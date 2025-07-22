@@ -3,7 +3,6 @@
 
 > **When data dies, we bring it back. Enterprise-grade backup orchestration with AI intelligence, military-grade security, and zero tolerance for data loss.**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/grim-project/grim)
 [![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)](https://github.com/grim-project/grim)
 [![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](https://github.com/grim-project/grim/releases)
@@ -527,7 +526,7 @@ bats tests/security.bats
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+BBL License - see [LICENSE](LICENSE) file for details.
 
 ---
 
