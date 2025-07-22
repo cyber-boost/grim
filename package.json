@@ -1,0 +1,13 @@
+{
+    "name": "npm-bash-integration-example",
+    "version": "1.0.0",
+    "description": "Example showing how npm JavaScript CLIs can utilize bash scripts",
+    "main": "npm-bash-integration-example.js",
+    "bin": {
+      "npm-bash": "./npm-bash-integration-example.js"
+    },
+    "scripts": {
+      "start": "node npm-bash-integration-example.js",
+      "install": "./scripts/install.sh"
+    }
+}
