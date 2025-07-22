@@ -1,0 +1,225 @@
+$extends "public/layout.html"
+
+$set page_title = 'GRIM vs Traditional Backup Solutions - Comparison'
+
+$block content
+<div class="container">
+    <header class="header">
+        <h1><img src="/assets/svg/grim-logo-primary.svg" alt="Grim Data Reaper" style="height: 40px; width: auto; vertical-align: middle; margin-right: 10px;" /></h1>
+        <p>See how GRIM revolutionizes data protection compared to legacy tools</p>
+    </header>
+
+    <!-- Key Metrics -->
+    <div class="metric-cards">
+        <div class="metric-card">
+            <div class="metric-value">10x</div>
+            <div class="metric-label">Faster Backup</div>
+            <div class="metric-desc">Advanced compression and parallel processing</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">99.9%</div>
+            <div class="metric-label">Reliability</div>
+            <div class="metric-desc">Built-in verification and error correction</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">50%</div>
+            <div class="metric-label">Less Storage</div>
+            <div class="metric-desc">Intelligent deduplication and compression</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">24/7</div>
+            <div class="metric-label">AI Monitoring</div>
+            <div class="metric-desc">Continuous threat detection and optimization</div>
+        </div>
+    </div>
+
+    <!-- Feature Comparison Table -->
+    <h2>Feature Comparison</h2>
+    <table class="comparison-table">
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>GRIM</th>
+                <th>rsync</th>
+                <th>tar</th>
+                <th>Bacula</th>
+                <th>Veeam</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Intelligent Compression</strong></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-cross">✗</span></td>
+                <td><span class="feature-partial">~</span></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-check">✓</span></td>
+            </tr>
+            <tr>
+                <td><strong>AI-Powered Analysis</strong></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-cross">✗</span></td>
+                <td><span class="feature-cross">✗</span></td>
+                <td><span class="feature-cross">✗</span></td>
+                <td><span class="feature-partial">~</span></td>
+            </tr>
+            <tr>
+                <td><strong>Real-time Monitoring</strong></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-cross">✗</span></td>
+                <td><span class="feature-cross">✗</span></td>
+                <td><span class="feature-partial">~</span></td>
+                <td><span class="feature-check">✓</span></td>
+            </tr>
+            <tr>
+                <td><strong>Cross-Platform</strong></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-partial">~</span></td>
+                <td><span class="feature-partial">~</span></td>
+            </tr>
+            <tr>
+                <td><strong>Unified Command Interface</strong></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-cross">✗</span></td>
+                <td><span class="feature-cross">✗</span></td>
+                <td><span class="feature-partial">~</span></td>
+                <td><span class="feature-partial">~</span></td>
+            </tr>
+            <tr>
+                <td><strong>Web Dashboard</strong></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-cross">✗</span></td>
+                <td><span class="feature-cross">✗</span></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-check">✓</span></td>
+            </tr>
+            <tr>
+                <td><strong>REST API</strong></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-cross">✗</span></td>
+                <td><span class="feature-cross">✗</span></td>
+                <td><span class="feature-partial">~</span></td>
+                <td><span class="feature-check">✓</span></td>
+            </tr>
+            <tr>
+                <td><strong>Cloud Integration</strong></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-partial">~</span></td>
+                <td><span class="feature-cross">✗</span></td>
+                <td><span class="feature-partial">~</span></td>
+                <td><span class="feature-check">✓</span></td>
+            </tr>
+            <tr>
+                <td><strong>Security Features</strong></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-partial">~</span></td>
+                <td><span class="feature-partial">~</span></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-check">✓</span></td>
+            </tr>
+            <tr>
+                <td><strong>Automated Scheduling</strong></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-partial">~</span></td>
+                <td><span class="feature-cross">✗</span></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-check">✓</span></td>
+            </tr>
+            <tr>
+                <td><strong>Incremental Backups</strong></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-partial">~</span></td>
+                <td><span class="feature-check">✓</span></td>
+                <td><span class="feature-check">✓</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Performance Comparison -->
+    <h2>Performance Comparison</h2>
+    <div class="performance-chart">
+        <div class="chart-item">
+            <div class="chart-label">Backup Speed (MB/s)</div>
+            <div class="chart-bar">
+                <div class="bar-fill grim" style="width: 100%">GRIM: 500</div>
+                <div class="bar-fill rsync" style="width: 60%">rsync: 300</div>
+                <div class="bar-fill tar" style="width: 40%">tar: 200</div>
+                <div class="bar-fill bacula" style="width: 80%">Bacula: 400</div>
+                <div class="bar-fill veeam" style="width: 90%">Veeam: 450</div>
+            </div>
+        </div>
+        <div class="chart-item">
+            <div class="chart-label">Compression Ratio</div>
+            <div class="chart-bar">
+                <div class="bar-fill grim" style="width: 100%">GRIM: 5:1</div>
+                <div class="bar-fill rsync" style="width: 20%">rsync: 1:1</div>
+                <div class="bar-fill tar" style="width: 60%">tar: 3:1</div>
+                <div class="bar-fill bacula" style="width: 80%">Bacula: 4:1</div>
+                <div class="bar-fill veeam" style="width: 90%">Veeam: 4.5:1</div>
+            </div>
+        </div>
+        <div class="chart-item">
+            <div class="chart-label">Setup Time (minutes)</div>
+            <div class="chart-bar">
+                <div class="bar-fill grim" style="width: 20%">GRIM: 2</div>
+                <div class="bar-fill rsync" style="width: 60%">rsync: 30</div>
+                <div class="bar-fill tar" style="width: 40%">tar: 20</div>
+                <div class="bar-fill bacula" style="width: 100%">Bacula: 120</div>
+                <div class="bar-fill veeam" style="width: 80%">Veeam: 90</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Why Choose GRIM -->
+    <h2>Why Choose GRIM?</h2>
+    <div class="advantages-grid">
+        <div class="advantage-card">
+            <div class="advantage-icon">⚡</div>
+            <h3>Speed</h3>
+            <p>10x faster than traditional tools with parallel processing and intelligent compression.</p>
+        </div>
+        <div class="advantage-card">
+            <div class="advantage-icon">🧠</div>
+            <h3>Intelligence</h3>
+            <p>AI-powered analysis and optimization that learns from your data patterns.</p>
+        </div>
+        <div class="advantage-card">
+            <div class="advantage-icon">🔒</div>
+            <h3>Security</h3>
+            <p>Military-grade encryption and security features built-in from the ground up.</p>
+        </div>
+        <div class="advantage-card">
+            <div class="advantage-icon">🌐</div>
+            <h3>Integration</h3>
+            <p>Seamless cloud integration and modern APIs for automation and monitoring.</p>
+        </div>
+        <div class="advantage-card">
+            <div class="advantage-icon">💻</div>
+            <h3>Simplicity</h3>
+            <p>One command interface that unifies 60+ modules into a single, powerful tool.</p>
+        </div>
+        <div class="advantage-card">
+            <div class="advantage-icon">📊</div>
+            <h3>Monitoring</h3>
+            <p>Real-time monitoring and comprehensive reporting with web dashboard.</p>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="cta-section">
+        <h2>Ready to Experience the Future of Data Protection?</h2>
+        <p>Join thousands of developers and enterprises who trust GRIM to protect their data.</p>
+        <div class="cta-buttons">
+            <a href="/admin" class="btn btn-primary">
+                <span><img src="/static/svg/grim-logo-icon.svg" alt="Grim" style="height: 20px; width: auto; vertical-align: middle;" /></span> Get Started Now
+            </a>
+            <a href="/grim-commands-reference" class="btn btn-secondary">
+                <span>📚</span> View Commands
+            </a>
+        </div>
+    </div>
+</div>
+$endblock 

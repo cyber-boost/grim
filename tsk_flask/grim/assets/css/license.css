@@ -1,0 +1,344 @@
+/* License Management - Specific Styles */
+/* Extracted from scythe_license_manager.html */
+
+/* Software Registry Table */
+.software-registry {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #333;
+    margin-bottom: 30px;
+}
+
+.software-registry h3 {
+    color: #8b4513;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.software-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.software-table th {
+    background: rgba(139, 69, 19, 0.2);
+    color: #8b4513;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.software-table td {
+    padding: 12px;
+    border-bottom: 1px solid #333;
+    color: #e6e6e6;
+}
+
+.software-table tr:hover {
+    background: rgba(139, 69, 19, 0.1);
+}
+
+.license-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.license-status.valid {
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+}
+
+.license-status.expiring {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+}
+
+.license-status.checking {
+    background: rgba(23, 162, 184, 0.2);
+    color: #17a2b8;
+}
+
+.table-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.table-btn {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+    border-radius: 4px;
+    border: 1px solid rgba(139, 69, 19, 0.3);
+    background: rgba(139, 69, 19, 0.1);
+    color: #b8860b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.table-btn:hover {
+    background: rgba(139, 69, 19, 0.2);
+    border-color: rgba(139, 69, 19, 0.5);
+}
+
+/* Language Protection Dashboard */
+.language-protection {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #333;
+    margin-bottom: 30px;
+}
+
+.language-protection h3 {
+    color: #8b4513;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.language-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.language-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    transition: all 0.3s ease;
+}
+
+.language-item:hover {
+    border-color: #8b4513;
+    transform: translateY(-3px);
+}
+
+.language-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.language-icon {
+    font-size: 1.2rem;
+}
+
+.language-name {
+    color: #fff;
+    font-weight: 600;
+}
+
+.language-count {
+    color: #b8860b;
+    font-size: 0.9rem;
+}
+
+/* Configuration Panel */
+.config-panel {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #333;
+    margin-bottom: 30px;
+}
+
+.config-panel h3 {
+    color: #8b4513;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.config-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #333;
+}
+
+.config-item:last-child {
+    border-bottom: none;
+}
+
+.config-label {
+    color: #e6e6e6;
+    font-weight: 500;
+}
+
+.config-value {
+    color: #b8860b;
+    font-weight: 600;
+}
+
+.toggle-switch {
+    width: 40px;
+    height: 20px;
+    background: #333;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toggle-switch.active {
+    background: #8b4513;
+}
+
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: all 0.3s ease;
+}
+
+.toggle-switch.active::after {
+    transform: translateX(20px);
+}
+
+/* Compliance Reports */
+.compliance-reports {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #333;
+    margin-bottom: 30px;
+}
+
+.compliance-reports h3 {
+    color: #8b4513;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.report-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.report-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.report-item:hover {
+    border-color: #8b4513;
+    transform: translateY(-3px);
+}
+
+.report-icon {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.report-title {
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.report-desc {
+    color: #999;
+    font-size: 0.8rem;
+}
+
+/* License-specific activity items */
+.activity-item .activity-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #8b4513, #654321);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-size: 14px;
+}
+
+/* License-specific action buttons */
+.action-btn {
+    width: 100%;
+    margin-bottom: 10px;
+    justify-content: flex-start;
+    padding: 12px 16px;
+    background: rgba(139, 69, 19, 0.1);
+    border: 1px solid rgba(139, 69, 19, 0.3);
+    color: #e6e6e6;
+}
+
+.action-btn:hover {
+    background: rgba(139, 69, 19, 0.2);
+    border-color: rgba(139, 69, 19, 0.5);
+}
+
+/* Responsive adjustments for license management */
+@media (max-width: 768px) {
+    .software-table {
+        font-size: 0.8rem;
+    }
+
+    .software-table th,
+    .software-table td {
+        padding: 8px;
+    }
+
+    .language-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    .config-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* License-specific animations */
+@keyframes license-check {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.license-status.checking {
+    animation: license-check 2s infinite;
+}
+
+/* Glow effect for report items */
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(139, 69, 19, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(139, 69, 19, 0.6); }
+}
+
+.glow {
+    animation: glow 3s infinite;
+} 

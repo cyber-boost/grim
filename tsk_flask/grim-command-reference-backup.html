@@ -1,0 +1,2175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRIM Command Reference - Complete Interactive Guide</title>
+    <link rel="stylesheet" href="/static/css/command-reference.css">
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --primary: #8b4513;
+            --accent: #b8860b;
+            --text-primary: #e6e6e6;
+            --text-secondary: #ccc;
+            --text-muted: #999;
+            --success: #28a745;
+            --warning: #ffc107;
+            --error: #dc3545;
+            --info: #17a2b8;
+            --border: rgba(139, 69, 19, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .nav-logo img {
+            height: 30px;
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .nav-cta {
+            background: var(--primary);
+            color: var(--text-primary) !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .nav-cta:hover {
+            background: var(--accent);
+        }
+
+        /* Adjust body padding for fixed nav */
+        body {
+            padding-top: 80px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.1) 0%, transparent 100%);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        /* Search Bar */
+        .search-container {
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1.2rem 3rem 1.2rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-tertiary);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* Category Navigation */
+        .category-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .category-btn {
+            padding: 0.8rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        /* Command Grid */
+        .commands-grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .command-category {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .command-category.hidden {
+            display: none;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .category-icon {
+            font-size: 2rem;
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .commands-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .command-item {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .command-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 69, 19, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .command-item:hover::before {
+            left: 100%;
+        }
+
+        .command-item:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+            background: rgba(139, 69, 19, 0.05);
+        }
+
+        .command-item.hidden {
+            display: none;
+        }
+
+        .command-syntax {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .command-copy {
+            margin-left: auto;
+            padding: 0.3rem 0.6rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .command-copy:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .command-copy.copied {
+            background: var(--success);
+            color: white;
+        }
+
+        .command-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .command-example {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: var(--accent);
+            margin-top: 0.5rem;
+        }
+
+        .command-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            padding: 0.3rem 0.8rem;
+            background: rgba(139, 69, 19, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .tag.ui {
+            background: rgba(23, 162, 184, 0.2);
+            border-color: var(--info);
+            color: var(--info);
+        }
+
+        /* Quick Reference Panel */
+        .quick-ref {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            padding: 2rem;
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            z-index: 1000;
+        }
+
+        .quick-ref.open {
+            right: 0;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .quick-ref-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .quick-ref-close {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-ref-close:hover {
+            background: var(--error);
+            color: white;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(139, 69, 19, 0.5);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.7);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2rem; }
+            .category-nav { justify-content: flex-start; overflow-x: auto; }
+            .quick-ref { width: 100%; right: -100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <img src="/static/svg/grim-logo-primary.svg" alt="Grim Data Reaper" />
+                GRIM
+            </a>
+            <ul class="nav-links">
+                <li><a href="/#features">Features</a></li>
+                <li><a href="/grim-command-reference">Commands</a></li>
+                <li><a href="/#architecture">Architecture</a></li>
+                <li><a href="/grim-api-docs">Docs</a></li>
+                <li><a href="https://github.com/grim-project/grim">GitHub</a></li>
+                <li><a href="/admin" class="nav-cta">Get Started</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="header">
+            <h1><img src="/static/svg/grim-logo-primary.svg" alt="Grim Data Reaper" style="height: 40px; width: auto; vertical-align: middle; margin-right: 10px;" /> GRIM Command Reference</h1>
+            <p>Complete guide to the unified command system - Everything through 'grim'</p>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" 
+                   class="search-input" 
+                   id="searchInput" 
+                   placeholder="Search commands... (e.g., 'backup', 'ai', 'security')">
+            <span class="search-icon">🔍</span>
+        </div>
+
+        <!-- Category Navigation -->
+        <div class="category-nav" id="categoryNav">
+            <button class="category-btn active" data-category="all">
+                <span>📚</span> All Commands
+            </button>
+            <button class="category-btn" data-category="health">
+                <span>🏥</span> System Health
+            </button>
+            <button class="category-btn" data-category="backup">
+                <span>💾</span> Backup
+            </button>
+            <button class="category-btn" data-category="monitor">
+                <span>🔍</span> Monitoring
+            </button>
+            <button class="category-btn" data-category="security">
+                <span>🔐</span> Security
+            </button>
+            <button class="category-btn" data-category="license">
+                <span>📋</span> License
+            </button>
+            <button class="category-btn" data-category="ai">
+                <span>🧠</span> AI & ML
+            </button>
+            <button class="category-btn" data-category="maintenance">
+                <span>⚙️</span> Maintenance
+            </button>
+            <button class="category-btn" data-category="compress">
+                <span>🗜️</span> Compression
+            </button>
+            <button class="category-btn" data-category="reports">
+                <span>📊</span> Reports
+            </button>
+            <button class="category-btn" data-category="remote">
+                <span>☁️</span> Remote
+            </button>
+            <button class="category-btn" data-category="emergency">
+                <span>🚨</span> Emergency
+            </button>
+        </div>
+
+        <!-- Commands Grid -->
+        <div class="commands-grid" id="commandsGrid">
+            <!-- System Health & Status -->
+            <div class="command-category" data-category="health">
+                <div class="category-header">
+                    <span class="category-icon">🏥</span>
+                    <h2 class="category-title">System Health & Status</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim health
+                            <button class="command-copy" onclick="copyCommand('grim health')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            System health dashboard showing all component status, resource usage, and alerts.
+                        </p>
+                        <div class="command-example">
+                            grim health --verbose --check-all
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Essential</span>
+                            <span class="tag ui">Dashboard UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim status
+                            <button class="command-copy" onclick="copyCommand('grim status')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Overall system status with real-time monitoring of all Grim subsystems.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Monitoring</span>
+                            <span class="tag ui">Status Panel</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim info-system
+                            <button class="command-copy" onclick="copyCommand('grim info-system')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Detailed system information including versions, configurations, and capabilities.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Diagnostic</span>
+                            <span class="tag">System</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim info-storage
+                            <button class="command-copy" onclick="copyCommand('grim info-storage')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Storage usage dashboard showing capacity, usage trends, and predictions.
+                        </p>
+                        <div class="command-example">
+                            grim info-storage --breakdown --predict
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Storage</span>
+                            <span class="tag ui">Charts</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim info-performance
+                            <button class="command-copy" onclick="copyCommand('grim info-performance')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Performance metrics dashboard with CPU, memory, and I/O statistics.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Performance</span>
+                            <span class="tag ui">Metrics UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim info-version
+                            <button class="command-copy" onclick="copyCommand('grim info-version')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Version information for all Grim components and update status.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Info</span>
+                            <span class="tag">Version</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Backup Management -->
+            <div class="command-category" data-category="backup">
+                <div class="category-header">
+                    <span class="category-icon">💾</span>
+                    <h2 class="category-title">Backup Management</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim backup-create &lt;type&gt; &lt;path&gt;
+                            <button class="command-copy" onclick="copyCommand('grim backup-create daily /path')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Create backup with interactive wizard for configuration and options.
+                        </p>
+                        <div class="command-example">
+                            grim backup-create daily /var/www --wizard
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Backup</span>
+                            <span class="tag ui">Wizard UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim backup-list
+                            <button class="command-copy" onclick="copyCommand('grim backup-list')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Backup browser/manager with search, filter, and preview capabilities.
+                        </p>
+                        <div class="command-example">
+                            grim backup-list --filter type=daily --sort date
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Browse</span>
+                            <span class="tag ui">Table UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim backup-verify &lt;backup&gt;
+                            <button class="command-copy" onclick="copyCommand('grim backup-verify backup.tar.gz')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Integrity verification interface with detailed checksum validation.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Integrity</span>
+                            <span class="tag ui">Progress UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim backup-schedule &lt;freq&gt; &lt;path&gt;
+                            <button class="command-copy" onclick="copyCommand('grim backup-schedule daily /path')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Backup scheduler with calendar view and cron expression builder.
+                        </p>
+                        <div class="command-example">
+                            grim backup-schedule "0 2 * * *" /critical/data --ui
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Schedule</span>
+                            <span class="tag ui">Calendar UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim backup-full &lt;path&gt;
+                            <button class="command-copy" onclick="copyCommand('grim backup-full /path')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Full backup interface with progress tracking and estimation.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Full Backup</span>
+                            <span class="tag ui">Progress Bar</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim backup-incremental &lt;path&gt;
+                            <button class="command-copy" onclick="copyCommand('grim backup-incremental /path')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Incremental backup with change detection and delta visualization.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Incremental</span>
+                            <span class="tag ui">Delta View</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim backup-differential &lt;path&gt;
+                            <button class="command-copy" onclick="copyCommand('grim backup-differential /path')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Differential backup interface showing changes since last full backup.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Differential</span>
+                            <span class="tag ui">Diff View</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monitoring & Surveillance -->
+            <div class="command-category" data-category="monitor">
+                <div class="category-header">
+                    <span class="category-icon">🔍</span>
+                    <h2 class="category-title">Monitoring & Surveillance</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim monitor-start &lt;path&gt;
+                            <button class="command-copy" onclick="copyCommand('grim monitor-start /path')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Start monitoring interface with real-time file change detection.
+                        </p>
+                        <div class="command-example">
+                            grim monitor-start /var/www --recursive --ui
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Real-time</span>
+                            <span class="tag ui">Live Monitor</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim monitor-stop &lt;path&gt;
+                            <button class="command-copy" onclick="copyCommand('grim monitor-stop /path')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Stop monitoring with summary report of detected changes.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Control</span>
+                            <span class="tag">Monitor</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim monitor-status
+                            <button class="command-copy" onclick="copyCommand('grim monitor-status')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Monitoring dashboard showing all active monitors and statistics.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Status</span>
+                            <span class="tag ui">Dashboard</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim monitor-events &lt;path&gt;
+                            <button class="command-copy" onclick="copyCommand('grim monitor-events /path')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Event viewer with timeline, filtering, and detailed event inspection.
+                        </p>
+                        <div class="command-example">
+                            grim monitor-events /var/www --last-24h --filter type=modify
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Events</span>
+                            <span class="tag ui">Timeline UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim monitor-performance
+                            <button class="command-copy" onclick="copyCommand('grim monitor-performance')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Performance monitor with real-time graphs and resource tracking.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Performance</span>
+                            <span class="tag ui">Graphs</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim lookouts-start
+                            <button class="command-copy" onclick="copyCommand('grim lookouts-start')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Start security surveillance system with threat detection dashboard.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Security</span>
+                            <span class="tag ui">Surveillance UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim lookouts-scan &lt;path&gt;
+                            <button class="command-copy" onclick="copyCommand('grim lookouts-scan /path')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Threat scanner with detailed security analysis and recommendations.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Scanner</span>
+                            <span class="tag ui">Analysis UI</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security & Compliance -->
+            <div class="command-category" data-category="security">
+                <div class="category-header">
+                    <span class="category-icon">🔐</span>
+                    <h2 class="category-title">Security & Compliance</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim security-audit
+                            <button class="command-copy" onclick="copyCommand('grim security-audit')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Security audit dashboard with vulnerability assessment and compliance checks.
+                        </p>
+                        <div class="command-example">
+                            grim security-audit --deep --report pdf
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Audit</span>
+                            <span class="tag ui">Report UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim security-encrypt &lt;file&gt;
+                            <button class="command-copy" onclick="copyCommand('grim security-encrypt file')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            File encryption interface with AES-256-CBC and key management.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Encryption</span>
+                            <span class="tag ui">Encrypt UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim security-decrypt &lt;file&gt;
+                            <button class="command-copy" onclick="copyCommand('grim security-decrypt file')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            File decryption interface with secure key entry and verification.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Decryption</span>
+                            <span class="tag ui">Decrypt UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim security-scan
+                            <button class="command-copy" onclick="copyCommand('grim security-scan')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Vulnerability scanner with CVE database and patch recommendations.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Scanner</span>
+                            <span class="tag ui">Vuln UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim quarantine-list
+                            <button class="command-copy" onclick="copyCommand('grim quarantine-list')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Quarantine manager showing isolated threats with analysis details.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Quarantine</span>
+                            <span class="tag ui">Manager UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim quarantine-isolate &lt;file&gt;
+                            <button class="command-copy" onclick="copyCommand('grim quarantine-isolate file')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Threat isolation interface with secure containment and logging.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Isolate</span>
+                            <span class="tag">Security</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim quarantine-analyze &lt;file&gt;
+                            <button class="command-copy" onclick="copyCommand('grim quarantine-analyze file')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Threat analysis interface with detailed forensic examination.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Analysis</span>
+                            <span class="tag ui">Forensics UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim quarantine-restore &lt;file&gt;
+                            <button class="command-copy" onclick="copyCommand('grim quarantine-restore file')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Quarantine restoration with safety checks and confirmation.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Restore</span>
+                            <span class="tag">Quarantine</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- License Protection -->
+            <div class="command-category" data-category="license">
+                <div class="category-header">
+                    <span class="category-icon">📋</span>
+                    <h2 class="category-title">License Protection (Scythe)</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim license-install &lt;path&gt; &lt;id&gt;
+                            <button class="command-copy" onclick="copyCommand('grim license-install /app id123')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            License protection setup wizard for software monitoring.
+                        </p>
+                        <div class="command-example">
+                            grim license-install /opt/app proj123 --name "My App"
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Scythe</span>
+                            <span class="tag ui">Setup Wizard</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim license-status
+                            <button class="command-copy" onclick="copyCommand('grim license-status')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            License compliance dashboard showing all protected software status.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Compliance</span>
+                            <span class="tag ui">Dashboard</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim license-check
+                            <button class="command-copy" onclick="copyCommand('grim license-check')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Violation checker with detailed compliance analysis.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Check</span>
+                            <span class="tag ui">Violations UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim license-report
+                            <button class="command-copy" onclick="copyCommand('grim license-report')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Compliance reporting interface with export options.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Report</span>
+                            <span class="tag ui">Export UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim license-start &lt;id&gt;
+                            <button class="command-copy" onclick="copyCommand('grim license-start id123')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Start license protection monitoring for specific software.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Start</span>
+                            <span class="tag">Monitor</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim license-stop
+                            <button class="command-copy" onclick="copyCommand('grim license-stop')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Stop license protection monitoring with summary report.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Stop</span>
+                            <span class="tag">Control</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI & Machine Learning -->
+            <div class="command-category" data-category="ai">
+                <div class="category-header">
+                    <span class="category-icon">🧠</span>
+                    <h2 class="category-title">AI & Machine Learning</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim ai-analyze &lt;path&gt;
+                            <button class="command-copy" onclick="copyCommand('grim ai-analyze /path')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            AI analysis interface with pattern recognition and insights dashboard.
+                        </p>
+                        <div class="command-example">
+                            grim ai-analyze /var/www --deep --visualize
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">AI</span>
+                            <span class="tag ui">Analysis UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim ai-recommend
+                            <button class="command-copy" onclick="copyCommand('grim ai-recommend')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            AI recommendation engine with actionable optimization suggestions.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">ML</span>
+                            <span class="tag ui">Recommendations</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim ai-train &lt;model&gt;
+                            <button class="command-copy" onclick="copyCommand('grim ai-train model')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            ML training interface with progress tracking and model management.
+                        </p>
+                        <div class="command-example">
+                            grim ai-train importance-predictor --dataset /backups
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Training</span>
+                            <span class="tag ui">ML Studio</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim ai-predict &lt;file&gt;
+                            <button class="command-copy" onclick="copyCommand('grim ai-predict file')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Prediction dashboard showing file importance and backup priorities.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Predict</span>
+                            <span class="tag ui">Predictions UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim ai-optimize
+                            <button class="command-copy" onclick="copyCommand('grim ai-optimize')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            AI optimization interface applying machine learning insights.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Optimize</span>
+                            <span class="tag ui">AI Actions</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim smart-suggestions
+                            <button class="command-copy" onclick="copyCommand('grim smart-suggestions')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Smart suggestions panel with prioritized recommendations.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Smart</span>
+                            <span class="tag ui">Suggestions UI</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Maintenance -->
+            <div class="command-category" data-category="maintenance">
+                <div class="category-header">
+                    <span class="category-icon">⚙️</span>
+                    <h2 class="category-title">System Maintenance</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim optimize-all
+                            <button class="command-copy" onclick="copyCommand('grim optimize-all')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            System optimization panel with comprehensive performance tuning.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Optimize</span>
+                            <span class="tag ui">Control Panel</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim optimize-storage
+                            <button class="command-copy" onclick="copyCommand('grim optimize-storage')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Storage optimization with deduplication analysis and cleanup.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Storage</span>
+                            <span class="tag ui">Optimizer UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim optimize-performance
+                            <button class="command-copy" onclick="copyCommand('grim optimize-performance')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Performance optimization interface with system tuning controls.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Performance</span>
+                            <span class="tag ui">Tuning UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim heal
+                            <button class="command-copy" onclick="copyCommand('grim heal')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Self-healing interface with automated issue detection and repair.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Healing</span>
+                            <span class="tag ui">Auto-fix UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim heal-diagnose
+                            <button class="command-copy" onclick="copyCommand('grim heal-diagnose')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Diagnostics dashboard showing system issues and recommendations.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Diagnostic</span>
+                            <span class="tag ui">Health Check</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim heal-monitor
+                            <button class="command-copy" onclick="copyCommand('grim heal-monitor')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Healing monitor showing real-time self-repair activities.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Monitor</span>
+                            <span class="tag ui">Healing UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim cleanup-all
+                            <button class="command-copy" onclick="copyCommand('grim cleanup-all')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Cleanup manager with space recovery and optimization tools.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Cleanup</span>
+                            <span class="tag ui">Manager UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim cleanup-logs
+                            <button class="command-copy" onclick="copyCommand('grim cleanup-logs')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Log cleanup interface with retention policy management.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Logs</span>
+                            <span class="tag">Cleanup</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim cleanup-temp
+                            <button class="command-copy" onclick="copyCommand('grim cleanup-temp')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Temporary file cleanup with safe deletion confirmation.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Temp</span>
+                            <span class="tag">Clean</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim cleanup-backups &lt;days&gt;
+                            <button class="command-copy" onclick="copyCommand('grim cleanup-backups 30')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Backup cleanup with retention policy and space analysis.
+                        </p>
+                        <div class="command-example">
+                            grim cleanup-backups 30 --dry-run --size-report
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Backup</span>
+                            <span class="tag">Retention</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compression Management -->
+            <div class="command-category" data-category="compress">
+                <div class="category-header">
+                    <span class="category-icon">🗜️</span>
+                    <h2 class="category-title">Compression Management</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim compress-benchmark &lt;path&gt;
+                            <button class="command-copy" onclick="copyCommand('grim compress-benchmark /path')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Compression benchmark tool comparing algorithms and ratios.
+                        </p>
+                        <div class="command-example">
+                            grim compress-benchmark /data --algorithms all
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Benchmark</span>
+                            <span class="tag ui">Comparison UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim compress-optimize &lt;path&gt;
+                            <button class="command-copy" onclick="copyCommand('grim compress-optimize /path')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Compression optimizer finding best algorithm for your data.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Optimize</span>
+                            <span class="tag ui">Algorithm UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim compress &lt;file&gt; --algorithm
+                            <button class="command-copy" onclick="copyCommand('grim compress file --algorithm zstd')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Compression interface with algorithm selection and progress.
+                        </p>
+                        <div class="command-example">
+                            grim compress data.tar --algorithm zstd --level 9
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Compress</span>
+                            <span class="tag ui">Progress UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim decompress &lt;file&gt;
+                            <button class="command-copy" onclick="copyCommand('grim decompress file.gz')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Decompression interface with automatic format detection.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Decompress</span>
+                            <span class="tag ui">Extract UI</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reporting & Analytics -->
+            <div class="command-category" data-category="reports">
+                <div class="category-header">
+                    <span class="category-icon">📊</span>
+                    <h2 class="category-title">Reporting & Analytics</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim report-daily
+                            <button class="command-copy" onclick="copyCommand('grim report-daily')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Daily report dashboard with activity summary and insights.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Daily</span>
+                            <span class="tag ui">Report UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim report-backup
+                            <button class="command-copy" onclick="copyCommand('grim report-backup')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Backup reporting with success rates, sizes, and trends.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Backup</span>
+                            <span class="tag ui">Analytics</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim report-security
+                            <button class="command-copy" onclick="copyCommand('grim report-security')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Security reporting dashboard with threat analysis and compliance.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Security</span>
+                            <span class="tag ui">Report UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim report-performance
+                            <button class="command-copy" onclick="copyCommand('grim report-performance')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Performance analytics with historical trends and bottlenecks.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Performance</span>
+                            <span class="tag ui">Analytics UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim report-compliance
+                            <button class="command-copy" onclick="copyCommand('grim report-compliance')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Compliance reporting for regulatory requirements and audits.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Compliance</span>
+                            <span class="tag ui">Audit UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim audit-report
+                            <button class="command-copy" onclick="copyCommand('grim audit-report')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Comprehensive audit reporting with export capabilities.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Audit</span>
+                            <span class="tag ui">Export UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim audit-search &lt;query&gt;
+                            <button class="command-copy" onclick="copyCommand('grim audit-search query')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Audit log search interface with advanced filtering.
+                        </p>
+                        <div class="command-example">
+                            grim audit-search "backup failed" --date-range 7d
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Search</span>
+                            <span class="tag ui">Search UI</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications & Alerts -->
+            <div class="command-category" data-category="notifications">
+                <div class="category-header">
+                    <span class="category-icon">🔔</span>
+                    <h2 class="category-title">Notifications & Alerts</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim notify-setup-email
+                            <button class="command-copy" onclick="copyCommand('grim notify-setup-email')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Email notification setup wizard with SMTP configuration.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Email</span>
+                            <span class="tag ui">Setup Wizard</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim notify-setup-slack
+                            <button class="command-copy" onclick="copyCommand('grim notify-setup-slack')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Slack integration setup with channel configuration.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Slack</span>
+                            <span class="tag ui">Integration UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim notify-test
+                            <button class="command-copy" onclick="copyCommand('grim notify-test')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Notification testing interface for all configured channels.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Test</span>
+                            <span class="tag ui">Test UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim alert-configure &lt;type&gt;
+                            <button class="command-copy" onclick="copyCommand('grim alert-configure backup-failure')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Alert configuration interface with threshold and priority settings.
+                        </p>
+                        <div class="command-example">
+                            grim alert-configure backup-failure --priority high
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Alerts</span>
+                            <span class="tag ui">Config UI</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Remote Operations -->
+            <div class="command-category" data-category="remote">
+                <div class="category-header">
+                    <span class="category-icon">☁️</span>
+                    <h2 class="category-title">Remote Operations</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim remote-setup &lt;provider&gt;
+                            <button class="command-copy" onclick="copyCommand('grim remote-setup s3')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Remote storage setup wizard for S3, Azure, GCP, or SSH.
+                        </p>
+                        <div class="command-example">
+                            grim remote-setup s3 --wizard
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Cloud</span>
+                            <span class="tag ui">Setup Wizard</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim remote-sync &lt;path&gt;
+                            <button class="command-copy" onclick="copyCommand('grim remote-sync /backups')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Remote sync interface with progress and bandwidth control.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Sync</span>
+                            <span class="tag ui">Sync UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim remote-download &lt;backup&gt;
+                            <button class="command-copy" onclick="copyCommand('grim remote-download backup.tar.gz')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Remote download interface with resume capability.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Download</span>
+                            <span class="tag ui">Transfer UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim remote-status
+                            <button class="command-copy" onclick="copyCommand('grim remote-status')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Remote storage status dashboard with connectivity checks.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Status</span>
+                            <span class="tag ui">Cloud Status</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim remote-list
+                            <button class="command-copy" onclick="copyCommand('grim remote-list')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Remote backup browser with search and filter capabilities.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Browse</span>
+                            <span class="tag ui">Remote Browser</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scheduling & Automation -->
+            <div class="command-category" data-category="schedule">
+                <div class="category-header">
+                    <span class="category-icon">📅</span>
+                    <h2 class="category-title">Scheduling & Automation</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim schedule-add &lt;cron&gt; &lt;command&gt;
+                            <button class="command-copy" onclick="copyCommand('grim schedule-add &quot;0 2 * * *&quot; &quot;grim backup /data&quot;')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Task scheduler with cron expression builder and validation.
+                        </p>
+                        <div class="command-example">
+                            grim schedule-add "0 2 * * *" "grim backup-create daily /var/www"
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Schedule</span>
+                            <span class="tag ui">Cron Builder</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim schedule-list
+                            <button class="command-copy" onclick="copyCommand('grim schedule-list')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Scheduled tasks manager with enable/disable controls.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Tasks</span>
+                            <span class="tag ui">Schedule UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim schedule-enable &lt;id&gt;
+                            <button class="command-copy" onclick="copyCommand('grim schedule-enable task123')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Enable scheduled task with immediate execution option.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Enable</span>
+                            <span class="tag">Control</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim schedule-disable &lt;id&gt;
+                            <button class="command-copy" onclick="copyCommand('grim schedule-disable task123')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Disable scheduled task without deletion.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Disable</span>
+                            <span class="tag">Control</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim schedule-remove &lt;id&gt;
+                            <button class="command-copy" onclick="copyCommand('grim schedule-remove task123')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Remove scheduled task with confirmation prompt.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Remove</span>
+                            <span class="tag">Delete</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration Management -->
+            <div class="command-category" data-category="config">
+                <div class="category-header">
+                    <span class="category-icon">⚙️</span>
+                    <h2 class="category-title">Configuration Management</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim config-get &lt;key&gt;
+                            <button class="command-copy" onclick="copyCommand('grim config-get backup.compression')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Configuration viewer with search and filter capabilities.
+                        </p>
+                        <div class="command-example">
+                            grim config-get backup.compression
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Config</span>
+                            <span class="tag ui">Viewer UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim config-set &lt;key&gt; &lt;value&gt;
+                            <button class="command-copy" onclick="copyCommand('grim config-set backup.compression zstd')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Configuration editor with validation and preview.
+                        </p>
+                        <div class="command-example">
+                            grim config-set ai.enabled true
+                        </div>
+                        <div class="command-tags">
+                            <span class="tag">Settings</span>
+                            <span class="tag ui">Editor UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim config-export
+                            <button class="command-copy" onclick="copyCommand('grim config-export')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Configuration export tool with format selection.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Export</span>
+                            <span class="tag ui">Export UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim config-import &lt;file&gt;
+                            <button class="command-copy" onclick="copyCommand('grim config-import config.json')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Configuration import with validation and merge options.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Import</span>
+                            <span class="tag ui">Import UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim config-reset
+                            <button class="command-copy" onclick="copyCommand('grim config-reset')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Reset configuration to defaults with backup option.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Reset</span>
+                            <span class="tag">Defaults</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Verification & Integrity -->
+            <div class="command-category" data-category="verify">
+                <div class="category-header">
+                    <span class="category-icon">🔍</span>
+                    <h2 class="category-title">Verification & Integrity</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim verify-system
+                            <button class="command-copy" onclick="copyCommand('grim verify-system')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            System integrity check with comprehensive validation.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Verify</span>
+                            <span class="tag ui">Integrity UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim verify-backup &lt;backup&gt;
+                            <button class="command-copy" onclick="copyCommand('grim verify-backup backup.tar.gz')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Backup verification with checksum and content validation.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Backup</span>
+                            <span class="tag ui">Verify UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim hash-create &lt;file&gt;
+                            <button class="command-copy" onclick="copyCommand('grim hash-create file.txt')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Hash generation interface with multiple algorithm support.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Hash</span>
+                            <span class="tag">Create</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim hash-check &lt;file&gt;
+                            <button class="command-copy" onclick="copyCommand('grim hash-check file.txt')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Hash verification interface with comparison tools.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Hash</span>
+                            <span class="tag">Verify</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Build & Deployment -->
+            <div class="command-category" data-category="build">
+                <div class="category-header">
+                    <span class="category-icon">🚀</span>
+                    <h2 class="category-title">Build & Deployment</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim build
+                            <button class="command-copy" onclick="copyCommand('grim build')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Build management interface for creating Grim packages.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Build</span>
+                            <span class="tag ui">Build UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim build-list
+                            <button class="command-copy" onclick="copyCommand('grim build-list')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Build browser showing available builds and versions.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Browse</span>
+                            <span class="tag ui">Version UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim deploy &lt;build&gt;
+                            <button class="command-copy" onclick="copyCommand('grim deploy v3.0.1')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Deployment interface with pre-flight checks and rollback.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Deploy</span>
+                            <span class="tag ui">Deploy UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim deploy-latest
+                            <button class="command-copy" onclick="copyCommand('grim deploy-latest')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Deploy latest stable build with automatic backup.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Update</span>
+                            <span class="tag">Latest</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim deploy-rollback &lt;backup&gt;
+                            <button class="command-copy" onclick="copyCommand('grim deploy-rollback previous')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Rollback interface for reverting deployments safely.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Rollback</span>
+                            <span class="tag ui">Revert UI</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim deploy-status
+                            <button class="command-copy" onclick="copyCommand('grim deploy-status')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Deployment status dashboard with history and logs.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Status</span>
+                            <span class="tag ui">Deploy Status</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Operations -->
+            <div class="command-category" data-category="emergency">
+                <div class="category-header">
+                    <span class="category-icon">🚨</span>
+                    <h2 class="category-title">Emergency Operations</h2>
+                </div>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim emergency-heal
+                            <button class="command-copy" onclick="copyCommand('grim emergency-heal')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Emergency healing with automatic issue detection and repair.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Critical</span>
+                            <span class="tag ui">Auto-Fix</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim emergency-isolate &lt;file&gt;
+                            <button class="command-copy" onclick="copyCommand('grim emergency-isolate /infected/file')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Emergency isolation for threats with immediate quarantine.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Threat</span>
+                            <span class="tag">Isolate</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim emergency-restore &lt;backup&gt;
+                            <button class="command-copy" onclick="copyCommand('grim emergency-restore latest')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Emergency restore with minimal verification for speed.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Restore</span>
+                            <span class="tag ui">Quick Restore</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim emergency-encrypt &lt;path&gt;
+                            <button class="command-copy" onclick="copyCommand('grim emergency-encrypt /sensitive')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Emergency encryption for rapid data protection.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Encrypt</span>
+                            <span class="tag">Quick</span>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="command-syntax">
+                            grim emergency-shutdown
+                            <button class="command-copy" onclick="copyCommand('grim emergency-shutdown')">Copy</button>
+                        </div>
+                        <p class="command-description">
+                            Emergency shutdown with graceful service termination.
+                        </p>
+                        <div class="command-tags">
+                            <span class="tag">Shutdown</span>
+                            <span class="tag">Emergency</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Reference Panel -->
+    <div class="quick-ref" id="quickRef">
+        <div class="quick-ref-header">
+            <h3>Quick Reference</h3>
+            <button class="quick-ref-close" onclick="toggleQuickRef()">✕</button>
+        </div>
+        <div id="quickRefContent">
+            <h4>Essential Commands</h4>
+            <ul style="list-style: none; padding: 0;">
+                <li style="padding: 0.5rem 0; font-family: monospace;">grim health</li>
+                <li style="padding: 0.5rem 0; font-family: monospace;">grim backup-create daily /data</li>
+                <li style="padding: 0.5rem 0; font-family: monospace;">grim monitor-start /path</li>
+                <li style="padding: 0.5rem 0; font-family: monospace;">grim ai-recommend</li>
+                <li style="padding: 0.5rem 0; font-family: monospace;">grim security-audit</li>
+            </ul>
+            
+            <h4 style="margin-top: 2rem;">Command Patterns</h4>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+                All Grim commands follow the pattern:<br>
+                <code style="background: var(--bg-tertiary); padding: 0.2rem 0.5rem; border-radius: 4px;">
+                    grim [action]-[target] [arguments] [--flags]
+                </code>
+            </p>
+
+            <h4 style="margin-top: 2rem;">UI Commands</h4>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+                Many commands include interactive UI elements marked with the 
+                <span class="tag ui" style="display: inline-block;">UI Tag</span>.
+                These provide dashboards, wizards, and visual interfaces.
+            </p>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="fab" onclick="toggleQuickRef()">
+        📚
+    </div>
+
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const commandItems = document.querySelectorAll('.command-item');
+        const categories = document.querySelectorAll('.command-category');
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            commandItems.forEach(item => {
+                const syntax = item.querySelector('.command-syntax').textContent.toLowerCase();
+                const description = item.querySelector('.command-description').textContent.toLowerCase();
+                const tags = Array.from(item.querySelectorAll('.tag')).map(tag => tag.textContent.toLowerCase());
+                
+                if (syntax.includes(searchTerm) || 
+                    description.includes(searchTerm) || 
+                    tags.some(tag => tag.includes(searchTerm))) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+
+            // Hide empty categories
+            categories.forEach(category => {
+                const visibleItems = category.querySelectorAll('.command-item:not(.hidden)');
+                if (visibleItems.length === 0 && searchTerm !== '') {
+                    category.classList.add('hidden');
+                } else {
+                    category.classList.remove('hidden');
+                }
+            });
+        });
+
+        // Category filter
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const selectedCategory = btn.dataset.category;
+                
+                // Update active button
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Show/hide categories
+                categories.forEach(category => {
+                    if (selectedCategory === 'all' || category.dataset.category === selectedCategory) {
+                        category.classList.remove('hidden');
+                    } else {
+                        category.classList.add('hidden');
+                    }
+                });
+            });
+        });
+
+        // Copy command functionality
+        function copyCommand(command) {
+            navigator.clipboard.writeText(command).then(() => {
+                event.target.textContent = 'Copied!';
+                event.target.classList.add('copied');
+                setTimeout(() => {
+                    event.target.textContent = 'Copy';
+                    event.target.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Quick reference panel
+        function toggleQuickRef() {
+            const quickRef = document.getElementById('quickRef');
+            quickRef.classList.toggle('open');
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + K for search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+            
+            // Escape to close quick ref
+            if (e.key === 'Escape') {
+                const quickRef = document.getElementById('quickRef');
+                if (quickRef.classList.contains('open')) {
+                    quickRef.classList.remove('open');
+                }
+            }
+        });
+
+        // Add hover effects
+        commandItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.boxShadow = '0 5px 15px rgba(139, 69, 19, 0.2)';
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                item.style.boxShadow = 'none';
+            });
+        });
+
+        // Count commands
+        const totalCommands = document.querySelectorAll('.command-item').length;
+        console.log(`Total Grim commands loaded: ${totalCommands}`);
+    </script>
+</body>
+</html>
