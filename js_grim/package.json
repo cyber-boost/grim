@@ -1,0 +1,110 @@
+{
+  "name": "grim-js",
+  "version": "1.0.0",
+  "description": "JavaScript CLI that unifies sh_grim, scyth, py_grim, and go_grim - The Ultimate Backup, Monitoring, and Security System",
+  "main": "grim.js",
+  "bin": {
+    "grim": "./grim.js"
+  },
+  "scripts": {
+    "start": "node grim.js",
+    "test": "node grim.js health",
+    "build": "echo 'No build required for Node.js CLI'",
+    "install-global": "npm install -g .",
+    "uninstall-global": "npm uninstall -g grim-js",
+    "grim": "node grim.js"
+  },
+  "keywords": [
+    "grim",
+    "backup",
+    "monitoring",
+    "security",
+    "cli",
+    "orchestration",
+    "system-management",
+    "compression",
+    "encryption",
+    "ai",
+    "machine-learning"
+  ],
+  "author": "Bernie Gengel and his beagle Buddy",
+  "license": "BBL",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/grim-reaper/grim-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/grim-reaper/grim-js/issues"
+  },
+  "homepage": "https://grim-reaper.org",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^9.4.1",
+    "ora": "^5.4.1",
+    "inquirer": "^8.2.4",
+    "figlet": "^1.5.2",
+    "cli-table3": "^0.6.2",
+    "moment": "^2.29.4",
+    "node-cron": "^3.0.2"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^2.8.0"
+  },
+  "files": [
+    "grim.js",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "directories": {
+    "bin": "./",
+    "lib": "./",
+    "doc": "./docs",
+    "scripts": "./scripts"
+  },
+  "config": {
+    "install_dir": "/opt/grim-reaper",
+    "config_dir": "/etc/grim-reaper",
+    "log_dir": "/var/log/grim",
+    "backup_dir": "/backups",
+    "user": "grim",
+    "group": "grim"
+  },
+  "metadata": {
+    "build_date": "2025-01-18T13:30:00Z",
+    "build_host": "grim-reaper-build-server",
+    "git_commit": "abc123def456",
+    "git_branch": "main",
+    "checksum": "sha256:deadbeef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+  },
+  "grim": {
+    "version": "1.0.0",
+    "components": {
+      "sh_grim": "Bash-based backup and system operations",
+      "scyth": "File scanning and analysis",
+      "py_grim": "Python-based monitoring and AI",
+      "go_grim": "Go-based web interface and performance"
+    },
+    "features": [
+      "unified-cli",
+      "multi-language-integration",
+      "ascii-art",
+      "backup-orchestration",
+      "security-auditing",
+      "ai-analysis",
+      "system-monitoring",
+      "web-interface",
+      "emergency-operations"
+    ],
+    "legal": {
+      "license": "https://grim-reaper.org/license",
+      "privacy-policy": "https://grim-reaper.org/privacy-policy",
+      "terms-and-conditions": "https://grim-reaper.org/terms-and-conditions"
+    }
+  }
+} 

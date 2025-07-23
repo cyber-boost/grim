@@ -1,0 +1,164 @@
+# Scythe Orchestrator Configuration
+# Central configuration for Grim Reaper system coordination
+
+# Monitoring Settings
+monitoring_interval: 30  # seconds between health checks
+health_check_timeout: 10  # seconds before health check times out
+max_retries: 3  # maximum retry attempts for failed operations
+log_level: INFO  # logging level (DEBUG, INFO, WARNING, ERROR)
+
+# Module Configuration
+modules:
+  sh_grim:
+    enabled: true
+    priority: 1
+    health_check_script: health.sh
+    critical_files:
+      - init.sh
+      - backup.sh
+      - verify.sh
+    dependencies: []
+    
+  go_grim:
+    enabled: true
+    priority: 2
+    build_command: "make build"
+    test_command: "make test"
+    critical_files:
+      - go.mod
+      - Makefile
+      - README.md
+    dependencies: []
+    
+  py_grim:
+    enabled: true
+    priority: 3
+    test_command: "python -m pytest"
+    critical_files:
+      - requirements.txt
+      - README.md
+    dependencies: []
+
+# Performance Settings
+performance:
+  max_concurrent_checks: 3
+  parallel_execution: true
+  resource_limits:
+    cpu_percent: 80
+    memory_mb: 1024
+    disk_gb: 10
+
+# Security Settings
+security:
+  enable_encryption: true
+  encryption_key_path: "scythe/config/keys/"
+  ssl_verify: true
+  allowed_ips: []
+  authentication_required: false
+
+# Notification Settings
+notifications:
+  enabled: true
+  email:
+    smtp_server: ""
+    smtp_port: 587
+    username: ""
+    password: ""
+    recipients: []
+  slack:
+    webhook_url: ""
+    channel: "#grim-reaper"
+  discord:
+    webhook_url: ""
+    channel_id: ""
+
+# Backup Settings
+backup:
+  enabled: true
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  retention_days: 30
+  compression: true
+  encryption: true
+  backup_path: "scythe/backups/"
+
+# Integration Settings
+integrations:
+  prometheus:
+    enabled: false
+    port: 9090
+    metrics_path: "/metrics"
+  
+  grafana:
+    enabled: false
+    dashboard_url: ""
+    api_key: ""
+  
+  elasticsearch:
+    enabled: false
+    hosts: []
+    index_prefix: "grim-reaper"
+
+# API Settings
+api:
+  enabled: true
+  host: "0.0.0.0"
+  port: 8080
+  cors_enabled: true
+  rate_limit: 100  # requests per minute
+  authentication:
+    enabled: false
+    token_expiry_hours: 24
+
+# Database Settings (if needed)
+database:
+  type: "sqlite"  # sqlite, postgresql, mysql
+  connection_string: "scythe/data/orchestrator.db"
+  max_connections: 10
+  timeout_seconds: 30
+
+# Logging Configuration
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_rotation:
+    enabled: true
+    max_size_mb: 100
+    backup_count: 5
+  console_output: true
+  file_output: true
+  log_directory: "scythe/logs/"
+
+# Alerting Rules
+alerts:
+  health_threshold: 0.7  # Alert if health score below this
+  error_threshold: 3  # Alert after this many consecutive errors
+  downtime_threshold: 300  # Alert if module down for this many seconds
+  
+  # Alert channels
+  channels:
+    - type: "email"
+      enabled: true
+    - type: "slack"
+      enabled: false
+    - type: "discord"
+      enabled: false
+
+# Maintenance Settings
+maintenance:
+  auto_restart_failed: true
+  restart_delay_seconds: 60
+  max_restart_attempts: 3
+  cleanup_old_logs: true
+  cleanup_old_backups: true
+  maintenance_window:
+    enabled: false
+    start_time: "02:00"
+    end_time: "04:00"
+    timezone: "UTC"
+
+# Development Settings
+development:
+  debug_mode: false
+  hot_reload: false
+  test_mode: false
+  mock_external_services: false 

@@ -1,0 +1,23 @@
+{
+  "sh_grim": {
+    "status": "error",
+    "last_check": "2025-07-18T13:29:50.487546",
+    "health_score": 0.3,
+    "error_count": 1,
+    "uptime": 0.008005619049072266
+  },
+  "go_grim": {
+    "status": "running",
+    "last_check": "2025-07-18T13:29:50.517765",
+    "health_score": 1.0,
+    "error_count": 0,
+    "uptime": 0.030050039291381836
+  },
+  "py_grim": {
+    "status": "running",
+    "last_check": "2025-07-18T13:29:50.536164",
+    "health_score": 1.0,
+    "error_count": 0,
+    "uptime": 0.01824474334716797
+  }
+}
