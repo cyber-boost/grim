@@ -4,7 +4,65 @@
 
 set -euo pipefail
 
-GRIM_ROOT="/opt/reaper"
+# Dynamic Grim Reaper root detection
+find_grim_root() {
+    local current_dir="$(pwd)"
+    local max_depth=10
+    local depth=0
+
+    # First, try to find from current directory
+    while [[ $depth -lt $max_depth ]]; do
+        if [[ -f "$current_dir/throne/grim_throne.sh" ]] || [[ -f "$current_dir/throne/php_grim_throne.sh" ]]; then
+            echo "$current_dir"
+            return 0
+        fi
+
+        if [[ -f "$current_dir/tsk_flask/grim_admin_server.py" ]]; then
+            echo "$current_dir"
+            return 0
+        fi
+
+        local parent_dir="$(dirname "$current_dir")"
+        if [[ "$parent_dir" == "$current_dir" ]]; then
+            break
+        fi
+
+        current_dir="$parent_dir"
+        ((depth++))
+    done
+
+    # If not found, try common installation paths
+    local possible_paths=(
+        "$HOME/reaper"
+        "$HOME/.reaper"
+        "/root/reaper"
+        "/root/.reaper"
+        "/usr/local/reaper"
+        "/usr/share/reaper"
+        "$(pwd)"
+    )
+
+    for path in "${possible_paths[@]}"; do
+        if [[ -d "$path" ]] && (
+            [[ -f "$path/throne/grim_throne.sh" ]] ||
+            [[ -f "$path/throne/php_grim_throne.sh" ]] ||
+            [[ -f "$path/tsk_flask/grim_admin_server.py" ]]
+        ); then
+            echo "$path"
+            return 0
+        fi
+    done
+
+    echo "Could not find Grim Reaper root directory" >&2
+    return 1
+}
+
+GRIM_ROOT="$(find_grim_root)"
+if [[ $? -ne 0 ]]; then
+    echo "❌ $GRIM_ROOT" >&2
+    exit 1
+fi
+
 cd "$GRIM_ROOT"
 
 # Colors for output

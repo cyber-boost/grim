@@ -28,6 +28,7 @@ class GrimCLI
         $maxDepth = 10;
         $depth = 0;
 
+        // First, try to find from current directory
         while ($depth < $maxDepth) {
             // Check for throne scripts
             if (file_exists($currentDir . '/throne/grim_throne.sh') ||
@@ -49,7 +50,32 @@ class GrimCLI
             $depth++;
         }
 
-        throw new \RuntimeException('Could not find Grim Reaper root directory');
+        // If not found, try common installation paths
+        $possiblePaths = [
+            // User's home directory
+            $_SERVER['HOME'] . '/reaper',
+            $_SERVER['HOME'] . '/.reaper',
+            // Root user paths
+            '/root/reaper',
+            '/root/.reaper',
+            // System paths (fallback)
+            '/usr/local/reaper',
+            '/usr/share/reaper',
+            // Current directory as last resort
+            getcwd()
+        ];
+
+        foreach ($possiblePaths as $path) {
+            if (is_dir($path) && (
+                file_exists($path . '/throne/grim_throne.sh') ||
+                file_exists($path . '/throne/php_grim_throne.sh') ||
+                file_exists($path . '/tsk_flask/grim_admin_server.py')
+            )) {
+                return $path;
+            }
+        }
+
+        throw new \RuntimeException('Could not find Grim Reaper root directory. Please ensure Grim Reaper is properly installed.');
     }
 
     /**

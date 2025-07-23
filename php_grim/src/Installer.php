@@ -40,6 +40,7 @@ class Installer
         $maxDepth = 10;
         $depth = 0;
 
+        // First, try to find from current directory
         while ($depth < $maxDepth) {
             // Check for throne scripts
             if (file_exists($currentDir . '/throne/grim_throne.sh') ||
@@ -61,7 +62,56 @@ class Installer
             $depth++;
         }
 
-        throw new \RuntimeException('Could not find Grim Reaper root directory');
+        // If not found, try common installation paths
+        $possiblePaths = [
+            // User's home directory
+            $_SERVER['HOME'] . '/reaper',
+            $_SERVER['HOME'] . '/.reaper',
+            // Root user paths
+            '/root/reaper',
+            '/root/.reaper',
+            // System paths (fallback)
+            '/usr/local/reaper',
+            '/usr/share/reaper',
+            // Current directory as last resort
+            getcwd()
+        ];
+
+        foreach ($possiblePaths as $path) {
+            if (is_dir($path) && (
+                file_exists($path . '/throne/grim_throne.sh') ||
+                file_exists($path . '/throne/php_grim_throne.sh') ||
+                file_exists($path . '/tsk_flask/grim_admin_server.py')
+            )) {
+                return $path;
+            }
+        }
+
+        throw new \RuntimeException('Could not find Grim Reaper root directory. Please ensure Grim Reaper is properly installed.');
+    }
+
+    /**
+     * Get backup directory
+     */
+    private function getBackupDir(): string
+    {
+        // Use graveyard if available
+        $graveyard = $_SERVER['HOME'] . '/.graveyard';
+        if (is_dir($graveyard) || is_writable(dirname($graveyard))) {
+            return $graveyard;
+        }
+
+        // Fallback to user's home
+        return $_SERVER['HOME'] . '/backups';
+    }
+
+    /**
+     * Get installation directory
+     */
+    private function getInstallDir(): string
+    {
+        // Use user's home directory
+        return $_SERVER['HOME'] . '/reaper';
     }
 
     /**
@@ -175,10 +225,13 @@ class Installer
      */
     private function createDirectories(): void
     {
+        $backupDir = $this->getBackupDir();
+        $installDir = $this->getInstallDir();
+        
         $directories = [
             $this->grimRoot . '/logs',
             $this->grimRoot . '/cache',
-            $this->grimRoot . '/backups',
+            $backupDir,
             $this->grimRoot . '/temp'
         ];
 
@@ -196,12 +249,15 @@ class Installer
     private function setupEnvironmentVariables(): void
     {
         $envFile = $this->grimRoot . '/.env';
+        $backupDir = $this->getBackupDir();
+        
         if (!file_exists($envFile)) {
             $envContent = "GRIM_ROOT={$this->grimRoot}\n";
             $envContent .= "GRIM_ENV=production\n";
             $envContent .= "GRIM_LOG_LEVEL=info\n";
             $envContent .= "GRIM_CACHE_DIR={$this->grimRoot}/cache\n";
-            $envContent .= "GRIM_BACKUP_DIR={$this->grimRoot}/backups\n";
+            $envContent .= "GRIM_BACKUP_DIR={$backupDir}\n";
+            $envContent .= "GRIM_HOME={$_SERVER['HOME']}\n";
             
             file_put_contents($envFile, $envContent);
             echo "📝 Created environment file: $envFile\n";
