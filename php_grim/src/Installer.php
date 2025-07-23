@@ -2,438 +2,486 @@
 
 namespace GrimReaper;
 
-use Composer\Script\Event;
-use Composer\Installer\PackageEvent;
-
 /**
- * Grim Reaper PHP Package Installer
- * Handles post-installation tasks and dependency management
+ * Enhanced PHP Installer for Grim Reaper
+ * Comprehensive PHP environment setup and management
  */
 class Installer
 {
-    private const GRIM_VERSION = '1.0.0';
-    private const REQUIRED_EXTENSIONS = ['json', 'curl', 'openssl', 'zip'];
-    private const REQUIRED_COMMANDS = ['rsync', 'tar', 'gzip', 'curl', 'wget'];
+    private string $grimRoot;
+    private array $requiredExtensions = [
+        'json', 'curl', 'openssl', 'zip', 'mbstring', 'xml', 'opcache'
+    ];
+    
+    private array $optionalExtensions = [
+        'mysql', 'pgsql', 'redis', 'gd', 'imagick', 'intl', 'bcmath'
+    ];
+    
+    private array $composerPackages = [
+        'phpunit/phpunit' => '^10.0',
+        'phpstan/phpstan' => '^1.10',
+        'squizlabs/php_codesniffer' => '^3.7',
+        'phpmd/phpmd' => '^2.15',
+        'vimeo/psalm' => '^5.0',
+        'enlightn/security-checker' => '^1.0'
+    ];
+
+    public function __construct()
+    {
+        $this->grimRoot = $this->findGrimRoot();
+    }
 
     /**
-     * Post-installation hook for Composer
+     * Find Grim Reaper root directory
      */
-    public static function postInstall(Event $event): void
+    private function findGrimRoot(): string
     {
-        $io = $event->getIO();
-        $io->write('<info>🗡️  Grim Reaper PHP Package Installation</info>');
-        
-        try {
-            self::checkRequirements($io);
-            self::setupGrimDirectory($io);
-            self::installDependencies($io);
-            self::createSymlinks($io);
-            self::verifyInstallation($io);
-            
-            $io->write('<info>✅ Grim Reaper installation completed successfully!</info>');
-            $io->write('');
-            $io->write('Usage:');
-            $io->write('  grim help          - Show available commands');
-            $io->write('  grim check-deps    - Verify dependencies');
-            $io->write('  grim backup        - Start backup operations');
-            $io->write('  grim monitor       - Monitor system health');
-            $io->write('');
-            $io->write('For more information: https://grim.so');
-            
-        } catch (\Exception $e) {
-            $io->writeError('<error>❌ Installation failed: ' . $e->getMessage() . '</error>');
-            throw $e;
+        $currentDir = getcwd();
+        $maxDepth = 10;
+        $depth = 0;
+
+        while ($depth < $maxDepth) {
+            // Check for throne scripts
+            if (file_exists($currentDir . '/throne/grim_throne.sh') ||
+                file_exists($currentDir . '/throne/php_grim_throne.sh')) {
+                return $currentDir;
+            }
+
+            // Check for grim_admin_server.py
+            if (file_exists($currentDir . '/tsk_flask/grim_admin_server.py')) {
+                return $currentDir;
+            }
+
+            $parentDir = dirname($currentDir);
+            if ($parentDir === $currentDir) {
+                break;
+            }
+
+            $currentDir = $parentDir;
+            $depth++;
+        }
+
+        throw new \RuntimeException('Could not find Grim Reaper root directory');
+    }
+
+    /**
+     * Post-install command for Composer
+     */
+    public static function postInstall(): void
+    {
+        $installer = new self();
+        $installer->setupEnvironment();
+        $installer->installDependencies();
+        $installer->configurePHP();
+        echo "✅ PHP Grim Reaper setup complete!\n";
+    }
+
+    /**
+     * Post-update command for Composer
+     */
+    public static function postUpdate(): void
+    {
+        $installer = new self();
+        $installer->updateDependencies();
+        echo "✅ PHP Grim Reaper updated successfully!\n";
+    }
+
+    /**
+     * Install all dependencies
+     */
+    public static function installDependencies(): void
+    {
+        $installer = new self();
+        $installer->installSystemDependencies();
+        $installer->installComposerDependencies();
+        $installer->installDevelopmentTools();
+    }
+
+    /**
+     * Setup PHP environment
+     */
+    public function setupEnvironment(): void
+    {
+        echo "🐘 Setting up PHP environment...\n";
+
+        // Check PHP version
+        $this->checkPHPVersion();
+
+        // Check Composer
+        $this->checkComposer();
+
+        // Create necessary directories
+        $this->createDirectories();
+
+        // Set up environment variables
+        $this->setupEnvironmentVariables();
+
+        echo "✅ PHP environment setup complete\n";
+    }
+
+    /**
+     * Check PHP version requirements
+     */
+    private function checkPHPVersion(): void
+    {
+        $version = PHP_VERSION;
+        $major = (int)explode('.', $version)[0];
+        $minor = (int)explode('.', $version)[1];
+
+        if ($major < 8 || ($major === 8 && $minor < 1)) {
+            throw new \RuntimeException("PHP 8.1+ required, found $version");
+        }
+
+        echo "✅ PHP version $version is compatible\n";
+    }
+
+    /**
+     * Check and install Composer
+     */
+    private function checkComposer(): void
+    {
+        if (!$this->commandExists('composer')) {
+            echo "📦 Installing Composer...\n";
+            $this->installComposer();
+        } else {
+            echo "✅ Composer is already installed\n";
         }
     }
 
     /**
-     * Post-update hook for Composer
+     * Install Composer
      */
-    public static function postUpdate(Event $event): void
+    private function installComposer(): void
     {
-        $io = $event->getIO();
-        $io->write('<info>🔄 Grim Reaper PHP Package Update</info>');
+        $installer = file_get_contents('https://getcomposer.org/installer');
+        if ($installer === false) {
+            throw new \RuntimeException('Failed to download Composer installer');
+        }
+
+        file_put_contents('composer-setup.php', $installer);
         
-        try {
-            self::checkRequirements($io);
-            self::updateDependencies($io);
-            self::verifyInstallation($io);
+        $signature = file_get_contents('https://composer.github.io/installer.sig');
+        if (hash_file('SHA384', 'composer-setup.php') !== $signature) {
+            unlink('composer-setup.php');
+            throw new \RuntimeException('Composer installer signature verification failed');
+        }
+
+        exec('php composer-setup.php --install-dir=/usr/local/bin --filename=composer');
+        unlink('composer-setup.php');
+    }
+
+    /**
+     * Create necessary directories
+     */
+    private function createDirectories(): void
+    {
+        $directories = [
+            $this->grimRoot . '/logs',
+            $this->grimRoot . '/cache',
+            $this->grimRoot . '/backups',
+            $this->grimRoot . '/temp'
+        ];
+
+        foreach ($directories as $dir) {
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+                echo "📁 Created directory: $dir\n";
+            }
+        }
+    }
+
+    /**
+     * Setup environment variables
+     */
+    private function setupEnvironmentVariables(): void
+    {
+        $envFile = $this->grimRoot . '/.env';
+        if (!file_exists($envFile)) {
+            $envContent = "GRIM_ROOT={$this->grimRoot}\n";
+            $envContent .= "GRIM_ENV=production\n";
+            $envContent .= "GRIM_LOG_LEVEL=info\n";
+            $envContent .= "GRIM_CACHE_DIR={$this->grimRoot}/cache\n";
+            $envContent .= "GRIM_BACKUP_DIR={$this->grimRoot}/backups\n";
             
-            $io->write('<info>✅ Grim Reaper update completed successfully!</info>');
-            
-        } catch (\Exception $e) {
-            $io->writeError('<error>❌ Update failed: ' . $e->getMessage() . '</error>');
-            throw $e;
+            file_put_contents($envFile, $envContent);
+            echo "📝 Created environment file: $envFile\n";
         }
     }
 
     /**
      * Install system dependencies
      */
-    public static function installDependencies(Event $event = null): void
+    public function installSystemDependencies(): void
     {
-        $io = $event ? $event->getIO() : null;
-        
-        if ($io) {
-            $io->write('<info>📦 Installing system dependencies...</info>');
-        }
-        
-        $installer = new self();
-        $installer->detectOS();
-        $installer->installSystemDependencies();
-        $installer->installGo();
-        $installer->buildBinaries();
-        
-        if ($io) {
-            $io->write('<info>✅ Dependencies installed successfully</info>');
-        }
-    }
+        echo "🔧 Installing system dependencies...\n";
 
-    /**
-     * Check system requirements
-     */
-    private static function checkRequirements($io): void
-    {
-        $io->write('<info>🔍 Checking system requirements...</info>');
-        
-        // Check PHP version
-        if (version_compare(PHP_VERSION, '8.1.0', '<')) {
-            throw new \RuntimeException('PHP 8.1 or higher is required. Current version: ' . PHP_VERSION);
-        }
-        
-        // Check required extensions
-        foreach (self::REQUIRED_EXTENSIONS as $ext) {
-            if (!extension_loaded($ext)) {
-                throw new \RuntimeException("Required PHP extension not loaded: $ext");
-            }
-        }
-        
-        // Check required commands
-        foreach (self::REQUIRED_COMMANDS as $cmd) {
-            if (!self::commandExists($cmd)) {
-                $io->writeWarning("<warning>⚠️  Command not found: $cmd (will be installed)</warning>");
-            }
-        }
-        
-        $io->write('<info>✅ System requirements check passed</info>');
-    }
-
-    /**
-     * Setup Grim Reaper directory structure
-     */
-    private static function setupGrimDirectory($io): void
-    {
-        $io->write('<info>📁 Setting up Grim Reaper directory...</info>');
-        
-        $grimRoot = self::getGrimRoot();
-        $dirs = [
-            $grimRoot,
-            $grimRoot . '/bin',
-            $grimRoot . '/config',
-            $grimRoot . '/logs',
-            $grimRoot . '/backups',
-            $grimRoot . '/temp'
-        ];
-        
-        foreach ($dirs as $dir) {
-            if (!is_dir($dir)) {
-                if (!mkdir($dir, 0755, true)) {
-                    throw new \RuntimeException("Failed to create directory: $dir");
-                }
-            }
-        }
-        
-        $io->write('<info>✅ Directory structure created</info>');
-    }
-
-    /**
-     * Install system dependencies based on OS
-     */
-    private function installSystemDependencies(): void
-    {
-        $os = $this->detectOS();
-        
-        switch ($os) {
-            case 'ubuntu':
-            case 'debian':
-                $this->installDebianDependencies();
-                break;
-            case 'centos':
-            case 'rhel':
-            case 'fedora':
-                $this->installRedHatDependencies();
-                break;
-            default:
-                throw new \RuntimeException("Unsupported operating system: $os");
-        }
-    }
-
-    /**
-     * Install Go programming language
-     */
-    private function installGo(): void
-    {
-        if ($this->commandExists('go')) {
-            return; // Go already installed
-        }
-        
-        $goVersion = '1.21.0';
-        $goArch = 'linux-amd64';
-        $goUrl = "https://go.dev/dl/go{$goVersion}.{$goArch}.tar.gz";
-        
-        $tempDir = sys_get_temp_dir();
-        $goArchive = $tempDir . "/go{$goVersion}.{$goArch}.tar.gz";
-        
-        // Download Go
-        if (!file_put_contents($goArchive, file_get_contents($goUrl))) {
-            throw new \RuntimeException('Failed to download Go');
-        }
-        
-        // Extract to /usr/local
-        $command = "sudo tar -C /usr/local -xzf $goArchive";
-        if (system($command) !== 0) {
-            throw new \RuntimeException('Failed to install Go');
-        }
-        
-        // Add to PATH
-        $this->addToPath('/usr/local/go/bin');
-        
-        unlink($goArchive);
-    }
-
-    /**
-     * Build Go binaries
-     */
-    private function buildBinaries(): void
-    {
-        $grimRoot = self::getGrimRoot();
-        $goDir = $grimRoot . '/go_grim';
-        
-        if (!is_dir($goDir)) {
-            throw new \RuntimeException("Go source directory not found: $goDir");
-        }
-        
-        $currentDir = getcwd();
-        chdir($goDir);
-        
-        // Download modules
-        if (system('go mod download') !== 0) {
-            throw new \RuntimeException('Failed to download Go modules');
-        }
-        
-        // Build binaries
-        if (file_exists('Makefile')) {
-            if (system('make build') !== 0) {
-                throw new \RuntimeException('Failed to build Go binaries with Makefile');
-            }
+        if ($this->commandExists('apt-get')) {
+            $this->installUbuntuDependencies();
+        } elseif ($this->commandExists('yum')) {
+            $this->installCentOSDependencies();
         } else {
-            if (system('go build -o build/grim-compression ./cmd/compression') !== 0) {
-                throw new \RuntimeException('Failed to build Go compression binary');
-            }
+            echo "⚠️  Unsupported package manager, please install dependencies manually\n";
         }
-        
-        chdir($currentDir);
     }
 
     /**
-     * Create symlinks for global access
+     * Install Ubuntu/Debian dependencies
      */
-    private static function createSymlinks($io): void
+    private function installUbuntuDependencies(): void
     {
-        $io->write('<info>🔗 Creating symlinks...</info>');
-        
-        $grimRoot = self::getGrimRoot();
-        $binDir = $grimRoot . '/bin';
-        $globalBinDir = '/usr/local/bin';
-        
-        // Create grim command symlink
-        $grimBin = $binDir . '/grim';
-        $globalGrimBin = $globalBinDir . '/grim';
-        
-        if (!file_exists($grimBin)) {
-            // Create the grim wrapper script
-            self::createGrimWrapper($grimBin);
-        }
-        
-        if (!file_exists($globalGrimBin)) {
-            if (!symlink($grimBin, $globalGrimBin)) {
-                $io->writeWarning('<warning>⚠️  Failed to create global symlink (may need sudo)</warning>');
-            }
-        }
-        
-        $io->write('<info>✅ Symlinks created</info>');
-    }
-
-    /**
-     * Create the grim wrapper script
-     */
-    private static function createGrimWrapper(string $binPath): void
-    {
-        $grimRoot = self::getGrimRoot();
-        // Look for throne script in parent directory (main project root)
-        $phpThrone = dirname($grimRoot) . '/throne/php_grim_throne.sh';
-        
-        $wrapper = "#!/bin/bash\n";
-        $wrapper .= "# Grim Reaper PHP Wrapper\n";
-        $wrapper .= "# Auto-generated by Grim Reaper PHP package\n\n";
-        $wrapper .= "GRIM_ROOT=\"" . dirname($grimRoot) . "\"\n";
-        $wrapper .= "cd \"\$GRIM_ROOT\"\n\n";
-        $wrapper .= "if [[ -f \"$phpThrone\" ]]; then\n";
-        $wrapper .= "    exec \"$phpThrone\" \"\$@\"\n";
-        $wrapper .= "else\n";
-        $wrapper .= "    echo \"❌ Grim Reaper throne script not found\" >&2\n";
-        $wrapper .= "    exit 1\n";
-        $wrapper .= "fi\n";
-        
-        if (!file_put_contents($binPath, $wrapper)) {
-            throw new \RuntimeException('Failed to create grim wrapper script');
-        }
-        
-        chmod($binPath, 0755);
-    }
-
-    /**
-     * Verify installation
-     */
-    private static function verifyInstallation($io): void
-    {
-        $io->write('<info>🔍 Verifying installation...</info>');
-        
-        $grimRoot = self::getGrimRoot();
-        
-        // Check if grim command works
-        if (self::commandExists('grim')) {
-            $io->write('<info>✅ Grim command is available</info>');
-        } else {
-            $io->writeWarning('<warning>⚠️  Grim command not found in PATH</warning>');
-        }
-        
-        // Check if throne script exists
-        $throneScript = dirname($grimRoot) . '/throne/php_grim_throne.sh';
-        if (file_exists($throneScript)) {
-            $io->write('<info>✅ Throne script found</info>');
-        } else {
-            throw new \RuntimeException('Throne script not found: ' . $throneScript);
-        }
-        
-        $io->write('<info>✅ Installation verification complete</info>');
-    }
-
-    /**
-     * Get Grim Reaper root directory
-     */
-    public static function getGrimRoot(): string
-    {
-        // Try to find the installation directory
-        $possiblePaths = [
-            // Current PHP package directory
-            dirname(__DIR__),
-            // Composer vendor directory
-            dirname(dirname(__DIR__)) . '/grim-reaper/grim-reaper',
-            // Global composer installation
-            '/usr/local/share/grim-reaper',
-            '/usr/share/grim-reaper',
-            // Local installation
-            getcwd() . '/vendor/grim-reaper/grim-reaper',
-            // Fallback to current directory
-            getcwd()
+        $packages = [
+            'php8.1', 'php8.1-cli', 'php8.1-common', 'php8.1-curl', 'php8.1-mbstring',
+            'php8.1-xml', 'php8.1-zip', 'php8.1-opcache', 'php8.1-mysql', 'php8.1-pgsql',
+            'php8.1-redis', 'php8.1-gd', 'php8.1-imagick', 'php8.1-intl', 'php8.1-bcmath',
+            'composer', 'git', 'curl', 'wget', 'unzip', 'tar', 'gzip'
         ];
-        
-        foreach ($possiblePaths as $path) {
-            if (is_dir($path) && file_exists($path . '/composer.json')) {
-                return realpath($path);
-            }
+
+        $packageList = implode(' ', $packages);
+        exec("sudo apt-get update && sudo apt-get install -y $packageList", $output, $returnCode);
+
+        if ($returnCode !== 0) {
+            throw new \RuntimeException('Failed to install Ubuntu dependencies');
         }
-        
-        // If not found, use current directory as fallback
-        return realpath(getcwd());
+
+        echo "✅ Ubuntu dependencies installed\n";
     }
 
     /**
-     * Detect operating system
+     * Install CentOS/RHEL dependencies
      */
-    private function detectOS(): string
+    private function installCentOSDependencies(): void
     {
-        if (file_exists('/etc/os-release')) {
-            $content = file_get_contents('/etc/os-release');
-            if (preg_match('/^ID=(.+)$/m', $content, $matches)) {
-                return strtolower(trim($matches[1], '"'));
-            }
-        }
-        
-        return 'unknown';
-    }
-
-    /**
-     * Install dependencies for Debian-based systems
-     */
-    private function installDebianDependencies(): void
-    {
-        $commands = [
-            'sudo apt update',
-            'sudo apt install -y rsync tar gzip bzip2 xz-utils openssl curl wget ssh-client scp findutils build-essential git'
+        $packages = [
+            'php', 'php-cli', 'php-common', 'php-curl', 'php-mbstring',
+            'php-xml', 'php-zip', 'php-opcache', 'php-mysql', 'php-pgsql',
+            'php-redis', 'php-gd', 'php-imagick', 'php-intl', 'php-bcmath',
+            'git', 'curl', 'wget', 'unzip', 'tar', 'gzip'
         ];
-        
-        foreach ($commands as $command) {
-            if (system($command) !== 0) {
-                throw new \RuntimeException("Failed to execute: $command");
+
+        $packageList = implode(' ', $packages);
+        exec("sudo yum install -y $packageList", $output, $returnCode);
+
+        if ($returnCode !== 0) {
+            throw new \RuntimeException('Failed to install CentOS dependencies');
+        }
+
+        echo "✅ CentOS dependencies installed\n";
+    }
+
+    /**
+     * Install Composer dependencies
+     */
+    public function installComposerDependencies(): void
+    {
+        echo "📦 Installing Composer dependencies...\n";
+
+        $composerJson = dirname(__DIR__) . '/composer.json';
+        if (file_exists($composerJson)) {
+            chdir(dirname(__DIR__));
+            exec('composer install --optimize-autoloader', $output, $returnCode);
+
+            if ($returnCode !== 0) {
+                throw new \RuntimeException('Failed to install Composer dependencies');
             }
+
+            echo "✅ Composer dependencies installed\n";
         }
     }
 
     /**
-     * Install dependencies for Red Hat-based systems
+     * Install development tools
      */
-    private function installRedHatDependencies(): void
+    public function installDevelopmentTools(): void
     {
-        $commands = [
-            'sudo yum update -y',
-            'sudo yum install -y rsync tar gzip bzip2 xz openssl curl wget openssh-clients findutils gcc gcc-c++ make git'
-        ];
-        
-        foreach ($commands as $command) {
-            if (system($command) !== 0) {
-                throw new \RuntimeException("Failed to execute: $command");
+        echo "🛠️  Installing development tools...\n";
+
+        foreach ($this->composerPackages as $package => $version) {
+            echo "Installing $package...\n";
+            exec("composer global require $package:$version", $output, $returnCode);
+            
+            if ($returnCode !== 0) {
+                echo "⚠️  Failed to install $package\n";
             }
         }
+
+        echo "✅ Development tools installed\n";
     }
 
     /**
      * Update dependencies
      */
-    private static function updateDependencies($io): void
+    public function updateDependencies(): void
     {
-        $io->write('<info>🔄 Updating dependencies...</info>');
-        
-        $installer = new self();
-        $installer->detectOS();
-        $installer->installSystemDependencies();
-        $installer->buildBinaries();
-        
-        $io->write('<info>✅ Dependencies updated successfully</info>');
+        echo "🔄 Updating dependencies...\n";
+
+        chdir(dirname(__DIR__));
+        exec('composer update', $output, $returnCode);
+
+        if ($returnCode !== 0) {
+            throw new \RuntimeException('Failed to update dependencies');
+        }
+
+        echo "✅ Dependencies updated\n";
     }
 
     /**
-     * Add directory to PATH
+     * Configure PHP settings
      */
-    private function addToPath(string $path): void
+    public function configurePHP(): void
     {
-        $bashrc = $_SERVER['HOME'] . '/.bashrc';
-        $pathLine = "export PATH=\$PATH:$path";
-        
-        if (file_exists($bashrc) && !str_contains(file_get_contents($bashrc), $path)) {
-            file_put_contents($bashrc, "\n$pathLine\n", FILE_APPEND);
+        echo "⚙️  Configuring PHP settings...\n";
+
+        $phpIniFiles = [
+            '/etc/php/8.1/cli/php.ini',
+            '/etc/php/8.1/apache2/php.ini',
+            '/etc/php/8.1/fpm/php.ini',
+            '/etc/php.ini'
+        ];
+
+        foreach ($phpIniFiles as $iniFile) {
+            if (file_exists($iniFile)) {
+                $this->configurePHPIni($iniFile);
+            }
         }
-        
-        // Also add to current session
-        putenv("PATH=" . getenv('PATH') . ":$path");
+
+        echo "✅ PHP configuration complete\n";
+    }
+
+    /**
+     * Configure specific PHP INI file
+     */
+    private function configurePHPIni(string $iniFile): void
+    {
+        $content = file_get_contents($iniFile);
+        if ($content === false) {
+            return;
+        }
+
+        $replacements = [
+            'upload_max_filesize = 2M' => 'upload_max_filesize = 100M',
+            'post_max_size = 8M' => 'post_max_size = 100M',
+            'memory_limit = 128M' => 'memory_limit = 512M',
+            'max_execution_time = 30' => 'max_execution_time = 300',
+            'max_input_time = 60' => 'max_input_time = 300',
+            'display_errors = On' => 'display_errors = Off',
+            'log_errors = Off' => 'log_errors = On',
+            'error_log = php_errors.log' => 'error_log = /var/log/php_errors.log'
+        ];
+
+        foreach ($replacements as $search => $replace) {
+            $content = str_replace($search, $replace, $content);
+        }
+
+        file_put_contents($iniFile, $content);
+        echo "✅ Configured: $iniFile\n";
     }
 
     /**
      * Check if command exists
      */
-    private static function commandExists(string $command): bool
+    private function commandExists(string $command): bool
     {
-        return !empty(shell_exec("which $command 2>/dev/null"));
+        $output = [];
+        exec("which $command", $output, $returnCode);
+        return $returnCode === 0;
+    }
+
+    /**
+     * Verify installation
+     */
+    public function verifyInstallation(): bool
+    {
+        echo "🔍 Verifying installation...\n";
+
+        $checks = [
+            'PHP Version' => $this->checkPHPVersion(),
+            'Composer' => $this->commandExists('composer'),
+            'Required Extensions' => $this->checkRequiredExtensions(),
+            'Grim Root' => is_dir($this->grimRoot),
+            'Throne Scripts' => file_exists($this->grimRoot . '/throne/php_grim_throne.sh')
+        ];
+
+        $allPassed = true;
+        foreach ($checks as $check => $result) {
+            $status = $result ? '✅' : '❌';
+            echo "$status $check\n";
+            if (!$result) {
+                $allPassed = false;
+            }
+        }
+
+        return $allPassed;
+    }
+
+    /**
+     * Check required PHP extensions
+     */
+    private function checkRequiredExtensions(): bool
+    {
+        $missing = [];
+        foreach ($this->requiredExtensions as $ext) {
+            if (!extension_loaded($ext)) {
+                $missing[] = $ext;
+            }
+        }
+
+        if (!empty($missing)) {
+            echo "❌ Missing extensions: " . implode(', ', $missing) . "\n";
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Get installation status
+     */
+    public function getStatus(): array
+    {
+        return [
+            'grim_root' => $this->grimRoot,
+            'php_version' => PHP_VERSION,
+            'composer_installed' => $this->commandExists('composer'),
+            'required_extensions' => $this->getExtensionStatus($this->requiredExtensions),
+            'optional_extensions' => $this->getExtensionStatus($this->optionalExtensions),
+            'throne_scripts' => [
+                'grim_throne.sh' => file_exists($this->grimRoot . '/throne/grim_throne.sh'),
+                'php_grim_throne.sh' => file_exists($this->grimRoot . '/throne/php_grim_throne.sh')
+            ]
+        ];
+    }
+
+    /**
+     * Get extension status
+     */
+    private function getExtensionStatus(array $extensions): array
+    {
+        $status = [];
+        foreach ($extensions as $ext) {
+            $status[$ext] = extension_loaded($ext);
+        }
+        return $status;
+    }
+
+    /**
+     * Clean up installation
+     */
+    public function cleanup(): void
+    {
+        echo "🧹 Cleaning up installation...\n";
+
+        $tempFiles = [
+            'composer-setup.php',
+            'composer.phar'
+        ];
+
+        foreach ($tempFiles as $file) {
+            if (file_exists($file)) {
+                unlink($file);
+                echo "🗑️  Removed: $file\n";
+            }
+        }
+
+                 echo "✅ Cleanup complete\n";
     }
 } 
