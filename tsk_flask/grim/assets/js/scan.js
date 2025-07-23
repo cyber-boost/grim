@@ -446,6 +446,55 @@ class GrimScan {
     }
 
     /**
+     * Update path display
+     */
+    updatePathDisplay() {
+        const pathItems = document.querySelectorAll('.path-item');
+        pathItems.forEach(item => {
+            const pathName = item.querySelector('.path-name').textContent;
+            const toggleBtn = item.querySelector('.toggle-btn');
+            
+            if (this.scanConfig.paths.includes(pathName)) {
+                toggleBtn.classList.add('active');
+                toggleBtn.textContent = '✓';
+            } else {
+                toggleBtn.classList.remove('active');
+                toggleBtn.textContent = '○';
+            }
+        });
+    }
+
+    /**
+     * Update exclusion display
+     */
+    updateExclusionDisplay() {
+        const exclusionList = document.querySelector('.exclusion-list');
+        if (!exclusionList) return;
+        
+        exclusionList.innerHTML = '';
+        this.scanConfig.exclusions.forEach(pattern => {
+            const item = document.createElement('div');
+            item.className = 'exclusion-item';
+            item.innerHTML = `
+                <span class="exclusion-pattern">${pattern}</span>
+                <button class="remove-btn" onclick="removeExclusion('${pattern}')">×</button>
+            `;
+            exclusionList.appendChild(item);
+        });
+    }
+
+    /**
+     * Update schedule display
+     */
+    updateScheduleDisplay() {
+        // Update schedule settings display
+        const scheduleSelect = document.querySelector('.schedule-select');
+        if (scheduleSelect) {
+            scheduleSelect.value = this.scanConfig.schedule;
+        }
+    }
+
+    /**
      * Toggle scan path
      */
     togglePath(button) {

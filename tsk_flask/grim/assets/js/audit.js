@@ -78,16 +78,17 @@ class GrimAudit {
         
         const pollInterval = setInterval(async () => {
             try {
-                const status = await this.executor.getCommandStatus(this.currentScan.id);
+                const result = await this.executor.getCommandResult(this.currentScan.id);
                 
-                if (status.status === 'completed') {
+                if (result && result.success) {
                     clearInterval(pollInterval);
-                    this.handleSecurityScanComplete(status.result);
-                } else if (status.status === 'failed') {
+                    this.handleSecurityScanComplete(result);
+                } else if (result && !result.success) {
                     clearInterval(pollInterval);
-                    this.handleSecurityScanError(status.error);
+                    this.handleSecurityScanError(result.error || 'Scan failed');
                 } else {
-                    this.updateAuditProgress(status.progress || 0, status.current_check || 'Scanning...');
+                    // Command still running, update progress
+                    this.updateAuditProgress(50, 'Scanning...');
                 }
                 
             } catch (error) {

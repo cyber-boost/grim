@@ -9,8 +9,16 @@ from fastapi.responses import JSONResponse
 from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, Field
 import asyncio
+import logging
 
-from grim_core.tusktsk import get_tusk_api, GrimTuskAPI
+# Try to import grim_core modules with fallback
+try:
+    from grim_core.tusktsk import get_tusk_api, GrimTuskAPI
+    TUSK_AVAILABLE = True
+except ImportError as e:
+    logging.warning(f"Failed to import TuskLang integration in routes: {e}")
+    TUSK_AVAILABLE = False
+    GrimTuskAPI = None
 
 # Create router
 router = APIRouter(prefix="/tusktsk", tags=["TuskLang Integration"])
@@ -42,6 +50,8 @@ class ConfigResponse(BaseModel):
 # Dependency to get TuskLang API instance
 def get_tusk_api_dependency() -> GrimTuskAPI:
     """Dependency to get TuskLang API instance"""
+    if not TUSK_AVAILABLE:
+        raise HTTPException(status_code=503, detail="TuskLang integration not available")
     return get_tusk_api()
 
 

@@ -150,7 +150,7 @@ class HerdAuth:
             request.endpoint.startswith('assets_files') or
             request.endpoint.startswith('assets_css_files') or
             request.endpoint.startswith('assets_js_files') or
-                               request.endpoint in ['login', 'register', 'logout', 'health_check', 'root', 'api_docs', 'command_reference', 'comparison_chart', 'public_landing', 'grim_api_docs', 'grim_commands_reference', 'grim_architecture', 'grim_command_reference', 'grim_comparison_chart', 'landing_page', 'home_page', 'emergency_page', 'terminal_page', 'api_status', 'api_config', 'api_performance', 'api_tusk_status', 'execute_command', 'get_command_result', 'get_command_history', 'get_executor_status', 'auth_status', 'test_dashboard', 'test_backup', 'test_alerts', 'test_docs', 'docs']
+                               request.endpoint in ['login', 'register', 'logout', 'health_check', 'root', 'api_docs', 'command_reference', 'comparison_chart', 'public_landing', 'grim_api_docs', 'grim_commands_reference', 'grim_architecture', 'grim_command_reference', 'grim_comparison_chart', 'landing_page', 'home_page', 'emergency_page', 'terminal_page', 'api_status', 'api_config', 'api_performance', 'api_tusk_status', 'execute_command', 'get_command_result', 'get_command_history', 'get_executor_status', 'auth_status', 'test_dashboard', 'test_backup', 'test_alerts', 'test_docs', 'docs', 'create_child', 'cry_to_mom']
         ):
             return
         

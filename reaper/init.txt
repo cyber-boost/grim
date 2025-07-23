@@ -1,0 +1,106 @@
+Security Libraries
+Vulnerability Scanning & Analysis
+
+Trivy - Comprehensive vulnerability scanner for containers, filesystems, git repos
+Semgrep - Static analysis tool for finding bugs, security issues
+Bandit (Python) - Security linter for Python code
+gosec (Go) - Security checker for Go code
+npm audit / yarn audit - JavaScript dependency scanning
+safety (Python) - Checks Python dependencies for known vulnerabilities
+
+Authentication & Authorization
+
+OIDC/OAuth libraries - OpenID Connect for modern auth flows
+Argon2 - Password hashing (better than bcrypt/scrypt)
+PyJWT/jose - JWT token handling
+Vault SDK - HashiCorp Vault integration for secrets management
+PKCS#11 - Hardware security module integration
+
+Cryptography
+
+libsodium/NaCl - Modern, easy-to-use crypto library
+OpenSSL/BoringSSL - Industry standard crypto
+age - Modern file encryption
+sops - Encrypting files with cloud KMS support
+
+Network Security
+
+nmap bindings - Network discovery and security auditing
+scapy - Packet manipulation
+ZAP/OWASP API - Web application security testing
+mitmproxy - HTTPS proxy for security testing
+
+Monitoring Libraries
+Observability & Metrics
+
+OpenTelemetry - Unified observability framework
+Prometheus client libraries - Metrics collection
+StatsD clients - Simple metrics protocol
+Micrometer - Vendor-neutral metrics facade
+
+Logging & Analysis
+
+Structured logging (zap, logrus, winston)
+Fluent Bit SDK - Log forwarding and processing
+Elasticsearch clients - Log storage and search
+Sentry SDK - Error tracking and monitoring
+
+Tracing & APM
+
+Jaeger client libraries - Distributed tracing
+Zipkin instrumentation - Alternative tracing
+Datadog APM - Commercial APM integration
+New Relic SDK - Application performance monitoring
+
+System Monitoring
+
+psutil - Cross-platform system stats
+gopsutil (Go) - System and process utilities
+systeminformation (Node.js) - Hardware and system info
+osquery bindings - SQL-based OS instrumentation
+
+Integration Features
+Alerting & Notifications
+
+PagerDuty API - Incident management
+Slack/Discord/Teams SDKs - Team notifications
+Twilio - SMS/voice alerts
+SendGrid/AWS SES - Email notifications
+
+Compliance & Auditing
+
+Open Policy Agent (OPA) - Policy as code
+Falco libs - Runtime security
+auditd bindings - Linux audit framework
+SCAP libraries - Security compliance scanning
+
+Container Security
+
+Docker/containerd clients - Container runtime integration
+Kubernetes client-go - K8s API access
+OCI image-spec - Container image analysis
+Anchore/Grype - Container vulnerability scanning
+
+CLI Enhancement Libraries
+User Experience
+
+Cobra/Click/Typer - CLI framework with subcommands
+Bubble Tea - Terminal UI components
+Rich/Colorama - Enhanced terminal output
+Progress bars - Visual feedback for long operations
+
+Configuration Management
+
+Viper/config - Multi-format config handling
+dotenv - Environment variable management
+HCL/TOML/YAML parsers - Config file formats
+
+Best Practices for Integration
+
+Modular Architecture - Make security features pluggable
+Async Operations - Don't block on security scans
+Caching - Cache vulnerability databases locally
+Rate Limiting - Respect API limits for cloud services
+Offline Mode - Work without internet when possible
+Pipeline Integration - Support CI/CD workflows
+Output Formats - JSON, SARIF, JUnit for tool integration

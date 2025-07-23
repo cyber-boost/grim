@@ -3,10 +3,10 @@ Grimm Integration Module
 Comprehensive integration framework for external systems and APIs
 """
 
-from .api import APIManager
-from .webhooks import WebhookManager
-from .plugins import PluginManager
-from .connectors import ConnectorManager
+from integration.api import APIManager
+from integration.webhooks import WebhookManager
+from integration.plugins import PluginManager
+from integration.connectors import ConnectorManager
 
 __version__ = "1.0.0"
 __author__ = "Grimm Integration Team"

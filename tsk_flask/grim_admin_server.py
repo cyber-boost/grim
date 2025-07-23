@@ -27,9 +27,17 @@ from grim_executor import grim_executor
 # Import Herd authentication system
 from herd_auth import get_herd, init_herd, login_required, admin_required, get_current_user, is_authenticated
 
-# Import Flask-TSK (optional) - will be imported inside app context
-FLASK_TSK_AVAILABLE = False
-print("Flask-TSK will be imported when needed")
+# Import Mother Database integration
+from mother_db import LocalMotherDB, MotherDBClient, get_error_tracker, init_error_tracker
+
+# Import Flask-TSK with simple TSK renderer
+try:
+    from __init__ import FlaskTSK, render_tsk_template, TSK_RENDERER_AVAILABLE
+    FLASK_TSK_AVAILABLE = TSK_RENDERER_AVAILABLE
+    print(f"Flask-TSK available: {FLASK_TSK_AVAILABLE}")
+except ImportError as e:
+    FLASK_TSK_AVAILABLE = False
+    print(f"Flask-TSK not available: {e}")
 
 # Configure logging
 logging.basicConfig(
@@ -57,19 +65,22 @@ class GrimAdminServer:
         # Initialize Herd authentication system
         self.herd = init_herd(self.app)
         
-        # Initialize TuskLang integration
+        # Initialize Mother Database
+        self.mother_db = LocalMotherDB()
+        
+        # Initialize Error Tracker
+        init_error_tracker()
+        
+        # Initialize TuskLang integration with simple TSK renderer
         global FLASK_TSK_AVAILABLE
-        FLASK_TSK_AVAILABLE = False
         
         # Initialize Flask-TSK immediately
         try:
             with self.app.app_context():
-                # Import FlaskTSK from the current directory
-                sys.path.insert(0, os.path.dirname(__file__))
-                from __init__ import FlaskTSK
-                FlaskTSK(self.app)  # Register with Flask app
+                # Initialize Flask-TSK with simple renderer
+                flask_tsk = FlaskTSK(self.app)
                 FLASK_TSK_AVAILABLE = True
-                logger.info("Flask-TSK initialized successfully")
+                logger.info("Flask-TSK initialized successfully with simple TSK renderer")
         except Exception as e:
             FLASK_TSK_AVAILABLE = False
             logger.warning(f"Flask-TSK not available: {e}")
@@ -77,8 +88,11 @@ class GrimAdminServer:
         # Setup CORS
         CORS(self.app)
         
-        # Initialize simple TuskLang renderer
-        self.tsk_renderer = render_simple_tsk_template
+        # Initialize TSK renderer
+        if FLASK_TSK_AVAILABLE:
+            self.tsk_renderer = render_tsk_template
+        else:
+            self.tsk_renderer = render_simple_tsk_template
         
         # Setup routes
         self._setup_routes()
@@ -428,6 +442,91 @@ class GrimAdminServer:
                 'page_title': 'Alerts Management'
             })
         
+        @self.app.route('/test-mother-db')
+        def test_mother_db_dashboard():
+            """Test Mother Database dashboard without authentication"""
+            try:
+                stats = self.mother_db.get_stats()
+                installations = self.mother_db.get_all_installations()
+                recent_errors = self.mother_db.get_all_errors(20)
+                
+                return self._render_admin_page('admin/mother-db.html', {
+                    'page_title': 'Mother Database',
+                    'current_page': 'mother-db',
+                    'stats': stats,
+                    'installations': installations,
+                    'recent_errors': recent_errors
+                })
+            except Exception as e:
+                logger.error(f"Error loading mother database dashboard: {e}")
+                return self._render_admin_page('admin/mother-db.html', {
+                    'page_title': 'Mother Database',
+                    'current_page': 'mother-db',
+                    'error': str(e)
+                })
+        
+        @self.app.route('/admin/mother-db')
+        @admin_required
+        def mother_db_dashboard():
+            """Mother Database dashboard"""
+            try:
+                stats = self.mother_db.get_stats()
+                installations = self.mother_db.get_all_installations()
+                recent_errors = self.mother_db.get_all_errors(20)
+                
+                return self._render_admin_page('admin/mother-db.html', {
+                    'page_title': 'Mother Database',
+                    'current_page': 'mother-db',
+                    'stats': stats,
+                    'installations': installations,
+                    'recent_errors': recent_errors
+                })
+            except Exception as e:
+                logger.error(f"Error loading mother database dashboard: {e}")
+                return self._render_admin_page('admin/mother-db.html', {
+                    'page_title': 'Mother Database',
+                    'current_page': 'mother-db',
+                    'error': str(e)
+                })
+        
+        @self.app.route('/admin/mother-db/installations')
+        @admin_required
+        def mother_db_installations():
+            """Mother Database installations page"""
+            try:
+                installations = self.mother_db.get_all_installations()
+                return self._render_admin_page('admin/mother-db-installations.html', {
+                    'page_title': 'Installations',
+                    'current_page': 'mother-db-installations',
+                    'installations': installations
+                })
+            except Exception as e:
+                logger.error(f"Error loading installations page: {e}")
+                return self._render_admin_page('admin/mother-db-installations.html', {
+                    'page_title': 'Installations',
+                    'current_page': 'mother-db-installations',
+                    'error': str(e)
+                })
+        
+        @self.app.route('/admin/mother-db/errors')
+        @admin_required
+        def mother_db_errors():
+            """Mother Database errors page"""
+            try:
+                errors = self.mother_db.get_all_errors(100)
+                return self._render_admin_page('admin/mother-db-errors.html', {
+                    'page_title': 'Error Reports',
+                    'current_page': 'mother-db-errors',
+                    'errors': errors
+                })
+            except Exception as e:
+                logger.error(f"Error loading errors page: {e}")
+                return self._render_admin_page('admin/mother-db-errors.html', {
+                    'page_title': 'Error Reports',
+                    'current_page': 'mother-db-errors',
+                    'error': str(e)
+                })
+        
         # Public pages - serve static files
         @self.app.route('/public/api-docs')
         def api_docs():
@@ -534,12 +633,28 @@ class GrimAdminServer:
         @self.app.route('/api/tusk/status')
         def api_tusk_status():
             """Get TuskLang status"""
-            if self.tsk:
-                return jsonify(self.tsk.get_status())
-            else:
+            try:
+                # Use Flask-TSK integration
+                if FLASK_TSK_AVAILABLE:
+                    tsk_config = get_tsk_config()
+                    return jsonify({
+                        'available': True,
+                        'renderer': 'simple_tsk_renderer',
+                        'performance_engine': 'turbo_engine',
+                        'version': '2.0.5-simple',
+                        'config': tsk_config
+                    })
+                else:
+                    return jsonify({
+                        'available': False,
+                        'error': 'Flask-TSK not available',
+                        'renderer': 'simple_tsk_renderer'
+                    })
+            except Exception as e:
                 return jsonify({
                     'available': False,
-                    'error': 'TuskLang not available'
+                    'error': str(e),
+                    'renderer': 'simple_tsk_renderer'
                 })
         
         # Command execution endpoints
@@ -692,6 +807,143 @@ class GrimAdminServer:
                 'tusk_engine': FLASK_TSK_AVAILABLE,
                 'executor_status': grim_executor.get_system_status()
             })
+        
+        # Mother Database API Endpoints (Public - No Authentication Required)
+        @self.app.route('/db/create_child', methods=['POST'])
+        @self.app.route('/create_child', methods=['POST'])
+        @self.app.route('/grim.so/db/create_child', methods=['POST'])
+        def create_child():
+            """Register a new installation with the mother database"""
+            try:
+                data = request.get_json()
+                if not data:
+                    return jsonify({
+                        'success': False,
+                        'error': 'No data provided'
+                    }), 400
+                
+                result = self.mother_db.create_child(data)
+                return jsonify(result)
+                
+            except Exception as e:
+                logger.error(f"Error creating child installation: {e}")
+                return jsonify({
+                    'success': False,
+                    'error': str(e)
+                }), 500
+        
+        @self.app.route('/db/cry_to_mom', methods=['POST'])
+        @self.app.route('/cry_to_mom', methods=['POST'])
+        @self.app.route('/grim.so/db/cry_to_mom', methods=['POST'])
+        def cry_to_mom():
+            """Send error report to mother database"""
+            try:
+                data = request.get_json()
+                if not data:
+                    return jsonify({
+                        'success': False,
+                        'error': 'No data provided'
+                    }), 400
+                
+                result = self.mother_db.cry_to_mom(data)
+                return jsonify(result)
+                
+            except Exception as e:
+                logger.error(f"Error sending error report: {e}")
+                return jsonify({
+                    'success': False,
+                    'error': str(e)
+                }), 500
+        
+        @self.app.route('/db/status/<install_id>')
+        def get_installation_status(install_id):
+            """Get installation status from mother database"""
+            try:
+                result = self.mother_db.get_installation_status(install_id)
+                return jsonify(result)
+                
+            except Exception as e:
+                logger.error(f"Error getting installation status: {e}")
+                return jsonify({
+                    'success': False,
+                    'error': str(e)
+                }), 500
+        
+        @self.app.route('/db/update/<install_id>', methods=['PUT'])
+        def update_installation(install_id):
+            """Update installation data in mother database"""
+            try:
+                data = request.get_json()
+                if not data:
+                    return jsonify({
+                        'success': False,
+                        'error': 'No data provided'
+                    }), 400
+                
+                result = self.mother_db.update_installation(install_id, data)
+                return jsonify(result)
+                
+            except Exception as e:
+                logger.error(f"Error updating installation: {e}")
+                return jsonify({
+                    'success': False,
+                    'error': str(e)
+                }), 500
+        
+        @self.app.route('/db/installations')
+        @admin_required
+        def get_all_installations():
+            """Get all installations (admin only)"""
+            try:
+                installations = self.mother_db.get_all_installations()
+                return jsonify({
+                    'success': True,
+                    'installations': installations
+                })
+                
+            except Exception as e:
+                logger.error(f"Error getting installations: {e}")
+                return jsonify({
+                    'success': False,
+                    'error': str(e)
+                }), 500
+        
+        @self.app.route('/db/errors')
+        @admin_required
+        def get_all_errors():
+            """Get all errors (admin only)"""
+            try:
+                limit = request.args.get('limit', 100, type=int)
+                errors = self.mother_db.get_all_errors(limit)
+                return jsonify({
+                    'success': True,
+                    'errors': errors
+                })
+                
+            except Exception as e:
+                logger.error(f"Error getting errors: {e}")
+                return jsonify({
+                    'success': False,
+                    'error': str(e)
+                }), 500
+        
+        @self.app.route('/db/stats')
+        @admin_required
+        def get_db_stats():
+            """Get database statistics (admin only)"""
+            try:
+                stats = self.mother_db.get_stats()
+                return jsonify({
+                    'success': True,
+                    'stats': stats
+                })
+                
+            except Exception as e:
+                logger.error(f"Error getting stats: {e}")
+                return jsonify({
+                    'success': False,
+                    'error': str(e)
+                }), 500
     
     def _render_admin_page(self, template_path: str, context: Dict[str, Any] = None) -> str:
         """Render admin page with Flask-TSK template engine"""

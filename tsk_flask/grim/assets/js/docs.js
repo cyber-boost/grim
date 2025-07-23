@@ -5,7 +5,8 @@ const searchInput = document.getElementById('searchInput');
 const commandItems = document.querySelectorAll('.command-item');
 const categories = document.querySelectorAll('.command-category');
 
-searchInput.addEventListener('input', (e) => {
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
     const searchTerm = e.target.value.toLowerCase();
     
     commandItems.forEach(item => {
@@ -32,10 +33,13 @@ searchInput.addEventListener('input', (e) => {
         }
     });
 });
+}
+}
 
 // Category filter
 const categoryBtns = document.querySelectorAll('.category-btn');
-categoryBtns.forEach(btn => {
+if (categoryBtns.length > 0) {
+    categoryBtns.forEach(btn => {
     btn.addEventListener('click', () => {
         const selectedCategory = btn.dataset.category;
         

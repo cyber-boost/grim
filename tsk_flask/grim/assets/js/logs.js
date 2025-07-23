@@ -13,28 +13,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initLogControls() {
     // Log level filter
-    document.getElementById('log-level').addEventListener('change', function() {
-        filterLogs();
-    });
+    const logLevel = document.getElementById('log-level');
+    if (logLevel) {
+        logLevel.addEventListener('change', function() {
+            filterLogs();
+        });
+    }
     
     // Time range filter
-    document.getElementById('time-range').addEventListener('change', function() {
-        filterLogs();
-    });
+    const timeRange = document.getElementById('time-range');
+    if (timeRange) {
+        timeRange.addEventListener('change', function() {
+            filterLogs();
+        });
+    }
     
     // Search functionality
-    document.getElementById('log-search').addEventListener('input', function() {
-        filterLogs();
-    });
+    const logSearch = document.getElementById('log-search');
+    if (logSearch) {
+        logSearch.addEventListener('input', function() {
+            filterLogs();
+        });
+    }
     
     // Auto-refresh toggle
-    document.getElementById('auto-refresh').addEventListener('change', function() {
-        if (this.checked) {
-            startAutoRefresh();
-        } else {
-            stopAutoRefresh();
-        }
-    });
+    const autoRefresh = document.getElementById('auto-refresh');
+    if (autoRefresh) {
+        autoRefresh.addEventListener('change', function() {
+            if (this.checked) {
+                startAutoRefresh();
+            } else {
+                stopAutoRefresh();
+            }
+        });
+    }
 }
 
 function filterLogs() {

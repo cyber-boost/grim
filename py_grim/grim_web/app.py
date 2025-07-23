@@ -7,11 +7,15 @@ from fastapi.responses import JSONResponse
 import time
 import logging
 
-from grim_core.tusktsk import get_tusk_integration
-from .tusktsk_routes import router as tusktsk_router
-
-# Initialize TuskLang integration
-tusk_integration = get_tusk_integration()
+# Try to import grim_core modules with fallback
+try:
+    from grim_core.tusktsk import get_tusk_integration
+    from grim_web.tusktsk_routes import router as tusktsk_router
+    TUSK_AVAILABLE = True
+except ImportError as e:
+    logging.warning(f"Failed to import TuskLang integration: {e}")
+    TUSK_AVAILABLE = False
+    tusktsk_router = None
 
 app = FastAPI(
     title="Grim Web API with TuskLang Integration",
@@ -28,13 +32,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include TuskLang routes
-app.include_router(tusktsk_router)
+# Initialize TuskLang integration with fallback
+if TUSK_AVAILABLE:
+    try:
+        tusk_integration = get_tusk_integration()
+        # Include TuskLang routes
+        app.include_router(tusktsk_router)
+    except Exception as e:
+        logging.error(f"Failed to initialize TuskLang integration: {e}")
+        tusk_integration = None
+else:
+    tusk_integration = None
 
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    tusk_status = tusk_integration.get_tusk_status()
+    if tusk_integration:
+        try:
+            tusk_status = tusk_integration.get_tusk_status()
+        except Exception as e:
+            tusk_status = {"error": str(e)}
+    else:
+        tusk_status = {"status": "unavailable"}
+    
     return {
         "status": "healthy",
         "timestamp": time.time(),
@@ -45,17 +65,19 @@ async def health_check():
 @app.get("/")
 async def root():
     """Root endpoint"""
+    tusk_available = tusk_integration and tusk_integration.is_tusk_available() if tusk_integration else False
+    
     return {
         "message": "Grim Web API is operational with TuskLang integration",
-        "tusk_available": tusk_integration.is_tusk_available(),
+        "tusk_available": tusk_available,
         "endpoints": {
             "health": "/health",
-            "tusk_status": "/tusktsk/status",
-            "tusk_info": "/tusktsk/info",
-            "tusk_health": "/tusktsk/health",
-            "config": "/tusktsk/config/{section}",
-            "function": "/tusktsk/function",
-            "operator": "/tusktsk/operator"
+            "tusk_status": "/tusktsk/status" if TUSK_AVAILABLE else "unavailable",
+            "tusk_info": "/tusktsk/info" if TUSK_AVAILABLE else "unavailable",
+            "tusk_health": "/tusktsk/health" if TUSK_AVAILABLE else "unavailable",
+            "config": "/tusktsk/config/{section}" if TUSK_AVAILABLE else "unavailable",
+            "function": "/tusktsk/function" if TUSK_AVAILABLE else "unavailable",
+            "operator": "/tusktsk/operator" if TUSK_AVAILABLE else "unavailable"
         }
     }
 

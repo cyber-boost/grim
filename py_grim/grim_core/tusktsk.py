@@ -24,8 +24,8 @@ except ImportError:
     TUSK_VERSION = None
     logging.warning("tusktsk package not available. Install with: pip install tusktsk")
 
-from .config import get_config
-from .logger import get_logger
+from grim_core.config import get_config
+from grim_core.logger import get_logger
 
 
 class GrimTuskIntegration:
