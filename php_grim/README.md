@@ -1,38 +1,69 @@
 # Grim Reaper PHP Package
 
-🗡️ Advanced backup, monitoring, and system management toolkit for PHP applications.
+[![Packagist](https://img.shields.io/packagist/v/grim-reaper/grim-reaper.svg)](https://packagist.org/packages/grim-reaper/grim-reaper)
+[![Packagist Downloads](https://img.shields.io/packagist/dt/grim-reaper/grim-reaper.svg)](https://packagist.org/packages/grim-reaper/grim-reaper)
+[![License](https://img.shields.io/packagist/l/grim-reaper/grim-reaper.svg)](https://packagist.org/packages/grim-reaper/grim-reaper)
 
-## Overview
+**Enhanced PHP Package for Grim Reaper - Advanced backup, monitoring, and system management toolkit with comprehensive PHP development features.**
 
-Grim Reaper is a comprehensive system management toolkit that provides advanced backup, monitoring, security, and optimization capabilities. This PHP package provides a complete wrapper around the Grim Reaper system, making it easy to integrate into PHP applications and deploy via Composer.
+## 🚀 Features
 
-## Features
+### 🐘 PHP-Specific Commands (20+ New Commands)
+- **`php-setup`** - Complete PHP environment setup and configuration
+- **`php-analyze`** - Code quality analysis (PHPStan, Psalm, PHPMD)
+- **`php-optimize`** - Performance optimization (OpCache, Composer autoloader)
+- **`php-security`** - Security audits and vulnerability scanning
+- **`php-test`** - PHPUnit test execution and management
+- **`php-lint`** - Syntax and PSR-12 style checking
+- **`php-deps`** - Dependency analysis and updates
+- **`php-deploy`** - Production deployment with automatic backups
+- **`php-monitor`** - Real-time PHP application monitoring
+- **`php-backup`** - Application + database backup
+- **`php-restore`** - Complete application restoration
+- **`php-cache`** - OpCache and cache management
+- **`php-logs`** - Error log management and analysis
+- **`php-composer`** - Composer operations wrapper
+- **`php-extensions`** - PHP extension management
+- **`php-versions`** - Multiple PHP version management
+- **`php-fpm`** - PHP-FPM service management
+- **`php-nginx`** - Nginx + PHP configuration
+- **`php-apache`** - Apache + PHP configuration
+- **`php-docker`** - Docker PHP operations
+- **`php-k8s`** - Kubernetes PHP operations
 
-- **Advanced Backup System**: Full, incremental, and differential backups with compression
-- **Real-time Monitoring**: File system monitoring with intelligent change detection
-- **Security Tools**: Encryption, vulnerability scanning, and quarantine systems
-- **AI-Powered Analysis**: Machine learning-based decision making and optimization
-- **Performance Optimization**: System tuning and resource management
-- **Emergency Recovery**: Rapid disaster recovery and system restoration
-- **Web Interface**: Modern web-based management dashboard
+### 🔧 Core Grim Reaper Features (All Original Commands Work)
+- **Backup System** - Full, incremental, differential backups
+- **Monitoring** - System health, performance, file monitoring
+- **Security** - Encryption, quarantine, vulnerability scanning
+- **AI/ML** - Decision engine, recommendations, predictions
+- **Emergency** - Emergency heal, isolate, restore
+- **Build/Deploy** - Build management, deployment automation
+- **Web Interface** - Admin web interface
+- **Reporting** - All reports and analytics
 
-## Requirements
+### 🌍 Cross-Platform & Portable
+- **Dynamic Path Detection** - No hardcoded paths, works anywhere
+- **Multi-User Support** - Works for root and regular users
+- **Cross-Platform** - Linux, macOS, Windows (WSL)
+- **Portable Installation** - Any directory structure
 
-- PHP 8.1 or higher
-- Linux operating system (Ubuntu, Debian, CentOS, RHEL, Fedora)
-- Required PHP extensions: `json`, `curl`, `openssl`, `zip`
-- System commands: `rsync`, `tar`, `gzip`, `curl`, `wget`
-- Go programming language (automatically installed)
+## 📋 Requirements
 
-## Installation
+- **PHP**: 8.1 or higher
+- **Operating System**: Linux (Ubuntu/Debian, CentOS/RHEL), macOS, Windows (WSL)
+- **PHP Extensions**: json, curl, openssl, zip, mbstring, xml, opcache
+- **System Commands**: composer, git, curl, wget, tar, gzip
+- **Optional**: Go (for compression features)
+
+## 🛠️ Installation
 
 ### Via Composer (Recommended)
 
 ```bash
-# Install globally
+# Global installation
 composer global require grim-reaper/grim-reaper
 
-# Or install in your project
+# Or project-specific installation
 composer require grim-reaper/grim-reaper
 ```
 
@@ -40,248 +71,197 @@ composer require grim-reaper/grim-reaper
 
 ```bash
 # Clone the repository
-git clone https://github.com/grim-reaper/grim-reaper.git
-cd grim-reaper
+git clone https://github.com/cyber-boost/grim.git
+cd grim/php_grim
 
-# Install dependencies
+# Install system dependencies
 ./install_php_dependencies.sh
 
 # Install Composer dependencies
 composer install
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
 ```bash
-# Check if Grim Reaper is properly installed
-grim check-deps
+# Setup PHP environment
+grim php-setup
 
-# Run initial setup
-grim setup
+# Analyze PHP code quality
+grim php-analyze /path/to/your/app
 
-# Check system health
-grim health
+# Deploy PHP application
+grim php-deploy /path/to/your/app
 
-# Start monitoring a directory
-grim monitor /path/to/monitor
-
-# Create a backup
-grim backup /path/to/backup
-
-# View system status
-grim status
+# Monitor PHP application
+grim php-monitor /path/to/your/app
 ```
 
-## Usage
+## 📖 Usage
 
-### Basic Commands
+### PHP Development Commands
 
 ```bash
-# System health and status
-grim health              # Check all systems health
-grim status              # Overall system status
-grim doctor              # Diagnose installation issues
+# Code Quality & Analysis
+grim php-analyze /app          # Run PHPStan, Psalm, PHPMD
+grim php-lint /app             # Syntax and PSR-12 checking
+grim php-test /app             # Run PHPUnit tests
+grim php-deps /app             # Analyze dependencies
 
-# Backup operations
-grim backup /data        # Create backup of directory
-grim backup-list         # List available backups
-grim backup-verify       # Verify backup integrity
-grim restore backup-name # Restore from backup
-
-# Monitoring
-grim monitor /path       # Start monitoring directory
-grim monitor-status      # Check monitoring status
-grim monitor-events      # View monitoring events
+# Performance & Optimization
+grim php-optimize /app         # Optimize OpCache and Composer
+grim php-cache clear           # Clear PHP caches
+grim php-cache status          # Check OpCache status
 
 # Security
-grim security-audit      # Run security audit
-grim security-encrypt    # Encrypt files
-grim security-scan       # Scan for vulnerabilities
+grim php-security /app         # Security audit
+grim php-logs analyze          # Analyze error logs
 
-# System optimization
-grim optimize-all        # Optimize all systems
-grim optimize-storage    # Optimize storage usage
-grim optimize-performance # Optimize performance
+# Deployment
+grim php-deploy /app           # Deploy with backup
+grim php-backup /app           # Backup app + database
+grim php-restore backup-name   # Restore from backup
+
+# Monitoring
+grim php-monitor /app          # Real-time monitoring
+grim php-fpm status            # Check PHP-FPM status
+grim php-nginx status          # Check Nginx status
+
+# Container Operations
+grim php-docker build          # Build Docker image
+grim php-docker run            # Run Docker container
+grim php-k8s deploy            # Deploy to Kubernetes
 ```
 
-### Advanced Commands
+### Core Grim Reaper Commands (All Work)
 
 ```bash
-# AI and machine learning
-grim ai-analyze /path    # Analyze with AI
-grim ai-recommend        # Get AI recommendations
-grim ai-train model      # Train AI models
+# System Health
+grim health                    # Check system health
+grim status                    # Overall system status
 
-# Emergency operations
-grim emergency-heal      # Emergency system healing
-grim emergency-isolate   # Isolate suspicious files
-grim emergency-restore   # Emergency restore
+# Backup Operations
+grim backup /data             # Backup directory
+grim backup-full /data        # Full backup
+grim backup-incremental /data # Incremental backup
 
-# Reporting and analytics
-grim report-daily        # Daily system report
-grim report-backup       # Backup report
-grim report-security     # Security report
-grim report-performance  # Performance report
+# Monitoring
+grim monitor /path            # Monitor directory
+grim monitor-start /path      # Start monitoring
+grim monitor-status           # Check monitoring status
+
+# Security
+grim security-audit           # Security audit
+grim security-encrypt /file   # Encrypt file
+grim quarantine-isolate /file # Isolate suspicious file
+
+# AI & Machine Learning
+grim ai-analyze /path         # AI analysis
+grim ai-recommend             # Get recommendations
+grim smart-suggestions        # Smart suggestions
+
+# Emergency Operations
+grim emergency-heal           # Emergency system heal
+grim emergency-restore backup # Emergency restore
 ```
 
-## Configuration
+## 🔧 PHP Integration
 
-The PHP package automatically creates a configuration file at `config/grim.json`:
-
-```json
-{
-    "version": "1.0.0",
-    "grim_root": "/path/to/grim/reaper",
-    "backup_path": "/path/to/grim/reaper/backups",
-    "log_path": "/path/to/grim/reaper/logs",
-    "temp_path": "/path/to/grim/reaper/temp"
-}
-```
-
-## PHP Integration
-
-### Using in PHP Applications
+### Using in PHP Code
 
 ```php
 <?php
 
 use GrimReaper\GrimCLI;
+use GrimReaper\Installer;
 
-// Create CLI instance
+// Initialize Grim Reaper
 $grim = new GrimCLI();
 
-// Run commands programmatically
-$exitCode = $grim->run(['grim', 'health']);
-$exitCode = $grim->run(['grim', 'backup', '/data']);
-$exitCode = $grim->run(['grim', 'monitor', '/path']);
+// Setup environment
+$installer = new Installer();
+$installer->setupEnvironment();
+
+// Get installation status
+$status = $installer->getStatus();
+print_r($status);
 ```
 
 ### Composer Scripts
 
-Add these scripts to your `composer.json`:
-
 ```json
 {
     "scripts": {
-        "grim:health": "grim health",
-        "grim:backup": "grim backup",
-        "grim:monitor": "grim monitor",
-        "grim:setup": "grim setup",
-        "grim:check-deps": "grim check-deps"
+        "grim-setup": "GrimReaper\\Installer::installDependencies",
+        "grim-analyze": "grim php-analyze src/",
+        "grim-test": "grim php-test .",
+        "grim-deploy": "grim php-deploy ."
     }
 }
 ```
 
-Then run:
+## 🏗️ Automatic Dependency Management
 
-```bash
-composer run grim:health
-composer run grim:backup /data
-```
+The package automatically:
 
-## Deployment to Packagist
+- **Detects and installs** missing PHP extensions
+- **Downloads and configures** Composer
+- **Installs development tools** (PHPUnit, PHPStan, PHPCS, PHPMD, Psalm)
+- **Configures PHP settings** for optimal performance
+- **Sets up environment** variables and directories
+- **Manages system dependencies** (Ubuntu/Debian, CentOS/RHEL)
 
-### Preparing for Packagist
-
-1. **Update version in composer.json**:
-   ```json
-   {
-       "version": "1.0.0"
-   }
-   ```
-
-2. **Create release tag**:
-   ```bash
-   git tag v1.0.0
-   git push origin v1.0.0
-   ```
-
-3. **Submit to Packagist**:
-   - Go to https://packagist.org/
-   - Submit your GitHub repository URL
-   - Packagist will automatically detect releases
-
-### Package Structure
-
-```
-grim-reaper/
-├── composer.json              # Package configuration
-├── README_PHP.md             # This file
-├── install_php_dependencies.sh # Dependency installer
-├── bin/
-│   └── grim                  # Main CLI entry point
-├── src/
-│   ├── GrimCLI.php           # Main CLI class
-│   └── Installer.php         # Installation handler
-└── throne/
-    └── php_grim_throne.sh    # Main orchestrator script
-```
-
-## Troubleshooting
+## 🔍 Troubleshooting
 
 ### Common Issues
 
-1. **"Grim command not found"**
-   ```bash
-   # Run setup to create symlinks
-   grim setup
-   
-   # Or manually create symlink
-   sudo ln -sf /path/to/grim-reaper/bin/grim /usr/local/bin/grim
-   ```
-
-2. **"PHP extension not loaded"**
-   ```bash
-   # Install missing extensions
-   sudo apt install php-json php-curl php-openssl php-zip
-   ```
-
-3. **"Go not found"**
-   ```bash
-   # Install Go manually
-   ./install_php_dependencies.sh
-   ```
-
-4. **"Permission denied"**
-   ```bash
-   # Fix permissions
-   sudo chown -R $USER:$USER /path/to/grim-reaper
-   chmod +x /path/to/grim-reaper/bin/grim
-   ```
-
-### Getting Help
-
 ```bash
-# Show help
-grim help
+# Check installation status
+grim php-setup
 
-# Check dependencies
-grim check-deps
+# Verify PHP extensions
+grim php-extensions
 
-# Diagnose issues
-grim doctor
+# Check PHP version
+php -v
 
-# View logs
-tail -f /path/to/grim-reaper/logs/grim.log
+# Verify Composer
+composer --version
+
+# Check Grim Reaper installation
+grim status
 ```
 
-## Development
+### Logs and Debugging
+
+```bash
+# View PHP error logs
+grim php-logs show
+
+# Analyze error patterns
+grim php-logs analyze
+
+# Clear logs
+grim php-logs clear
+```
+
+## 🛠️ Development
 
 ### Building from Source
 
 ```bash
 # Clone repository
-git clone https://github.com/grim-reaper/grim-reaper.git
-cd grim-reaper
+git clone https://github.com/cyber-boost/grim.git
+cd grim/php_grim
 
-# Install development dependencies
+# Install dependencies
 composer install
 
 # Run tests
 composer test
 
-# Run static analysis
-composer stan
+# Build package
+./phpgrim.sh
 ```
 
 ### Contributing
@@ -292,26 +272,37 @@ composer stan
 4. Add tests
 5. Submit a pull request
 
-## License
+## 📄 License
 
-MIT License - see LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Support
+## 🆘 Support
 
-- **Documentation**: https://grim.so/docs
-- **Issues**: https://github.com/grim-reaper/grim-reaper/issues
-- **Discussions**: https://github.com/grim-reaper/grim-reaper/discussions
-- **Email**: support@grim.so
+- **Documentation**: [https://grim.so](https://grim.so)
+- **Issues**: [GitHub Issues](https://github.com/cyber-boost/grim/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/cyber-boost/grim/discussions)
 
-## Changelog
+## 📈 Changelog
+
+### v1.0.2 (Current)
+- ✨ **Enhanced PHP Features**: 20+ new PHP-specific commands
+- 🌍 **Dynamic Path Detection**: No more hardcoded paths
+- 🐘 **Comprehensive PHP Tools**: PHPStan, Psalm, PHPMD, PHPUnit
+- 🔧 **Advanced Deployment**: Docker, Kubernetes, Nginx, Apache support
+- 🛡️ **Security Features**: Vulnerability scanning, file permissions
+- 📊 **Monitoring**: Real-time PHP application monitoring
+- 🚀 **Performance**: OpCache optimization, Composer autoloader
+- 🔄 **Portability**: Cross-platform, multi-user support
+
+### v1.0.1
+- 🐛 Bug fixes and improvements
+- 📦 Packagist deployment
 
 ### v1.0.0
-- Initial PHP package release
-- Complete CLI wrapper implementation
-- Automatic dependency installation
-- Composer integration
-- Packagist deployment ready
+- 🎉 Initial release
+- 📦 Basic PHP wrapper functionality
+- 🔧 Core Grim Reaper integration
 
 ---
 
-**Grim Reaper** - Advanced system management for the modern era. 
+**Grim Reaper PHP Package** - The ultimate PHP development and deployment toolkit! 🗡️🐘 

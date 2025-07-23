@@ -49,10 +49,10 @@
         "optimize-autoloader": true,
         "sort-packages": true
     },
-    "version": "1.0.0",
+    "version": "1.0.2",
     "extra": {
         "grim-reaper": {
-            "description": "Advanced backup, monitoring, and system management toolkit"
+            "description": "Advanced backup, monitoring, and system management toolkit with comprehensive PHP development features"
         }
     },
     "minimum-stability": "stable",
