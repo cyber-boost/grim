@@ -11,6 +11,7 @@ z_archive/
 test_data/
 rc.sh
 CLAUDE.md 
+tsk_flask/
 
 # Node.js
 node_modules/
