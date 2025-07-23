@@ -16,29 +16,29 @@ import (
 type ScanResult = scanner.ScanResult
 
 type ScanSummary struct {
-	TotalFiles     int64         `json:"total_files"`
-	TotalDirs      int64         `json:"total_dirs"`
-	TotalSize      int64         `json:"total_size"`
-	ScanDuration   time.Duration `json:"scan_duration"`
-	StartTime      time.Time     `json:"start_time"`
-	EndTime        time.Time     `json:"end_time"`
-	FileTypes      map[string]int `json:"file_types"`
-	LargestFiles   []ScanResult  `json:"largest_files"`
-	RecentFiles    []ScanResult  `json:"recent_files"`
+	TotalFiles   int64          `json:"total_files"`
+	TotalDirs    int64          `json:"total_dirs"`
+	TotalSize    int64          `json:"total_size"`
+	ScanDuration time.Duration  `json:"scan_duration"`
+	StartTime    time.Time      `json:"start_time"`
+	EndTime      time.Time      `json:"end_time"`
+	FileTypes    map[string]int `json:"file_types"`
+	LargestFiles []ScanResult   `json:"largest_files"`
+	RecentFiles  []ScanResult   `json:"recent_files"`
 }
 
 func main() {
 	var (
-		rootPath     = flag.String("path", ".", "Root directory to scan")
-		outputFile   = flag.String("output", "", "Output file for results (JSON)")
-		includeHash  = flag.Bool("hash", false, "Calculate file hashes")
-		workers      = flag.Int("workers", 8, "Number of worker goroutines")
-		maxDepth     = flag.Int("depth", -1, "Maximum directory depth (-1 for unlimited)")
-		fileTypes    = flag.String("types", "", "Comma-separated list of file extensions to include")
-		minSize      = flag.Int64("min-size", 0, "Minimum file size in bytes")
-		maxSize      = flag.Int64("max-size", -1, "Maximum file size in bytes")
-		verbose      = flag.Bool("verbose", false, "Verbose output")
-		summary      = flag.Bool("summary", true, "Generate scan summary")
+		rootPath    = flag.String("path", ".", "Root directory to scan")
+		outputFile  = flag.String("output", "", "Output file for results (JSON)")
+		includeHash = flag.Bool("hash", false, "Calculate file hashes")
+		workers     = flag.Int("workers", 8, "Number of worker goroutines")
+		maxDepth    = flag.Int("depth", -1, "Maximum directory depth (-1 for unlimited)")
+		fileTypes   = flag.String("types", "", "Comma-separated list of file extensions to include")
+		minSize     = flag.Int64("min-size", 0, "Minimum file size in bytes")
+		maxSize     = flag.Int64("max-size", -1, "Maximum file size in bytes")
+		verbose     = flag.Bool("verbose", false, "Verbose output")
+		summary     = flag.Bool("summary", true, "Generate scan summary")
 	)
 	flag.Parse()
 
@@ -108,13 +108,13 @@ func main() {
 
 	// Prepare output
 	output := map[string]interface{}{
-		"scan_path":    *rootPath,
-		"scan_time":    startTime,
-		"duration":     duration.String(),
-		"total_files":  len(allResults),
-		"errors":       len(scanErrors),
-		"results":      allResults,
-		"scan_errors":  scanErrors,
+		"scan_path":   *rootPath,
+		"scan_time":   startTime,
+		"duration":    duration.String(),
+		"total_files": len(allResults),
+		"errors":      len(scanErrors),
+		"results":     allResults,
+		"scan_errors": scanErrors,
 	}
 
 	if summaryData != nil {
@@ -221,4 +221,4 @@ func generateSummary(results []ScanResult, startTime, endTime time.Time, duratio
 	}
 
 	return summary
-} 
+}

@@ -21,27 +21,27 @@ import (
 type CompressionAlgorithm string
 
 const (
-	GzipCompression    CompressionAlgorithm = "gzip"
-	ZlibCompression    CompressionAlgorithm = "zlib"
-	SnappyCompression  CompressionAlgorithm = "snappy"
-	ZstdCompression    CompressionAlgorithm = "zstd"
-	BrotliCompression  CompressionAlgorithm = "brotli"
-	XzCompression      CompressionAlgorithm = "xz"
-	PgzipCompression   CompressionAlgorithm = "pgzip"
-	GozstdCompression  CompressionAlgorithm = "gozstd"
+	GzipCompression   CompressionAlgorithm = "gzip"
+	ZlibCompression   CompressionAlgorithm = "zlib"
+	SnappyCompression CompressionAlgorithm = "snappy"
+	ZstdCompression   CompressionAlgorithm = "zstd"
+	BrotliCompression CompressionAlgorithm = "brotli"
+	XzCompression     CompressionAlgorithm = "xz"
+	PgzipCompression  CompressionAlgorithm = "pgzip"
+	GozstdCompression CompressionAlgorithm = "gozstd"
 )
 
 // CompressionResult contains compression metrics
 type CompressionResult struct {
-	Algorithm           CompressionAlgorithm
-	OriginalSize        int64
-	CompressedSize      int64
-	CompressionRatio    float64
-	CompressionTime     time.Duration
-	DecompressionTime   time.Duration
-	CompressionSpeed    float64 // MB/s
-	DecompressionSpeed  float64 // MB/s
-	Error               error
+	Algorithm          CompressionAlgorithm
+	OriginalSize       int64
+	CompressedSize     int64
+	CompressionRatio   float64
+	CompressionTime    time.Duration
+	DecompressionTime  time.Duration
+	CompressionSpeed   float64 // MB/s
+	DecompressionSpeed float64 // MB/s
+	Error              error
 }
 
 // CompressionEngine provides high-performance compression capabilities
@@ -187,7 +187,7 @@ func (e *CompressionEngine) BenchmarkAll(data []byte) map[CompressionAlgorithm]*
 // GetBestAlgorithm returns the algorithm with the best compression ratio
 func (e *CompressionEngine) GetBestAlgorithm(data []byte) (CompressionAlgorithm, *CompressionResult, error) {
 	results := e.BenchmarkAll(data)
-	
+
 	var bestAlgorithm CompressionAlgorithm
 	var bestResult *CompressionResult
 	bestRatio := 1.0
@@ -213,7 +213,7 @@ func (e *CompressionEngine) GetBestAlgorithm(data []byte) (CompressionAlgorithm,
 // GetFastestAlgorithm returns the algorithm with the fastest compression speed
 func (e *CompressionEngine) GetFastestAlgorithm(data []byte) (CompressionAlgorithm, *CompressionResult, error) {
 	results := e.BenchmarkAll(data)
-	
+
 	var fastestAlgorithm CompressionAlgorithm
 	var fastestResult *CompressionResult
 	fastestSpeed := 0.0
@@ -406,4 +406,4 @@ func (g *GozstdCompressor) Name() string { return "gozstd" }
 func (e *CompressionEngine) GetAlgorithm(algorithm CompressionAlgorithm) (Compressor, bool) {
 	compressor, exists := e.algorithms[algorithm]
 	return compressor, exists
-} 
+}

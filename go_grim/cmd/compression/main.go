@@ -14,24 +14,24 @@ import (
 )
 
 type BenchmarkResult struct {
-	Timestamp    time.Time                                    `json:"timestamp"`
-	DataSize     int64                                        `json:"data_size"`
+	Timestamp    time.Time                                                           `json:"timestamp"`
+	DataSize     int64                                                               `json:"data_size"`
 	Results      map[compression.CompressionAlgorithm]*compression.CompressionResult `json:"results"`
-	BestRatio    compression.CompressionAlgorithm             `json:"best_ratio"`
-	FastestSpeed compression.CompressionAlgorithm             `json:"fastest_speed"`
-	Duration     time.Duration                                `json:"duration"`
+	BestRatio    compression.CompressionAlgorithm                                    `json:"best_ratio"`
+	FastestSpeed compression.CompressionAlgorithm                                    `json:"fastest_speed"`
+	Duration     time.Duration                                                       `json:"duration"`
 }
 
 func main() {
 	var (
-		inputFile    = flag.String("input", "", "Input file to compress")
-		outputFile   = flag.String("output", "", "Output file for compressed data")
-		algorithm    = flag.String("algorithm", "", "Compression algorithm to use")
-		benchmark    = flag.Bool("benchmark", false, "Run benchmark on all algorithms")
-		decompress   = flag.Bool("decompress", false, "Decompress instead of compress")
-		jsonOutput   = flag.Bool("json", false, "Output results in JSON format")
-		verbose      = flag.Bool("verbose", false, "Enable verbose logging")
-		iterations   = flag.Int("iterations", 1, "Number of benchmark iterations")
+		inputFile  = flag.String("input", "", "Input file to compress")
+		outputFile = flag.String("output", "", "Output file for compressed data")
+		algorithm  = flag.String("algorithm", "", "Compression algorithm to use")
+		benchmark  = flag.Bool("benchmark", false, "Run benchmark on all algorithms")
+		decompress = flag.Bool("decompress", false, "Decompress instead of compress")
+		jsonOutput = flag.Bool("json", false, "Output results in JSON format")
+		verbose    = flag.Bool("verbose", false, "Enable verbose logging")
+		iterations = flag.Int("iterations", 1, "Number of benchmark iterations")
 	)
 	flag.Parse()
 
@@ -78,7 +78,7 @@ func runBenchmark(engine *compression.CompressionEngine, inputFile string, itera
 		}
 	}
 
-	fmt.Printf("Running compression benchmark on %d MB of data (%d iterations)...\n", 
+	fmt.Printf("Running compression benchmark on %d MB of data (%d iterations)...\n",
 		len(data)/(1024*1024), iterations)
 
 	start := time.Now()
@@ -86,7 +86,7 @@ func runBenchmark(engine *compression.CompressionEngine, inputFile string, itera
 
 	for i := 0; i < iterations; i++ {
 		results := engine.BenchmarkAll(data)
-		
+
 		// Find best compression ratio
 		var bestRatio compression.CompressionAlgorithm
 		bestRatioValue := 1.0
@@ -258,9 +258,9 @@ func outputBenchmarkResults(results []BenchmarkResult, totalDuration time.Durati
 	fmt.Printf("Average duration per iteration: %v\n", totalDuration/time.Duration(len(results)))
 
 	fmt.Printf("\n--- ALGORITHM COMPARISON ---\n")
-	fmt.Printf("%-12s %-12s %-12s %-12s %-12s %-12s\n", 
+	fmt.Printf("%-12s %-12s %-12s %-12s %-12s %-12s\n",
 		"Algorithm", "Size (MB)", "Ratio (%)", "Comp (MB/s)", "Decomp (MB/s)", "Status")
-	fmt.Printf("%-12s %-12s %-12s %-12s %-12s %-12s\n", 
+	fmt.Printf("%-12s %-12s %-12s %-12s %-12s %-12s\n",
 		"-----------", "-----------", "-----------", "-----------", "-----------", "-----------")
 
 	for algo, res := range result.Results {
@@ -279,9 +279,9 @@ func outputBenchmarkResults(results []BenchmarkResult, totalDuration time.Durati
 	}
 
 	fmt.Printf("\n--- SUMMARY ---\n")
-	fmt.Printf("Best compression ratio: %s (%.2f%%)\n", 
+	fmt.Printf("Best compression ratio: %s (%.2f%%)\n",
 		result.BestRatio, result.Results[result.BestRatio].CompressionRatio*100)
-	fmt.Printf("Fastest compression: %s (%.2f MB/s)\n", 
+	fmt.Printf("Fastest compression: %s (%.2f MB/s)\n",
 		result.FastestSpeed, result.Results[result.FastestSpeed].CompressionSpeed)
 }
 
@@ -295,4 +295,4 @@ func outputDecompressionResult(result *compression.CompressionResult, jsonOutput
 	if jsonOutput {
 		outputJSON(result)
 	}
-} 
+}

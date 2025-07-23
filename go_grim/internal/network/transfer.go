@@ -15,12 +15,12 @@ import (
 )
 
 type TransferManager struct {
-	workers     int
-	timeout     time.Duration
-	username    string
-	password    string
-	client      *http.Client
-	mu          sync.Mutex
+	workers  int
+	timeout  time.Duration
+	username string
+	password string
+	client   *http.Client
+	mu       sync.Mutex
 }
 
 type TransferResult struct {
@@ -119,7 +119,7 @@ func (tm *TransferManager) queueTransfers(source, destination, protocol string, 
 			if !info.IsDir() {
 				relPath, _ := filepath.Rel(source, path)
 				destPath := filepath.Join(destination, relPath)
-				
+
 				// Create destination directory
 				destDir := filepath.Dir(destPath)
 				if err := os.MkdirAll(destDir, 0755); err != nil {
@@ -487,4 +487,4 @@ func (tm *TransferManager) detectProtocol(source string) string {
 		return "sftp"
 	}
 	return "file"
-} 
+}

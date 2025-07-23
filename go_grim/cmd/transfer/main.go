@@ -15,14 +15,14 @@ import (
 type TransferResult = network.TransferResult
 
 type TransferSummary struct {
-	TotalFiles     int             `json:"total_files"`
-	Successful     int             `json:"successful"`
-	Failed         int             `json:"failed"`
-	TotalSize      int64           `json:"total_size"`
-	TotalTransferred int64         `json:"total_transferred"`
-	TotalDuration  time.Duration   `json:"total_duration"`
-	AverageSpeed   float64         `json:"average_speed_mbps"`
-	Results        []TransferResult `json:"results"`
+	TotalFiles       int              `json:"total_files"`
+	Successful       int              `json:"successful"`
+	Failed           int              `json:"failed"`
+	TotalSize        int64            `json:"total_size"`
+	TotalTransferred int64            `json:"total_transferred"`
+	TotalDuration    time.Duration    `json:"total_duration"`
+	AverageSpeed     float64          `json:"average_speed_mbps"`
+	Results          []TransferResult `json:"results"`
 }
 
 func main() {
@@ -75,10 +75,10 @@ func main() {
 			allResults = append(allResults, result)
 			if *verbose {
 				if result.Success {
-					fmt.Printf("✓ Transferred: %s -> %s (%d bytes, %.2f MB/s)\n", 
+					fmt.Printf("✓ Transferred: %s -> %s (%d bytes, %.2f MB/s)\n",
 						result.Source, result.Destination, result.Transferred, result.Speed)
 				} else {
-					fmt.Printf("✗ Failed: %s -> %s (%s)\n", 
+					fmt.Printf("✗ Failed: %s -> %s (%s)\n",
 						result.Source, result.Destination, result.Error)
 				}
 			}
@@ -106,17 +106,17 @@ func main() {
 
 	// Prepare output
 	outputData := map[string]interface{}{
-		"source":         *source,
-		"destination":    *destination,
-		"protocol":       *protocol,
-		"start_time":     startTime,
-		"end_time":       endTime,
-		"duration":       duration.String(),
-		"total_files":    len(allResults),
-		"errors":         len(transferErrors),
-		"results":        allResults,
+		"source":          *source,
+		"destination":     *destination,
+		"protocol":        *protocol,
+		"start_time":      startTime,
+		"end_time":        endTime,
+		"duration":        duration.String(),
+		"total_files":     len(allResults),
+		"errors":          len(transferErrors),
+		"results":         allResults,
 		"transfer_errors": transferErrors,
-		"summary":        summary,
+		"summary":         summary,
 	}
 
 	// Output results
@@ -182,4 +182,4 @@ func generateSummary(results []TransferResult, startTime, endTime time.Time, dur
 	}
 
 	return summary
-} 
+}
