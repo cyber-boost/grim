@@ -1,5 +1,6 @@
 # Build artifacts
 target/
+**/target/
 **/*.rs.bk
 Cargo.lock
 
@@ -30,4 +31,18 @@ test-results/
 
 # Backup files
 *.bak
-*.backup 
+*.backup
+
+# Release artifacts
+target/release/
+target/debug/
+target/package/
+
+# Fingerprint files
+target/**/.fingerprint/
+
+# Dependency files
+target/**/deps/
+target/**/*.d
+target/**/*.rlib
+target/**/*.rmeta 
