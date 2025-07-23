@@ -1,0 +1,67 @@
+# Grim Reaper Configuration
+# Unified configuration for all systems coordinated by Scythe
+
+logging:
+  level: INFO
+  file: logs/scythe.log
+
+systems:
+  sh_grim:
+    enabled: true
+    health_check_script: health_fixed.sh
+    module_path: sh_grim
+  
+  go_grim:
+    enabled: true
+    binary: build/grim-compression
+    build_command: make build
+    module_path: go_grim
+  
+  py_grim:
+    enabled: true
+    module: grim_web.app
+    health_endpoint: /health
+    module_path: py_grim
+
+operations:
+  backup:
+    timeout: 300
+    max_concurrent: 5
+    retry_attempts: 3
+    compression_algorithm: zstd
+    compression_level: 3
+  
+  restore:
+    timeout: 600
+    verify_integrity: true
+  
+  monitoring:
+    health_check_interval: 60
+    performance_monitoring: true
+
+storage:
+  backup_directory: backups
+  metadata_directory: backups
+  temporary_directory: tmp
+  
+  retention:
+    daily: 30
+    weekly: 12
+    monthly: 12
+
+security:
+  encryption:
+    enabled: false
+    algorithm: aes-256-gcm
+  
+  access_control:
+    require_authentication: false
+    
+network:
+  api:
+    host: 127.0.0.1
+    port: 8080
+  
+  web_dashboard:
+    host: 127.0.0.1
+    port: 8081
