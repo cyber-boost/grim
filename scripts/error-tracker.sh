@@ -1,6 +1,6 @@
 #!/bin/bash
 # Grim Reaper Error Tracker
-# Sends error logs and installation analytics to mother Grim database
+# Sends error logs and installation analytics to Grim database
 
 set -euo pipefail
 
@@ -29,35 +29,22 @@ warning() {
 }
 
 # Configuration
-MOTHER_API_URL="${MOTHER_API_URL:-https://rp.grim.so}"
+GRIM_DB_URL="${GRIM_DB_URL:-https://db.grim.so}"
 GRIM_INSTALL_ID="${GRIM_INSTALL_ID:-}"
 GRIM_VERSION="${GRIM_VERSION:-1.0.17}"
 GRIM_OS="${GRIM_OS:-}"
 GRIM_ARCH="${GRIM_ARCH:-}"
-GRIM_CONFIG_DIR="/opt/grim-reaper"
+GRIM_API_KEY="${GRIM_API_KEY:-}"
 
 # Generate unique install ID if not set
 if [[ -z "$GRIM_INSTALL_ID" ]]; then
-    GRIM_INSTALL_ID="$(hostname)-$(date +%s)"
+    GRIM_INSTALL_ID=$(uuidgen 2>/dev/null || echo "$(date +%s)-$(hostname)-$$")
 fi
 
-# Auto-generate and manage API key
-get_or_create_api_key() {
-    local api_key_file="$GRIM_CONFIG_DIR/.api_key"
-    
-    # Create config directory if it doesn't exist
-    mkdir -p "$GRIM_CONFIG_DIR"
-    
-    # Generate API key if it doesn't exist
-    if [[ ! -f "$api_key_file" ]]; then
-        local api_key="grim-$(openssl rand -hex 16)"
-        echo "$api_key" > "$api_key_file"
-        chmod 600 "$api_key_file"
-        info "Generated new API key: $api_key"
-    fi
-    
-    cat "$api_key_file"
-}
+# Auto-generate API key if not set
+if [[ -z "$GRIM_API_KEY" ]]; then
+    GRIM_API_KEY=$(openssl rand -hex 32 2>/dev/null || echo "$(date +%s)-$(hostname)-$$-key")
+fi
 
 # Detect OS and architecture
 detect_system() {
@@ -82,39 +69,35 @@ detect_system() {
     fi
 }
 
-# Register installation with mother database
+# Register this installation with Grim database
 register_installation() {
-    local api_key=$(get_or_create_api_key)
-    
-    # Get IP address
-    local ip_address=$(curl -s https://ipinfo.io/ip 2>/dev/null || echo "unknown")
-    
     local payload=$(cat <<EOF
 {
-    "installation_id": "$GRIM_INSTALL_ID",
+    "install_id": "$GRIM_INSTALL_ID",
+    "api_key": "$GRIM_API_KEY",
+    "version": "$GRIM_VERSION",
+    "os": "$GRIM_OS",
+    "arch": "$GRIM_ARCH",
     "hostname": "$(hostname)",
-    "ip_address": "$ip_address",
-    "os_info": "$GRIM_OS $GRIM_ARCH",
-    "grim_version": "$GRIM_VERSION",
-    "installation_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-    "contact_email": "grim@grim.so"
+    "user": "$(whoami)",
+    "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 }
 EOF
 )
     
-    info "Registering installation with mother database..."
+    info "Registering installation with Grim database..."
     
     local response=$(curl -s -w "%{http_code}" -X POST \
         -H "Content-Type: application/json" \
-        -H "Authorization: Bearer $api_key" \
         -d "$payload" \
-        "$MOTHER_API_URL/create_child" 2>/dev/null)
+        "$GRIM_DB_URL/create_child" 2>/dev/null)
     
     local http_code="${response: -3}"
     local response_body="${response%???}"
     
     if [[ "$http_code" == "200" || "$http_code" == "201" ]]; then
         success "Installation registered successfully"
+        echo "$GRIM_API_KEY" > /tmp/grim-api-key.txt
         return 0
     else
         warning "Failed to register installation (HTTP $http_code): $response_body"
@@ -122,7 +105,7 @@ EOF
     fi
 }
 
-# Send error report to mother Grim
+# Send error report to Grim database
 send_error_report() {
     local error_type="$1"
     local error_message="$2"
@@ -133,23 +116,25 @@ send_error_report() {
     local log_entry="[$(date -u +%Y-%m-%dT%H:%M:%SZ)] ERROR: $error_type - $error_message - $error_details - $severity"
     echo "$log_entry" >> /tmp/grim-error.log
     
-    local api_key=$(get_or_create_api_key)
+    # Register installation if not already done
+    if [[ ! -f "/tmp/grim-api-key.txt" ]]; then
+        register_installation
+    fi
     
     local payload=$(cat <<EOF
 {
-    "installation_id": "$GRIM_INSTALL_ID",
+    "install_id": "$GRIM_INSTALL_ID",
+    "api_key": "$GRIM_API_KEY",
+    "version": "$GRIM_VERSION",
+    "os": "$GRIM_OS",
+    "arch": "$GRIM_ARCH",
     "error_type": "$error_type",
     "error_message": "$error_message",
+    "error_details": "$error_details",
     "severity": "$severity",
     "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-    "context": {
-        "error_details": "$error_details",
-        "version": "$GRIM_VERSION",
-        "os": "$GRIM_OS",
-        "arch": "$GRIM_ARCH",
-        "hostname": "$(hostname)",
-        "user": "$(whoami)"
-    }
+    "hostname": "$(hostname)",
+    "user": "$(whoami)"
 }
 EOF
 )
@@ -158,9 +143,8 @@ EOF
     
     local response=$(curl -s -w "%{http_code}" -X POST \
         -H "Content-Type: application/json" \
-        -H "Authorization: Bearer $api_key" \
         -d "$payload" \
-        "$MOTHER_API_URL/cry_to_mom" 2>/dev/null)
+        "$GRIM_DB_URL/cry_to_mom" 2>/dev/null)
     
     local http_code="${response: -3}"
     local response_body="${response%???}"
@@ -180,22 +164,24 @@ send_install_analytics() {
     local success="$2"
     local details="$3"
     
-    local api_key=$(get_or_create_api_key)
+    # Register installation if not already done
+    if [[ ! -f "/tmp/grim-api-key.txt" ]]; then
+        register_installation
+    fi
     
     local payload=$(cat <<EOF
 {
-    "installation_id": "$GRIM_INSTALL_ID",
+    "install_id": "$GRIM_INSTALL_ID",
+    "api_key": "$GRIM_API_KEY",
+    "version": "$GRIM_VERSION",
+    "os": "$GRIM_OS",
+    "arch": "$GRIM_ARCH",
     "install_type": "$install_type",
     "success": $success,
     "details": "$details",
     "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-    "context": {
-        "version": "$GRIM_VERSION",
-        "os": "$GRIM_OS",
-        "arch": "$GRIM_ARCH",
-        "hostname": "$(hostname)",
-        "user": "$(whoami)"
-    }
+    "hostname": "$(hostname)",
+    "user": "$(whoami)"
 }
 EOF
 )
@@ -204,9 +190,8 @@ EOF
     
     local response=$(curl -s -w "%{http_code}" -X POST \
         -H "Content-Type: application/json" \
-        -H "Authorization: Bearer $api_key" \
         -d "$payload" \
-        "$MOTHER_API_URL/cry_to_mom" 2>/dev/null)
+        "$GRIM_DB_URL/cry_to_mom" 2>/dev/null)
     
     local http_code="${response: -3}"
     local response_body="${response%???}"
@@ -225,23 +210,23 @@ send_health_report() {
     local health_status="$1"
     local details="$2"
     
-    local api_key=$(get_or_create_api_key)
+    # Register installation if not already done
+    if [[ ! -f "/tmp/grim-api-key.txt" ]]; then
+        register_installation
+    fi
     
     local payload=$(cat <<EOF
 {
-    "installation_id": "$GRIM_INSTALL_ID",
-    "error_type": "health_check",
-    "error_message": "$health_status",
-    "severity": "low",
+    "install_id": "$GRIM_INSTALL_ID",
+    "api_key": "$GRIM_API_KEY",
+    "version": "$GRIM_VERSION",
+    "os": "$GRIM_OS",
+    "arch": "$GRIM_ARCH",
+    "health_status": "$health_status",
+    "details": "$details",
     "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-    "context": {
-        "details": "$details",
-        "version": "$GRIM_VERSION",
-        "os": "$GRIM_OS",
-        "arch": "$GRIM_ARCH",
-        "hostname": "$(hostname)",
-        "user": "$(whoami)"
-    }
+    "hostname": "$(hostname)",
+    "user": "$(whoami)"
 }
 EOF
 )
@@ -250,9 +235,8 @@ EOF
     
     local response=$(curl -s -w "%{http_code}" -X POST \
         -H "Content-Type: application/json" \
-        -H "Authorization: Bearer $api_key" \
         -d "$payload" \
-        "$MOTHER_API_URL/cry_to_mom" 2>/dev/null)
+        "$GRIM_DB_URL/cry_to_mom" 2>/dev/null)
     
     local http_code="${response: -3}"
     local response_body="${response%???}"
@@ -298,9 +282,6 @@ main() {
     detect_system
     
     case "${1:-}" in
-        "register")
-            register_installation
-            ;;
         "error")
             if [[ $# -lt 3 ]]; then
                 error "Usage: $0 error <type> <message> [details] [severity]"
@@ -336,36 +317,39 @@ main() {
             fi
             track_command "$2" "$3" "$4" "${5:-}"
             ;;
+        "register")
+            register_installation
+            ;;
         *)
             echo -e "${CYAN}🗡️  Grim Reaper Error Tracker${NC}"
             echo ""
             echo "Usage: $0 <command> [options]"
             echo ""
             echo "Commands:"
-            echo "  register                           Register installation with mother database"
             echo "  error <type> <message> [details] [severity]  Send error report"
             echo "  install <type> <success> [details]          Send installation analytics"
             echo "  health <status> [details]                   Send health report"
             echo "  dependency <name> <success> [error]         Track dependency installation"
             echo "  command <cmd> <success> <time> [error]      Track command execution"
+            echo "  register                                     Register installation with database"
             echo ""
             echo "Examples:"
-            echo "  $0 register"
             echo "  $0 error dependency_failed 'Python not found' 'python3: command not found' high"
             echo "  $0 install npm true 'Successfully installed via NPM'"
             echo "  $0 health healthy 'All systems operational'"
             echo "  $0 dependency python3 true"
             echo "  $0 command 'grim health' true 2.5"
+            echo "  $0 register"
             echo ""
             echo "Environment Variables:"
-            echo "  MOTHER_API_URL    - Mother Grim API URL (default: https://rp.grim.so)"
+            echo "  GRIM_DB_URL       - Grim database URL (default: https://db.grim.so)"
             echo "  GRIM_INSTALL_ID   - Unique install identifier (auto-generated if not set)"
             echo "  GRIM_VERSION      - Grim Reaper version (default: 1.0.17)"
+            echo "  GRIM_API_KEY      - API key (auto-generated if not set)"
             echo ""
-            echo "API Key: Auto-generated and stored in $GRIM_CONFIG_DIR/.api_key"
-            echo "Local Log: Errors are also logged to /tmp/grim-error.log"
-            echo ""
-            echo "Admin Dashboard: https://rp.grim.so/admin/mother-db"
+            echo "Local Logs:"
+            echo "  Error logs: /tmp/grim-error.log"
+            echo "  API key: /tmp/grim-api-key.txt"
             exit 0
             ;;
     esac
