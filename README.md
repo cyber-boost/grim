@@ -1,303 +1,272 @@
-# Grim Reaper - The Ultimate Backup, Monitoring, and Security System
+# Grim Reaper PHP Package
 
-[![PyPI version](https://badge.fury.io/py/grim-reaper.svg)](https://badge.fury.io/py/grim-reaper)
+🗡️ Advanced backup, monitoring, and system management toolkit for PHP applications.
 
-A comprehensive system management platform that combines Python, Go, and Bash components for enterprise-grade backup, monitoring, and security operations.
+[![Packagist Version](https://img.shields.io/packagist/v/grim-reaper/grim-reaper.svg)](https://packagist.org/packages/grim-reaper/grim-reaper)
+[![Packagist Downloads](https://img.shields.io/packagist/dt/grim-reaper/grim-reaper.svg)](https://packagist.org/packages/grim-reaper/grim-reaper)
 
-## 🚀 Quick Start
+## Overview
 
-### Option 1: NPM Installation (Recommended)
+Grim Reaper is a comprehensive system management toolkit that provides advanced backup, monitoring, security, and optimization capabilities. This PHP package provides a complete wrapper around the Grim Reaper system, making it easy to integrate into PHP applications and deploy via Composer.
+
+## Features
+
+- **Advanced Backup System**: Full, incremental, and differential backups with compression
+- **Real-time Monitoring**: File system monitoring with intelligent change detection
+- **Security Tools**: Encryption, vulnerability scanning, and quarantine systems
+- **AI-Powered Analysis**: Machine learning-based decision making and optimization
+- **Performance Optimization**: System tuning and resource management
+- **Emergency Recovery**: Rapid disaster recovery and system restoration
+- **Web Interface**: Modern web-based management dashboard
+
+## Requirements
+
+- PHP 8.1 or higher
+- Linux operating system (Ubuntu, Debian, CentOS, RHEL, Fedora)
+- Required PHP extensions: `json`, `curl`, `openssl`, `zip`
+- System commands: `rsync`, `tar`, `gzip`, `curl`, `wget`
+- Go programming language (automatically installed)
+
+## Installation
+
+### Via Composer (Recommended)
 
 ```bash
-# Install Grim Reaper via NPM with automatic dependency management and error tracking
-npm install -g grim-reaper@1.0.17
-```
-
-### Option 2: PHP Package Installation (Composer)
-
-```bash
-# Install Grim Reaper via Composer with automatic dependency management
+# Install globally
 composer global require grim-reaper/grim-reaper
 
 # Or install in your project
 composer require grim-reaper/grim-reaper
 ```
 
-### Option 3: Python Package Installation
+### Manual Installation
 
 ```bash
-# Install Python package (requires manual dependency setup)
-pip install grim-reaper==1.0.4
+# Clone the repository
+git clone https://github.com/cyber-boost/grim.git
+cd grim
+
+# Install dependencies
+./install_php_dependencies.sh
+
+# Install Composer dependencies
+composer install
 ```
 
-### Option 4: Automated Installation Script
+## Quick Start
 
 ```bash
-# Download and run the installation script
-curl -sSL https://raw.githubusercontent.com/cyber-boost/grim/main/install_dependencies.sh | bash
-```
-
-#### 2. Install System Dependencies
-**Ubuntu/Debian:**
-```bash
-sudo apt update
-sudo apt install -y rsync tar gzip bzip2 xz-utils openssl curl wget ssh-client scp findutils build-essential git
-```
-
-**CentOS/RHEL:**
-```bash
-sudo yum update -y
-sudo yum install -y rsync tar gzip bzip2 xz openssl curl wget openssh-clients findutils gcc gcc-c++ make git
-```
-
-#### 3. Install Go Runtime
-```bash
-# Download and install Go
-curl -LO https://go.dev/dl/go1.21.0.linux-amd64.tar.gz
-sudo tar -C /usr/local -xzf go1.21.0.linux-amd64.tar.gz
-echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
-source ~/.bashrc
-```
-
-#### 4. Setup Grim Directory
-```bash
-sudo mkdir -p /opt/reaper
-sudo chown $USER:$USER /opt/reaper
-```
-
-#### 5. Build Go Binaries
-```bash
-cd /opt/reaper/go_grim
-go mod download
-make build
-```
-
-## 📋 System Requirements
-
-### Required System Tools
-- `rsync` - File synchronization
-- `tar` - Archive creation
-- `gzip`, `bzip2`, `xz` - Compression utilities
-- `openssl` - Encryption and certificates
-- `curl`, `wget` - File downloads
-- `ssh`, `scp` - Remote operations
-- `find`, `du`, `df` - System utilities
-
-### Required Runtime
-- **Python 3.8+** - Core application logic
-- **Go 1.21+** - High-performance components
-- **Bash 4.0+** - System orchestration
-
-### Optional Dependencies
-- **PostgreSQL** - Database backend
-- **Redis** - Caching and sessions
-- **MongoDB** - Document storage
-
-## 🔧 Dependency Management
-
-### How PyPI Handles Dependencies
-
-The Grim Reaper package uses a **hybrid dependency management** approach:
-
-#### ✅ What PyPI Manages
-- Python package dependencies (via `install_requires`)
-- Python console scripts (via `entry_points`)
-- Package data files (bash scripts, configs)
-
-#### ❌ What Requires Manual Installation
-- System-level packages (apt, yum, etc.)
-- Go runtime and binaries
-- External system tools
-
-### Dependency Checking
-
-The package includes built-in dependency checking:
-
-```bash
-# Check all dependencies
+# Check if Grim Reaper is properly installed
 grim check-deps
 
-# This will verify:
-# - System tools (rsync, tar, gzip, etc.)
-# - Go runtime
-# - Go binaries
-# - Python package integrity
-```
-
-## 🏗️ Architecture
-
-```
-Grim Reaper System
-├── PHP Package (Packagist)
-│   ├── bin/grim           # Main CLI entry point
-│   ├── src/GrimCLI.php    # CLI application
-│   ├── src/Installer.php  # Installation handler
-│   └── composer.json      # Package configuration
-├── Python Package (PyPI)
-│   ├── grim_gateway.py    # Main entry point
-│   ├── grim_web/          # Web interface
-│   ├── grim_core/         # Core functionality
-│   └── grim_monitor/      # Monitoring
-├── Go Components
-│   ├── grim-compression   # High-performance compression
-│   └── grim-encryption    # Encryption utilities
-└── Bash Scripts
-    ├── throne/grim_throne.sh     # Main orchestrator
-    ├── backup.sh          # Backup operations
-    ├── monitor.sh         # System monitoring
-    └── security.sh        # Security operations
-```
-
-## 📦 Package Contents
-
-### Python Package (`grim-reaper`)
-- **Entry Points**: `grim`, `grim-backup`, `grim-monitor`, `grim-scan`, `grim-health`, `scythe`
-- **Data Files**: Bash scripts, configuration files, ASCII art
-- **Dependencies**: FastAPI, TuskLang SDK, PyYAML, aiohttp, bcrypt, etc.
-
-### PHP Package (`grim-reaper/grim-reaper`)
-- **Entry Points**: `grim` (CLI binary)
-- **Autoloading**: PSR-4 autoloading for `GrimReaper` namespace
-- **Dependencies**: PHP 8.1+, Composer, system packages, Go runtime
-- **Features**: Automatic dependency installation, portable paths, Composer integration
-- **Installation**: `composer require grim-reaper/grim-reaper`
-
-### Go Components (`go_grim/`)
-- **Binary**: `grim-compression` - High-performance compression engine
-- **Dependencies**: Managed via `go.mod`
-- **Build**: Requires Go 1.21+ and Make
-
-### Bash Scripts (`sh_grim/`)
-- **Orchestrator**: `throne/grim_throne.sh` - Main command router
-- **Operations**: Backup, monitoring, security, AI integration
-- **Dependencies**: System utilities (rsync, tar, openssl, etc.)
-
-## 🚀 Usage
-
-### Basic Commands
-```bash
-# Show help
-grim help
+# Run initial setup
+grim setup
 
 # Check system health
 grim health
 
-# Start backup
+# Start monitoring a directory
+grim monitor /path/to/monitor
+
+# Create a backup
 grim backup /path/to/backup
 
-# Monitor system
-grim monitor
-
-# Security scan
-grim scan /path/to/scan
-
-# Check dependencies
-grim check-deps
+# View system status
+grim status
 ```
 
-### Advanced Usage
+## Usage
+
+### Basic Commands
+
 ```bash
-# Orchestrated backup with all systems
-grim backup --source /home --dest /backups --compress --encrypt
+# System health and status
+grim health              # Check all systems health
+grim status              # Overall system status
+grim doctor              # Diagnose installation issues
 
-# Real-time monitoring
-grim monitor --interval 30 --metrics
+# Backup operations
+grim backup /data        # Create backup of directory
+grim backup-list         # List available backups
+grim backup-verify       # Verify backup integrity
+grim restore backup-name # Restore from backup
 
-# Security audit
-grim scan --vulnerabilities --compliance
+# Monitoring
+grim monitor /path       # Start monitoring directory
+grim monitor-status      # Check monitoring status
+grim monitor-events      # View monitoring events
+
+# Security
+grim security-audit      # Run security audit
+grim security-encrypt    # Encrypt files
+grim security-scan       # Scan for vulnerabilities
+
+# System optimization
+grim optimize-all        # Optimize all systems
+grim optimize-storage    # Optimize storage usage
+grim optimize-performance # Optimize performance
 ```
 
-## 📊 Error Tracking & Analytics
+### Advanced Commands
 
-Grim Reaper includes built-in error tracking and analytics that help improve the system:
-
-### Automatic Error Reporting
-- **Installation Analytics**: Tracks successful/failed installations
-- **Dependency Monitoring**: Reports dependency installation issues
-- **Health Checks**: Sends system health reports
-- **Command Execution**: Monitors command success/failure rates
-
-### Privacy & Security
-- **No Sensitive Data**: Only sends non-sensitive system information
-- **Optional**: Error tracking can be disabled by not setting `MOTHER_API_KEY`
-- **Anonymous**: Uses unique install IDs, not personal information
-- **Secure**: All data transmitted over HTTPS with API key authentication
-
-### Environment Variables
 ```bash
-# Enable error tracking (optional)
-export MOTHER_API_KEY="your-api-key"
-export MOTHER_API_URL="https://mother.grim.so/api/v1"
+# AI and machine learning
+grim ai-analyze /path    # Analyze with AI
+grim ai-recommend        # Get AI recommendations
+grim ai-train model      # Train AI models
 
-# Customize tracking
-export GRIM_INSTALL_ID="custom-install-id"
-export GRIM_VERSION="1.0.17"
+# Emergency operations
+grim emergency-heal      # Emergency system healing
+grim emergency-isolate   # Isolate suspicious files
+grim emergency-restore   # Emergency restore
+
+# Reporting and analytics
+grim report-daily        # Daily system report
+grim report-backup       # Backup report
+grim report-security     # Security report
+grim report-performance  # Performance report
 ```
 
-### Manual Error Reporting
+## Configuration
+
+The PHP package automatically creates a configuration file at `config/grim.json`:
+
+```json
+{
+    "version": "1.0.0",
+    "grim_root": "/path/to/grim/reaper",
+    "backup_path": "/path/to/grim/reaper/backups",
+    "log_path": "/path/to/grim/reaper/logs",
+    "temp_path": "/path/to/grim/reaper/temp"
+}
+```
+
+## PHP Integration
+
+### Using in PHP Applications
+
+```php
+<?php
+
+use GrimReaper\GrimCLI;
+
+// Create CLI instance
+$grim = new GrimCLI();
+
+// Run commands programmatically
+$exitCode = $grim->run(['grim', 'health']);
+$exitCode = $grim->run(['grim', 'backup', '/data']);
+$exitCode = $grim->run(['grim', 'monitor', '/path']);
+```
+
+### Composer Scripts
+
+Add these scripts to your `composer.json`:
+
+```json
+{
+    "scripts": {
+        "grim:health": "grim health",
+        "grim:backup": "grim backup",
+        "grim:monitor": "grim monitor",
+        "grim:setup": "grim setup",
+        "grim:check-deps": "grim check-deps"
+    }
+}
+```
+
+Then run:
+
 ```bash
-# Report an error
-./scripts/error-tracker.sh error dependency_failed "Python not found" "python3: command not found" high
-
-# Send health report
-./scripts/error-tracker.sh health healthy "All systems operational"
-
-# Track command execution
-./scripts/error-tracker.sh command "grim health" true 2.5
+composer run grim:health
+composer run grim:backup /data
 ```
 
-## 🔍 Troubleshooting
+## Automatic Dependency Management
+
+The PHP package automatically handles all dependencies:
+
+- **System Dependencies**: rsync, tar, gzip, curl, wget, etc.
+- **PHP Extensions**: json, curl, openssl, zip
+- **Go Language**: Automatic installation and PATH configuration
+- **Composer**: Package dependency resolution
+
+### Dependency Installation
+
+Dependencies are automatically installed during:
+
+1. **Composer Installation**: Post-install hooks run automatically
+2. **First Use**: `grim setup` automatically checks and installs missing deps
+3. **Manual Commands**: `grim install-deps` for explicit installation
+
+## Troubleshooting
 
 ### Common Issues
 
-#### 1. "throne/grim_throne.sh not found"
-```bash
-# Ensure Grim directory exists
-sudo mkdir -p /opt/reaper
-sudo chown $USER:$USER /opt/reaper
+1. **"Grim command not found"**
+   ```bash
+   # Run setup to create symlinks
+   grim setup
+   
+   # Or manually create symlink
+   sudo ln -sf /path/to/grim-reaper/bin/grim /usr/local/bin/grim
+   ```
 
-# Reinstall package
-pip install --force-reinstall grim-reaper
-```
+2. **"PHP extension not loaded"**
+   ```bash
+   # Install missing extensions
+   sudo apt install php-json php-curl php-openssl php-zip
+   ```
 
-#### 2. "Go binary not found"
-```bash
-# Build Go components
-cd /opt/reaper/go_grim
-make build
-```
+3. **"Go not found"**
+   ```bash
+   # Install Go manually
+   ./install_php_dependencies.sh
+   ```
 
-#### 3. "System tool not found"
-```bash
-# Install missing system tools
-sudo apt install rsync tar gzip bzip2 xz-utils openssl curl wget
-```
+4. **"Permission denied"**
+   ```bash
+   # Fix permissions
+   sudo chown -R $USER:$USER /path/to/grim-reaper
+   chmod +x /path/to/grim-reaper/bin/grim
+   ```
 
-#### 4. "Permission denied"
-```bash
-# Fix permissions
-sudo chown -R $USER:$USER /opt/reaper
-chmod +x /opt/reaper/grim_throne.sh
-```
+### Getting Help
 
-### Dependency Verification
 ```bash
-# Comprehensive dependency check
+# Show help
+grim help
+
+# Check dependencies
 grim check-deps
 
-# Manual verification
-which rsync tar gzip go grim-compression
-ls -la /opt/reaper/grim_throne.sh
+# Diagnose issues
+grim doctor
+
+# View logs
+tail -f /path/to/grim-reaper/logs/grim.log
 ```
 
-## 📚 Documentation
+## Development
 
-- **API Documentation**: https://grim.so/docs
-- **Installation Guide**: https://grim.so/install
-- **Configuration**: https://grim.so/config
-- **Troubleshooting**: https://grim.so/troubleshoot
+### Building from Source
 
-## 🤝 Contributing
+```bash
+# Clone repository
+git clone https://github.com/cyber-boost/grim.git
+cd grim
+
+# Install development dependencies
+composer install
+
+# Run tests
+composer test
+
+# Run static analysis
+composer stan
+```
+
+### Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -305,12 +274,26 @@ ls -la /opt/reaper/grim_throne.sh
 4. Add tests
 5. Submit a pull request
 
-## 🆘 Support
+## License
 
+MIT License - see LICENSE file for details.
+
+## Support
+
+- **Documentation**: https://grim.so/docs
 - **Issues**: https://github.com/cyber-boost/grim/issues
 - **Discussions**: https://github.com/cyber-boost/grim/discussions
 - **Email**: support@grim.so
 
+## Changelog
+
+### v1.0.0
+- Initial PHP package release
+- Complete CLI wrapper implementation
+- Automatic dependency installation
+- Composer integration
+- Packagist deployment ready
+
 ---
 
-**Grim Reaper** - The Ultimate Backup, Monitoring, and Security System
+**Grim Reaper** - Advanced system management for the modern era.
