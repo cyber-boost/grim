@@ -13,14 +13,24 @@ A comprehensive system management platform that combines Python, Go, and Bash co
 npm install -g grim-reaper@1.0.17
 ```
 
-### Option 2: Python Package Installation
+### Option 2: PHP Package Installation (Composer)
+
+```bash
+# Install Grim Reaper via Composer with automatic dependency management
+composer global require grim-reaper/grim-reaper
+
+# Or install in your project
+composer require grim-reaper/grim-reaper
+```
+
+### Option 3: Python Package Installation
 
 ```bash
 # Install Python package (requires manual dependency setup)
 pip install grim-reaper==1.0.4
 ```
 
-### Option 3: Automated Installation Script
+### Option 4: Automated Installation Script
 
 ```bash
 # Download and run the installation script
@@ -118,6 +128,11 @@ grim check-deps
 
 ```
 Grim Reaper System
+├── PHP Package (Packagist)
+│   ├── bin/grim           # Main CLI entry point
+│   ├── src/GrimCLI.php    # CLI application
+│   ├── src/Installer.php  # Installation handler
+│   └── composer.json      # Package configuration
 ├── Python Package (PyPI)
 │   ├── grim_gateway.py    # Main entry point
 │   ├── grim_web/          # Web interface
@@ -127,7 +142,7 @@ Grim Reaper System
 │   ├── grim-compression   # High-performance compression
 │   └── grim-encryption    # Encryption utilities
 └── Bash Scripts
-    ├── grim_throne.sh     # Main orchestrator
+    ├── throne/grim_throne.sh     # Main orchestrator
     ├── backup.sh          # Backup operations
     ├── monitor.sh         # System monitoring
     └── security.sh        # Security operations
@@ -140,13 +155,20 @@ Grim Reaper System
 - **Data Files**: Bash scripts, configuration files, ASCII art
 - **Dependencies**: FastAPI, TuskLang SDK, PyYAML, aiohttp, bcrypt, etc.
 
+### PHP Package (`grim-reaper/grim-reaper`)
+- **Entry Points**: `grim` (CLI binary)
+- **Autoloading**: PSR-4 autoloading for `GrimReaper` namespace
+- **Dependencies**: PHP 8.1+, Composer, system packages, Go runtime
+- **Features**: Automatic dependency installation, portable paths, Composer integration
+- **Installation**: `composer require grim-reaper/grim-reaper`
+
 ### Go Components (`go_grim/`)
 - **Binary**: `grim-compression` - High-performance compression engine
 - **Dependencies**: Managed via `go.mod`
 - **Build**: Requires Go 1.21+ and Make
 
 ### Bash Scripts (`sh_grim/`)
-- **Orchestrator**: `grim_throne.sh` - Main command router
+- **Orchestrator**: `throne/grim_throne.sh` - Main command router
 - **Operations**: Backup, monitoring, security, AI integration
 - **Dependencies**: System utilities (rsync, tar, openssl, etc.)
 
@@ -228,7 +250,7 @@ export GRIM_VERSION="1.0.17"
 
 ### Common Issues
 
-#### 1. "grim_throne.sh not found"
+#### 1. "throne/grim_throne.sh not found"
 ```bash
 # Ensure Grim directory exists
 sudo mkdir -p /opt/reaper
