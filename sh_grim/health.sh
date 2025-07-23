@@ -467,42 +467,35 @@ check_modules() {
     
     echo -e "\n${CYAN}=== Module Health Check ===${NC}"
     
-    # Check if sh_grim directory exists
-    if [ ! -d "$GRIM_ROOT/sh_grim" ]; then
-        echo -e "${RED}❌ sh_grim directory: Not found${NC}"
-        record_health_check "sh_grim_directory" "critical" "sh_grim directory not found" "sh_grim directory missing" "critical"
+    # Check if modules directory exists
+    if [ ! -d "$GRIM_ROOT/modules" ]; then
+        echo -e "${RED}❌ Modules directory: Not found${NC}"
+        record_health_check "modules_directory" "critical" "Modules directory not found" "Modules directory missing" "critical"
         return 1
     fi
-    
-    # Count all available modules
-    local total_modules=$(find "$GRIM_ROOT/sh_grim" -name "*.sh" -type f | wc -l)
-    local executable_modules=$(find "$GRIM_ROOT/sh_grim" -name "*.sh" -type f -executable | wc -l)
-    
-    echo -e "${GREEN}✅ Total sh_grim modules: $total_modules${NC}"
-    echo -e "${GREEN}✅ Executable modules: $executable_modules${NC}"
     
     # Check core modules
     local core_modules=("backup.sh" "restore.sh" "scan.sh" "delete.sh" "notify.sh")
     for module in "${core_modules[@]}"; do
-        if [ -f "$GRIM_ROOT/sh_grim/$module" ] && [ -x "$GRIM_ROOT/sh_grim/$module" ]; then
-            echo -e "${GREEN}✅ Core module $module: OK${NC}"
-            record_health_check "module_$module" "ok" "Core module $module accessible" "Module file exists and executable" "info"
+        if [ -f "$GRIM_ROOT/modules/$module" ] && [ -x "$GRIM_ROOT/modules/$module" ]; then
+            echo -e "${GREEN}✅ Module $module: OK${NC}"
+            record_health_check "module_$module" "ok" "Module $module accessible" "Module file exists and executable" "info"
         else
-            echo -e "${RED}❌ Core module $module: Missing or not executable${NC}"
-            record_health_check "module_$module" "critical" "Core module $module missing" "Module file missing or not executable" "critical"
+            echo -e "${RED}❌ Module $module: Missing or not executable${NC}"
+            record_health_check "module_$module" "critical" "Module $module missing" "Module file missing or not executable" "critical"
             issues_found=$((issues_found + 1))
         fi
     done
     
-    # Check additional important modules
-    local important_modules=("monitor.sh" "health.sh" "schedule.sh" "compress.sh" "quarantine.sh" "security.sh" "ai_decision_engine.sh")
-    for module in "${important_modules[@]}"; do
-        if [ -f "$GRIM_ROOT/sh_grim/$module" ] && [ -x "$GRIM_ROOT/sh_grim/$module" ]; then
-            echo -e "${GREEN}✅ Important module $module: OK${NC}"
-            record_health_check "module_$module" "ok" "Important module $module accessible" "Module file exists and executable" "info"
+    # Check new modules
+    local new_modules=("monitor.sh" "health.sh" "schedule.sh" "compress.sh" "quarantine.sh")
+    for module in "${new_modules[@]}"; do
+        if [ -f "$GRIM_ROOT/modules/$module" ] && [ -x "$GRIM_ROOT/modules/$module" ]; then
+            echo -e "${GREEN}✅ Module $module: OK${NC}"
+            record_health_check "module_$module" "ok" "Module $module accessible" "Module file exists and executable" "info"
         else
-            echo -e "${YELLOW}⚠️  Important module $module: Missing or not executable${NC}"
-            record_health_check "module_$module" "warning" "Important module $module missing" "Module file missing or not executable" "warning"
+            echo -e "${YELLOW}⚠️  Module $module: Missing or not executable${NC}"
+            record_health_check "module_$module" "warning" "Module $module missing" "Module file missing or not executable" "warning"
             issues_found=$((issues_found + 1))
         fi
     done

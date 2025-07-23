@@ -392,7 +392,7 @@ server {
 
 ## 📄 License
 
-This project is licensed under the Be Like Brit License (BBL) - see the BBL file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 🆘 Support
 

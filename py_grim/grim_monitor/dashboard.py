@@ -25,7 +25,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from grim_core.config import Config
 from grim_core.logger import Logger
-from grim_monitor.monitor import GrimMonitor
+from .monitor import GrimMonitor
 
 class DashboardManager:
     """Manages WebSocket connections for real-time updates"""

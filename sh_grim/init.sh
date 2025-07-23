@@ -33,14 +33,7 @@ SH_GRIM_CONFIG[sh_grim_root]="$SCRIPT_DIR"
 SH_GRIM_CONFIG[modules_dir]="$SCRIPT_DIR"  # Modules ARE in sh_grim directory
 SH_GRIM_CONFIG[db_dir]="$REAPER_ROOT/db"
 SH_GRIM_CONFIG[log_dir]="$REAPER_ROOT/logs"
-# Determine graveyard directory for backups
-if [[ -n "$GRIM_GRAVEYARD" ]]; then
-    SH_GRIM_CONFIG[backup_dir]="$GRIM_GRAVEYARD/backups"
-elif [[ "$(whoami)" == "root" ]]; then
-    SH_GRIM_CONFIG[backup_dir]="/root/.graveyard/backups"
-else
-    SH_GRIM_CONFIG[backup_dir]="$HOME/.graveyard/backups"
-fi
+SH_GRIM_CONFIG[backup_dir]="$REAPER_ROOT/backups"
 SH_GRIM_CONFIG[tmp_dir]="$REAPER_ROOT/tmp"
 
 # Application info

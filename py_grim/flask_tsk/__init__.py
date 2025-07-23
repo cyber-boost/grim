@@ -46,7 +46,7 @@ class FlaskTSK:
         
         # Register blueprint if enabled
         if app.config.get('TSK_ENABLE_BLUEPRINT', True):
-            from flask_tsk.blueprint import tsk_blueprint
+            from .blueprint import tsk_blueprint
             app.register_blueprint(tsk_blueprint)
         
         # Register context processor if enabled

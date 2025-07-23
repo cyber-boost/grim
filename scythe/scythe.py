@@ -26,19 +26,6 @@ import time
 REAPER_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(REAPER_ROOT))
 
-# Determine graveyard directory for backups
-def get_graveyard_dir():
-    """Get the graveyard directory for backups - user-specific and persistent"""
-    if os.getenv('GRIM_GRAVEYARD'):
-        return Path(os.getenv('GRIM_GRAVEYARD'))
-    
-    # Default to user's home directory
-    home = Path.home()
-    if home.name == 'root':
-        return home / '.graveyard'
-    else:
-        return home / '.graveyard'
-
 class SystemStatus(Enum):
     """System health status indicators"""
     HEALTHY = "healthy"
@@ -284,11 +271,7 @@ class ScytheOrchestrator:
             py_grim_path = self.systems['py_grim']
             sys.path.insert(0, str(py_grim_path))
             
-            # Set PYTHONPATH to include py_grim
-            os.environ['PYTHONPATH'] = str(py_grim_path) + ':' + os.environ.get('PYTHONPATH', '')
-            
-            # Import as a module from the package
-            import grim_web.app as app_module
+            import grim_web.app
             status = SystemStatus.HEALTHY
             message = "Web services available"
         except ImportError as e:
@@ -316,42 +299,17 @@ class ScytheOrchestrator:
         operation_id = f"backup_{backup_name}_{int(time.time())}"
         
         try:
-            # Step 1: Quick health check (skip if systems are down)
-            self.logger.info("🏥 Quick health check...")
-            try:
-                health = await self.health_check_all()
-                failed_systems = [name for name, status in health.items() 
-                               if status.status == SystemStatus.FAILED]
-                
-                if failed_systems:
-                    self.logger.warning(f"Systems failed health check (proceeding anyway): {failed_systems}")
-            except Exception as e:
-                self.logger.warning(f"Health check failed, continuing: {e}")
+            # Step 1: Health check all systems
+            health = await self.health_check_all()
+            failed_systems = [name for name, status in health.items() 
+                           if status.status == SystemStatus.FAILED]
             
-            # Step 2: Quick source validation (skip full scan for speed)
-            self.logger.info("📁 Validating source path...")
-            if not os.path.exists(source_path):
-                raise FileNotFoundError(f"Source path does not exist: {source_path}")
+            if failed_systems:
+                self.logger.warning(f"Systems failed health check (proceeding anyway): {failed_systems}")
             
-            # Get source size for progress tracking
-            source_size = 0
-            if os.path.isfile(source_path):
-                source_size = os.path.getsize(source_path)
-            elif os.path.isdir(source_path):
-                # Quick size estimation for directories
-                try:
-                    result = await asyncio.create_subprocess_exec(
-                        'du', '-sb', source_path,
-                        stdout=asyncio.subprocess.PIPE,
-                        stderr=asyncio.subprocess.PIPE
-                    )
-                    stdout, _ = await result.communicate()
-                    if result.returncode == 0:
-                        source_size = int(stdout.decode().split()[0])
-                except:
-                    source_size = 0  # Unknown size
-            
-            self.logger.info(f"📊 Source size: {self._format_size(source_size)}")
+            # Step 2: Scan and prepare (sh_grim)
+            self.logger.info("📁 Scanning source files...")
+            scan_result = await self._execute_sh_grim_command('scan.sh', [source_path])
             
             # Step 3: Compress and deduplicate (go_grim)
             self.logger.info("🗜️  Compressing data...")
@@ -370,7 +328,7 @@ class ScytheOrchestrator:
                 'backup_name': backup_name,
                 'status': 'success',
                 'source_path': source_path,
-                'source_size': source_size,
+                'scan_result': scan_result,
                 'compress_result': compress_result,
                 'storage_result': storage_result,
                 'verify_result': verify_result,
@@ -421,31 +379,20 @@ class ScytheOrchestrator:
         """Execute go_grim compression with optimal settings"""
         binary_path = self.systems['go_grim'] / self.config['systems']['go_grim']['binary']
         
-        # Check if source is a directory - go_grim only handles files
-        if os.path.isdir(source_path):
-            self.logger.info("Source is a directory, using system tar + zstd...")
-            return await self._execute_system_compression(source_path, backup_name)
-        
         if not binary_path.exists():
-            # Fallback to tar + zstd if go_grim binary not available
-            self.logger.info("go_grim binary not found, using system tar + zstd...")
-            return await self._execute_system_compression(source_path, backup_name)
+            raise FileNotFoundError("go_grim compression binary not found - run 'make build' in go_grim/")
         
-        # Use graveyard directory for backups
-        graveyard_dir = get_graveyard_dir()
-        backup_dir = graveyard_dir / 'backups'
-        backup_dir.mkdir(parents=True, exist_ok=True)
-        
-        output_path = backup_dir / f"{backup_name}.tar.zst"
+        output_path = self.reaper_root / 'backups' / f"{backup_name}.tar.zst"
+        output_path.parent.mkdir(exist_ok=True)
         
         cmd = [
             str(binary_path),
             '--algorithm', 'zstd',
+            '--level', '3',
             '--input', source_path,
             '--output', str(output_path)
         ]
         
-        self.logger.info(f"🗜️  Starting compression with go_grim...")
         proc = await asyncio.create_subprocess_exec(
             *cmd,
             stdout=asyncio.subprocess.PIPE,
@@ -457,46 +404,10 @@ class ScytheOrchestrator:
         if proc.returncode != 0:
             raise Exception(f"go_grim compression failed: {stderr.decode()}")
         
-        compressed_size = output_path.stat().st_size if output_path.exists() else 0
-        self.logger.info(f"✅ Compression completed: {self._format_size(compressed_size)}")
-        
         return {
             'output_path': str(output_path),
             'compression_ratio': self._calculate_compression_ratio(source_path, output_path),
             'stdout': stdout.decode()
-        }
-    
-    async def _execute_system_compression(self, source_path: str, backup_name: str) -> Dict[str, Any]:
-        """Fallback compression using system tar + zstd (shell pipe)"""
-        graveyard_dir = get_graveyard_dir()
-        backup_dir = graveyard_dir / 'backups'
-        backup_dir.mkdir(parents=True, exist_ok=True)
-
-        output_path = backup_dir / f"{backup_name}.tar.zst"
-        parent = str(Path(source_path).parent)
-        name = str(Path(source_path).name)
-
-        self.logger.info(f"🗜️  Starting compression with tar + zstd (shell pipe)...")
-        cmd = f"tar -cf - -C '{parent}' '{name}' | zstd -3 -o '{output_path}'"
-
-        proc = await asyncio.create_subprocess_shell(
-            cmd,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
-        )
-        stdout, stderr = await proc.communicate()
-
-        if proc.returncode != 0:
-            raise Exception(f"System compression failed: {stderr.decode()}")
-
-        compressed_size = output_path.stat().st_size if output_path.exists() else 0
-        self.logger.info(f"✅ Compression completed: {self._format_size(compressed_size)}")
-
-        return {
-            'output_path': str(output_path),
-            'compression_ratio': self._calculate_compression_ratio(source_path, output_path),
-            'stdout': stdout.decode(),
-            'stderr': stderr.decode()
         }
 
     async def _execute_py_grim_storage(self, backup_name: str, compress_result: Dict[str, Any]) -> Dict[str, Any]:
@@ -512,10 +423,7 @@ class ScytheOrchestrator:
             'status': 'stored'
         }
         
-        # Use graveyard directory for metadata
-        graveyard_dir = get_graveyard_dir()
-        backup_dir = graveyard_dir / 'backups'
-        metadata_path = backup_dir / f"{backup_name}.metadata.json"
+        metadata_path = self.reaper_root / 'backups' / f"{backup_name}.metadata.json"
         with open(metadata_path, 'w') as f:
             json.dump(metadata, f, indent=2)
         
@@ -523,11 +431,8 @@ class ScytheOrchestrator:
 
     async def _verify_backup(self, backup_name: str) -> Dict[str, Any]:
         """Verify backup integrity"""
-        # Use graveyard directory for verification
-        graveyard_dir = get_graveyard_dir()
-        backup_dir = graveyard_dir / 'backups'
-        backup_path = backup_dir / f"{backup_name}.tar.zst"
-        metadata_path = backup_dir / f"{backup_name}.metadata.json"
+        backup_path = self.reaper_root / 'backups' / f"{backup_name}.tar.zst"
+        metadata_path = self.reaper_root / 'backups' / f"{backup_name}.metadata.json"
         
         verification = {
             'backup_exists': backup_path.exists(),
@@ -538,19 +443,6 @@ class ScytheOrchestrator:
         
         return verification
 
-    def _format_size(self, size_bytes: int) -> str:
-        """Format bytes into human readable size"""
-        if size_bytes == 0:
-            return "0 B"
-        
-        size_names = ["B", "KB", "MB", "GB", "TB"]
-        i = 0
-        while size_bytes >= 1024 and i < len(size_names) - 1:
-            size_bytes /= 1024.0
-            i += 1
-        
-        return f"{size_bytes:.1f} {size_names[i]}"
-    
     def _calculate_compression_ratio(self, source_path: str, compressed_path: Path) -> float:
         """Calculate compression ratio"""
         try:

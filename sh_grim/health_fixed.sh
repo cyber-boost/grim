@@ -142,10 +142,6 @@ run_quick_health_check() {
         return 2
     fi
     
-    # Count all available modules
-    local total_modules=$(find "$MODULES_DIR" -name "*.sh" -type f | wc -l)
-    local executable_modules=$(find "$MODULES_DIR" -name "*.sh" -type f -executable | wc -l)
-    
     # Check for core modules
     local core_count=0
     for module in backup.sh restore.sh scan.sh monitor.sh; do
@@ -154,15 +150,12 @@ run_quick_health_check() {
         fi
     done
     
-    if [[ $core_count -ge 3 ]] && [[ $total_modules -gt 10 ]]; then
-        echo "HEALTHY: $total_modules total modules available ($core_count core, $executable_modules executable)"
+    if [[ $core_count -ge 3 ]]; then
+        echo "HEALTHY: $core_count core modules available"
         return 0
-    elif [[ $core_count -ge 3 ]]; then
-        echo "DEGRADED: $total_modules total modules available ($core_count core, $executable_modules executable)"
-        return 1
     else
-        echo "FAILED: Only $total_modules total modules available ($core_count core, $executable_modules executable)"
-        return 2
+        echo "DEGRADED: Only $core_count core modules available"
+        return 1
     fi
 }
 

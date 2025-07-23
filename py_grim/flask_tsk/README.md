@@ -324,7 +324,7 @@ def handle_tsk_error(error):
 
 ## License
 
-Be Like Brit License (BBL) - see BBL file for details.
+MIT License - see LICENSE file for details.
 
 ## Support
 

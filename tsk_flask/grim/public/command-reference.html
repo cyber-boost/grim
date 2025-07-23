@@ -1,0 +1,550 @@
+$extends "public/layout.html"
+
+$content
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Grim Command Reference</h1>
+                <p class="subtitle">Complete guide to the unified command system - Everything through 'grim'</p>
+                <p class="description">
+                    Master the unified command system that brings 60+ modules under one powerful interface.
+                    From backup management to AI-powered optimization, every operation is just a command away.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Command Categories Navigation -->
+    <section class="command-nav">
+        <div class="container">
+            <div class="command-categories">
+                <a href="#system-health" class="category-link">🏥 System Health</a>
+                <a href="#backup" class="category-link">💾 Backup</a>
+                <a href="#monitoring" class="category-link">🔍 Monitoring</a>
+                <a href="#security" class="category-link">🔐 Security</a>
+                <a href="#license" class="category-link">📋 License</a>
+                <a href="#ai-ml" class="category-link">🧠 AI & ML</a>
+                <a href="#maintenance" class="category-link">⚙️ Maintenance</a>
+                <a href="#compression" class="category-link">🗜️ Compression</a>
+                <a href="#reports" class="category-link">📊 Reports</a>
+                <a href="#remote" class="category-link">☁️ Remote</a>
+                <a href="#scheduling" class="category-link">📅 Scheduling</a>
+                <a href="#emergency" class="category-link">🚨 Emergency</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- System Health & Status -->
+    <section id="system-health" class="command-section">
+        <div class="container">
+            <h2>🏥 System Health & Status</h2>
+            
+            <div class="command-grid">
+                <div class="command-card">
+                    <h3>grim health</h3>
+                    <p>System health dashboard showing all component status, resource usage, and alerts.</p>
+                    <div class="command-example">
+                        <code>grim health --verbose --check-all</code>
+                    </div>
+                    <div class="command-features">
+                        <span class="feature">Essential Dashboard UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim status</h3>
+                    <p>Overall system status with real-time monitoring of all Grim subsystems.</p>
+                    <div class="command-features">
+                        <span class="feature">Monitoring Status Panel</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim info-system</h3>
+                    <p>Detailed system information including versions, configurations, and capabilities.</p>
+                    <div class="command-features">
+                        <span class="feature">Diagnostic System</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim info-storage</h3>
+                    <p>Storage usage dashboard showing capacity, usage trends, and predictions.</p>
+                    <div class="command-example">
+                        <code>grim info-storage --breakdown --predict</code>
+                    </div>
+                    <div class="command-features">
+                        <span class="feature">Storage Charts</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim info-performance</h3>
+                    <p>Performance metrics dashboard with CPU, memory, and I/O statistics.</p>
+                    <div class="command-features">
+                        <span class="feature">Performance Metrics UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim info-version</h3>
+                    <p>Version information for all Grim components and update status.</p>
+                    <div class="command-features">
+                        <span class="feature">Info Version</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Backup Management -->
+    <section id="backup" class="command-section">
+        <div class="container">
+            <h2>💾 Backup Management</h2>
+            
+            <div class="command-grid">
+                <div class="command-card">
+                    <h3>grim backup-create &lt;type&gt; &lt;path&gt;</h3>
+                    <p>Create backup with interactive wizard for configuration and options.</p>
+                    <div class="command-example">
+                        <code>grim backup-create daily /var/www --wizard</code>
+                    </div>
+                    <div class="command-features">
+                        <span class="feature">Backup Wizard UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim backup-list</h3>
+                    <p>Backup browser/manager with search, filter, and preview capabilities.</p>
+                    <div class="command-example">
+                        <code>grim backup-list --filter type=daily --sort date</code>
+                    </div>
+                    <div class="command-features">
+                        <span class="feature">Browse Table UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim backup-verify &lt;backup&gt;</h3>
+                    <p>Integrity verification interface with detailed checksum validation.</p>
+                    <div class="command-features">
+                        <span class="feature">Integrity Progress UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim backup-schedule &lt;freq&gt; &lt;path&gt;</h3>
+                    <p>Backup scheduler with calendar view and cron expression builder.</p>
+                    <div class="command-example">
+                        <code>grim backup-schedule "0 2 * * *" /critical/data --ui</code>
+                    </div>
+                    <div class="command-features">
+                        <span class="feature">Schedule Calendar UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim backup-full &lt;path&gt;</h3>
+                    <p>Full backup interface with progress tracking and estimation.</p>
+                    <div class="command-features">
+                        <span class="feature">Full Backup Progress Bar</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim backup-incremental &lt;path&gt;</h3>
+                    <p>Incremental backup with change detection and delta visualization.</p>
+                    <div class="command-features">
+                        <span class="feature">Incremental Delta View</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Monitoring & Surveillance -->
+    <section id="monitoring" class="command-section">
+        <div class="container">
+            <h2>🔍 Monitoring & Surveillance</h2>
+            
+            <div class="command-grid">
+                <div class="command-card">
+                    <h3>grim monitor-start &lt;path&gt;</h3>
+                    <p>Start monitoring interface with real-time file change detection.</p>
+                    <div class="command-example">
+                        <code>grim monitor-start /var/www --recursive --ui</code>
+                    </div>
+                    <div class="command-features">
+                        <span class="feature">Real-time Live Monitor</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim monitor-stop &lt;path&gt;</h3>
+                    <p>Stop monitoring with summary report of detected changes.</p>
+                    <div class="command-features">
+                        <span class="feature">Control Monitor</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim monitor-status</h3>
+                    <p>Monitoring dashboard showing all active monitors and statistics.</p>
+                    <div class="command-features">
+                        <span class="feature">Status Dashboard</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim monitor-events &lt;path&gt;</h3>
+                    <p>Event viewer with timeline, filtering, and detailed event inspection.</p>
+                    <div class="command-example">
+                        <code>grim monitor-events /var/www --last-24h --filter type=modify</code>
+                    </div>
+                    <div class="command-features">
+                        <span class="feature">Events Timeline UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim monitor-performance</h3>
+                    <p>Performance monitor with real-time graphs and resource tracking.</p>
+                    <div class="command-features">
+                        <span class="feature">Performance Graphs</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim lookouts-start</h3>
+                    <p>Start security surveillance system with threat detection dashboard.</p>
+                    <div class="command-features">
+                        <span class="feature">Security Surveillance UI</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security & Compliance -->
+    <section id="security" class="command-section">
+        <div class="container">
+            <h2>🔐 Security & Compliance</h2>
+            
+            <div class="command-grid">
+                <div class="command-card">
+                    <h3>grim security-audit</h3>
+                    <p>Security audit dashboard with vulnerability assessment and compliance checks.</p>
+                    <div class="command-example">
+                        <code>grim security-audit --deep --report pdf</code>
+                    </div>
+                    <div class="command-features">
+                        <span class="feature">Audit Report UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim security-encrypt &lt;file&gt;</h3>
+                    <p>File encryption interface with AES-256-CBC and key management.</p>
+                    <div class="command-features">
+                        <span class="feature">Encryption Encrypt UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim security-decrypt &lt;file&gt;</h3>
+                    <p>File decryption interface with secure key entry and verification.</p>
+                    <div class="command-features">
+                        <span class="feature">Decryption Decrypt UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim security-scan</h3>
+                    <p>Vulnerability scanner with CVE database and patch recommendations.</p>
+                    <div class="command-features">
+                        <span class="feature">Scanner Vuln UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim quarantine-list</h3>
+                    <p>Quarantine manager showing isolated threats with analysis details.</p>
+                    <div class="command-features">
+                        <span class="feature">Quarantine Manager UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim quarantine-isolate &lt;file&gt;</h3>
+                    <p>Threat isolation interface with secure containment and logging.</p>
+                    <div class="command-features">
+                        <span class="feature">Isolate Security</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI & Machine Learning -->
+    <section id="ai-ml" class="command-section">
+        <div class="container">
+            <h2>🧠 AI & Machine Learning</h2>
+            
+            <div class="command-grid">
+                <div class="command-card">
+                    <h3>grim ai-analyze &lt;path&gt;</h3>
+                    <p>AI analysis interface with pattern recognition and insights dashboard.</p>
+                    <div class="command-example">
+                        <code>grim ai-analyze /var/www --deep --visualize</code>
+                    </div>
+                    <div class="command-features">
+                        <span class="feature">AI Analysis UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim ai-recommend</h3>
+                    <p>AI recommendation engine with actionable optimization suggestions.</p>
+                    <div class="command-features">
+                        <span class="feature">ML Recommendations</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim ai-train &lt;model&gt;</h3>
+                    <p>ML training interface with progress tracking and model management.</p>
+                    <div class="command-example">
+                        <code>grim ai-train importance-predictor --dataset /backups</code>
+                    </div>
+                    <div class="command-features">
+                        <span class="feature">Training ML Studio</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim ai-predict &lt;file&gt;</h3>
+                    <p>Prediction dashboard showing file importance and backup priorities.</p>
+                    <div class="command-features">
+                        <span class="feature">Predict Predictions UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim ai-optimize</h3>
+                    <p>AI optimization interface applying machine learning insights.</p>
+                    <div class="command-features">
+                        <span class="feature">Optimize AI Actions</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim smart-suggestions</h3>
+                    <p>Smart suggestions panel with prioritized recommendations.</p>
+                    <div class="command-features">
+                        <span class="feature">Smart Suggestions UI</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- System Maintenance -->
+    <section id="maintenance" class="command-section">
+        <div class="container">
+            <h2>⚙️ System Maintenance</h2>
+            
+            <div class="command-grid">
+                <div class="command-card">
+                    <h3>grim optimize-all</h3>
+                    <p>System optimization panel with comprehensive performance tuning.</p>
+                    <div class="command-features">
+                        <span class="feature">Optimize Control Panel</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim optimize-storage</h3>
+                    <p>Storage optimization with deduplication analysis and cleanup.</p>
+                    <div class="command-features">
+                        <span class="feature">Storage Optimizer UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim optimize-performance</h3>
+                    <p>Performance optimization interface with system tuning controls.</p>
+                    <div class="command-features">
+                        <span class="feature">Performance Tuning UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim heal</h3>
+                    <p>Self-healing interface with automated issue detection and repair.</p>
+                    <div class="command-features">
+                        <span class="feature">Healing Auto-fix UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim heal-diagnose</h3>
+                    <p>Diagnostics dashboard showing system issues and recommendations.</p>
+                    <div class="command-features">
+                        <span class="feature">Diagnostic Health Check</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim cleanup-all</h3>
+                    <p>Cleanup manager with space recovery and optimization tools.</p>
+                    <div class="command-features">
+                        <span class="feature">Cleanup Manager UI</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compression Management -->
+    <section id="compression" class="command-section">
+        <div class="container">
+            <h2>🗜️ Compression Management</h2>
+            
+            <div class="command-grid">
+                <div class="command-card">
+                    <h3>grim compress-benchmark &lt;path&gt;</h3>
+                    <p>Compression benchmark tool comparing algorithms and ratios.</p>
+                    <div class="command-example">
+                        <code>grim compress-benchmark /data --algorithms all</code>
+                    </div>
+                    <div class="command-features">
+                        <span class="feature">Benchmark Comparison UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim compress-optimize &lt;path&gt;</h3>
+                    <p>Compression optimizer finding best algorithm for your data.</p>
+                    <div class="command-features">
+                        <span class="feature">Optimize Algorithm UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim compress &lt;file&gt; --algorithm</h3>
+                    <p>Compression interface with algorithm selection and progress.</p>
+                    <div class="command-example">
+                        <code>grim compress data.tar --algorithm zstd --level 9</code>
+                    </div>
+                    <div class="command-features">
+                        <span class="feature">Compress Progress UI</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim decompress &lt;file&gt;</h3>
+                    <p>Decompression interface with automatic format detection.</p>
+                    <div class="command-features">
+                        <span class="feature">Decompress Extract UI</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Emergency Operations -->
+    <section id="emergency" class="command-section">
+        <div class="container">
+            <h2>🚨 Emergency Operations</h2>
+            
+            <div class="command-grid">
+                <div class="command-card">
+                    <h3>grim emergency-heal</h3>
+                    <p>Emergency healing with automatic issue detection and repair.</p>
+                    <div class="command-features">
+                        <span class="feature">Critical Auto-Fix</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim emergency-isolate &lt;file&gt;</h3>
+                    <p>Emergency isolation for threats with immediate quarantine.</p>
+                    <div class="command-features">
+                        <span class="feature">Threat Isolate</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim emergency-restore &lt;backup&gt;</h3>
+                    <p>Emergency restore with minimal verification for speed.</p>
+                    <div class="command-features">
+                        <span class="feature">Restore Quick Restore</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim emergency-encrypt &lt;path&gt;</h3>
+                    <p>Emergency encryption for rapid data protection.</p>
+                    <div class="command-features">
+                        <span class="feature">Encrypt Quick</span>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <h3>grim emergency-shutdown</h3>
+                    <p>Emergency shutdown with graceful service termination.</p>
+                    <div class="command-features">
+                        <span class="feature">Shutdown Emergency</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Reference -->
+    <section class="quick-reference">
+        <div class="container">
+            <h2>Quick Reference</h2>
+            
+            <div class="reference-grid">
+                <div class="reference-section">
+                    <h3>Essential Commands</h3>
+                    <ul class="command-list">
+                        <li><code>grim health</code></li>
+                        <li><code>grim backup-create daily /data</code></li>
+                        <li><code>grim monitor-start /path</code></li>
+                        <li><code>grim ai-recommend</code></li>
+                        <li><code>grim security-audit</code></li>
+                    </ul>
+                </div>
+
+                <div class="reference-section">
+                    <h3>Command Patterns</h3>
+                    <p>All Grim commands follow the pattern:</p>
+                    <div class="pattern-example">
+                        <code>grim [action]-[target] [arguments] [--flags]</code>
+                    </div>
+                </div>
+
+                <div class="reference-section">
+                    <h3>UI Commands</h3>
+                    <p>Many commands include interactive UI elements marked with the UI Tag. These provide dashboards, wizards, and visual interfaces.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Master the Reaper</h2>
+            <p>Start using Grim's unified command system today. One command, infinite possibilities.</p>
+            <div class="cta-buttons">
+                <a href="/admin" class="btn btn-primary">Get Started</a>
+                <a href="/grim-architecture" class="btn btn-secondary">View Architecture</a>
+            </div>
+        </div>
+    </section>
+$endcontent 

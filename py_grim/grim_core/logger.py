@@ -15,7 +15,3 @@ def setup_logger(name="grim", level="INFO"):
     
     logger.addHandler(handler)
     return logger
-
-def get_logger(name="grim"):
-    """Get logger instance"""
-    return logging.getLogger(name)

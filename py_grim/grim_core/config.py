@@ -315,11 +315,11 @@ class Config:
 # Global configuration instance
 _config = None
 
-def get_config(config_path: Optional[str] = None) -> Config:
+def get_config() -> Config:
     """Get global configuration instance"""
     global _config
     if _config is None:
-        _config = Config(config_path)
+        _config = Config()
     return _config
 
 def set_config(config: Config):
