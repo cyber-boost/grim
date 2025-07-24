@@ -1,1 +1,3 @@
-pkg/go_grim/go.mod
+module github.com/cyber-boost/grim
+
+go 1.21
