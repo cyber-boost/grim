@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Union
 import requests
 
-__version__ = "1.0.7"
+__version__ = "1.0.9"
 __author__ = "Bernie Gengel and his beagle Buddy"
 __license__ = "BBL"
 

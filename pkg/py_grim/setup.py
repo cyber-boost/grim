@@ -68,9 +68,9 @@ def run_post_install():
 
 setup(
     name="grim-reaper",
-    version="1.0.7",
+    version="1.0.9",
     author="Bernie Gengel and his beagle Buddy", 
-    author_email="zoo@phptu.sk",
+    author_email="rip@grim.so",
     description="Grim: Unified Data Protection Ecosystem. When data death comes knocking, Grim ensures resurrection is just a command away. License management, auto backups, highly compressed backups, multi-algorithm compression, content-based deduplication, smart storage tiering save up to 60% space, military-grade encryption, license protection, security surveillance, and automated threat response.",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
@@ -148,7 +148,7 @@ setup(
         "machine-learning",
         "grim-reaper",
     ],
-    license="BBL",
+    license="By using this software you agree to the official license available at https://grim.so/license",
     platforms=["any"],
 )
 
