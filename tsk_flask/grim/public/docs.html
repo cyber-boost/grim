@@ -1,0 +1,502 @@
+$extends "public/layout.html"
+
+$content
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>GRIM Documentation</h1>
+                <p class="subtitle">Complete documentation for the unified data protection ecosystem</p>
+                <p class="description">
+                    Everything you need to know about Grim - from getting started to advanced features.
+                    Comprehensive guides, tutorials, and reference materials for the unified data protection ecosystem.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation Navigation -->
+    <section class="docs-nav">
+        <div class="container">
+            <div class="docs-categories">
+                <a href="#getting-started" class="category-link">🚀 Getting Started</a>
+                <a href="#installation" class="category-link">📦 Installation</a>
+                <a href="#commands" class="category-link">⚡ Commands</a>
+                <a href="#api" class="category-link">🔌 API</a>
+                <a href="#architecture" class="category-link">🏗️ Architecture</a>
+                <a href="#tutorials" class="category-link">📚 Tutorials</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Getting Started -->
+    <section id="getting-started" class="docs-section">
+        <div class="container">
+            <h2>🚀 Getting Started</h2>
+            <p class="section-description">Quick start guide to get you up and running with Grim in minutes.</p>
+            
+            <div class="docs-grid">
+                <div class="docs-card">
+                    <h3>What is Grim?</h3>
+                    <p>Grim is the unified data protection ecosystem that brings 60+ bash modules, high-performance Go compression, Python AI services, and intelligent orchestration into one powerful command.</p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <span class="feature-icon">🧠</span>
+                            <span>AI-Powered Intelligence</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">⚡</span>
+                            <span>Multi-Language Power</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🔒</span>
+                            <span>Enterprise Security</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">♻️</span>
+                            <span>Intelligent Storage</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="docs-card">
+                    <h3>Quick Installation</h3>
+                    <div class="code-block">
+                        <pre><code># Install Grim in 30 seconds
+curl -sSL get.grim.so | sudo bash
+
+# Initialize Grim
+grim init
+
+# Your data is now eternal
+grim backup /important/data</code></pre>
+                    </div>
+                    <p>That's it! Grim is now ready to protect your data with military-grade encryption and AI-powered optimization.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation -->
+    <section id="installation" class="docs-section">
+        <div class="container">
+            <h2>📦 Installation</h2>
+            <p class="section-description">Detailed installation instructions for different platforms and environments.</p>
+            
+            <div class="docs-grid">
+                <div class="docs-card">
+                    <h3>System Requirements</h3>
+                    <ul class="requirements-list">
+                        <li><strong>Operating System:</strong> Linux (Ubuntu 20.04+, CentOS 8+, RHEL 8+)</li>
+                        <li><strong>Python:</strong> 3.8+ with pip</li>
+                        <li><strong>Go:</strong> 1.19+ (for compression engine)</li>
+                        <li><strong>Storage:</strong> 1GB+ available space</li>
+                        <li><strong>Memory:</strong> 512MB+ RAM</li>
+                        <li><strong>Network:</strong> Internet connection for initial setup</li>
+                    </ul>
+                </div>
+
+                <div class="docs-card">
+                    <h3>Automatic Installation</h3>
+                    <div class="code-block">
+                        <pre><code># One-command installation
+curl -sSL get.grim.so | sudo bash
+
+# Verify installation
+grim --version
+grim health</code></pre>
+                    </div>
+                    <p>The automatic installer will:</p>
+                    <ul>
+                        <li>Detect your system architecture</li>
+                        <li>Install all dependencies</li>
+                        <li>Configure Grim services</li>
+                        <li>Set up default configurations</li>
+                    </ul>
+                </div>
+
+                <div class="docs-card">
+                    <h3>Manual Installation</h3>
+                    <div class="code-block">
+                        <pre><code># Clone the repository
+git clone https://github.com/grim-project/grim.git
+cd grim
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Install Go components
+go install ./cmd/grim
+
+# Configure Grim
+grim init --config-only</code></pre>
+                    </div>
+                    <p>Manual installation gives you full control over the setup process and is recommended for advanced users.</p>
+                </div>
+
+                <div class="docs-card">
+                    <h3>Docker Installation</h3>
+                    <div class="code-block">
+                        <pre><code># Pull the official image
+docker pull grimproject/grim:latest
+
+# Run Grim container
+docker run -d \
+  --name grim \
+  -v /data:/grim/data \
+  -v /config:/grim/config \
+  -p 8080:8080 \
+  grimproject/grim:latest
+
+# Access web interface
+open http://localhost:8080</code></pre>
+                    </div>
+                    <p>Docker installation provides isolation and easy deployment in containerized environments.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Commands -->
+    <section id="commands" class="docs-section">
+        <div class="container">
+            <h2>⚡ Commands</h2>
+            <p class="section-description">Complete command reference for the unified Grim interface.</p>
+            
+            <div class="command-categories">
+                <div class="command-category">
+                    <h3>💾 Backup & Restore</h3>
+                    <div class="command-list">
+                        <div class="command-item">
+                            <code>grim backup /path</code>
+                            <span>Create a backup of the specified path</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim backup-create daily /data</code>
+                            <span>Create a daily backup schedule</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim backup-verify backup.tar</code>
+                            <span>Verify backup integrity</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim restore backup.tar</code>
+                            <span>Restore from backup</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim backup-schedule "0 2 * * *" /data</code>
+                            <span>Set custom backup schedule</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="command-category">
+                    <h3>🤖 AI Operations</h3>
+                    <div class="command-list">
+                        <div class="command-item">
+                            <code>grim ai-analyze /data</code>
+                            <span>Analyze data patterns with AI</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim ai-recommend</code>
+                            <span>Get AI-powered recommendations</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim ai-optimize</code>
+                            <span>Optimize backup strategies</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim ai-train model_name</code>
+                            <span>Train custom AI models</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim smart-suggestions</code>
+                            <span>Get intelligent suggestions</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="command-category">
+                    <h3>🔒 Security</h3>
+                    <div class="command-list">
+                        <div class="command-item">
+                            <code>grim security-audit</code>
+                            <span>Perform security audit</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim security-encrypt file</code>
+                            <span>Encrypt specific files</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim quarantine-isolate file</code>
+                            <span>Isolate suspicious files</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim license-status</code>
+                            <span>Check license status</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim lookouts-scan /path</code>
+                            <span>Scan for threats</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="command-category">
+                    <h3>📊 Monitoring</h3>
+                    <div class="command-list">
+                        <div class="command-item">
+                            <code>grim monitor-start /path</code>
+                            <span>Start monitoring a path</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim monitor-status</code>
+                            <span>Check monitoring status</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim monitor-events /path</code>
+                            <span>View monitoring events</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim monitor-performance</code>
+                            <span>Check system performance</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim health</code>
+                            <span>System health check</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="command-category">
+                    <h3>⚡ Optimization</h3>
+                    <div class="command-list">
+                        <div class="command-item">
+                            <code>grim optimize-all</code>
+                            <span>Optimize all systems</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim compress file --algorithm zstd</code>
+                            <span>Compress with specific algorithm</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim compress-benchmark /data</code>
+                            <span>Benchmark compression</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim cleanup-all</code>
+                            <span>Clean up temporary files</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim heal</code>
+                            <span>Heal corrupted data</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="command-category">
+                    <h3>🚨 Emergency</h3>
+                    <div class="command-list">
+                        <div class="command-item">
+                            <code>grim emergency-heal</code>
+                            <span>Emergency data healing</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim emergency-restore backup</code>
+                            <span>Emergency restore</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim emergency-isolate file</code>
+                            <span>Emergency file isolation</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim emergency-encrypt /path</code>
+                            <span>Emergency encryption</span>
+                        </div>
+                        <div class="command-item">
+                            <code>grim emergency-shutdown</code>
+                            <span>Emergency shutdown</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Documentation -->
+    <section id="api" class="docs-section">
+        <div class="container">
+            <h2>🔌 API Reference</h2>
+            <p class="section-description">Programmatic access to all Grim functionality through the REST API.</p>
+            
+            <div class="api-overview">
+                <div class="api-info">
+                    <h3>Base URL</h3>
+                    <div class="code-block">
+                        <code>https://grim.so/api/v1</code>
+                    </div>
+                </div>
+
+                <div class="api-info">
+                    <h3>Authentication</h3>
+                    <p>All API endpoints require authentication using API keys or JWT tokens.</p>
+                    <div class="code-block">
+                        <pre><code>curl -H "Authorization: Bearer YOUR_API_KEY" \
+     https://grim.so/api/v1/backups</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-info">
+                    <h3>Quick Examples</h3>
+                    <div class="code-block">
+                        <pre><code># Check system health
+curl https://grim.so/api/v1/health
+
+# Create backup
+curl -X POST \
+     -H "Authorization: Bearer YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"path": "/data"}' \
+     https://grim.so/api/v1/backups</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cta-section">
+                <h3>Ready to explore the API?</h3>
+                <p>Visit the complete API documentation for detailed endpoint references, examples, and SDKs.</p>
+                <a href="/grim-api-docs" class="btn btn-primary">View API Docs</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture -->
+    <section id="architecture" class="docs-section">
+        <div class="container">
+            <h2>🏗️ Architecture</h2>
+            <p class="section-description">Understanding the four specialized subsystems that power Grim.</p>
+            
+            <div class="architecture-grid">
+                <div class="arch-card">
+                    <h3>🧠 Unified Command System</h3>
+                    <p>Everything accessible through 'grim'. No more hunting for scripts or remembering complex paths.</p>
+                    <ul>
+                        <li>60+ modules unified</li>
+                        <li>Intelligent routing</li>
+                        <li>Consistent interface</li>
+                        <li>Auto-completion support</li>
+                    </ul>
+                </div>
+
+                <div class="arch-card">
+                    <h3>🤖 AI-Powered Intelligence</h3>
+                    <p>TensorFlow and PyTorch models learn from your data patterns, predict storage needs, and optimize automatically.</p>
+                    <ul>
+                        <li>Pattern recognition</li>
+                        <li>Predictive analytics</li>
+                        <li>Auto-optimization</li>
+                        <li>Smart scheduling</li>
+                    </ul>
+                </div>
+
+                <div class="arch-card">
+                    <h3>⚡ Multi-Language Power</h3>
+                    <p>Bash for system ops, Go for performance, Python for AI. Each language doing what it does best.</p>
+                    <ul>
+                        <li>sh_grim: System integration</li>
+                        <li>go_grim: Blazing compression</li>
+                        <li>py_grim: AI & web services</li>
+                        <li>scythe: Orchestration</li>
+                    </ul>
+                </div>
+
+                <div class="arch-card">
+                    <h3>🔒 Enterprise Security</h3>
+                    <p>Military-grade encryption, license protection, security surveillance, and automated threat response.</p>
+                    <ul>
+                        <li>AES-256-CBC encryption</li>
+                        <li>Scythe license guard</li>
+                        <li>Lookouts surveillance</li>
+                        <li>Auto-quarantine</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="cta-section">
+                <h3>Want to dive deeper?</h3>
+                <p>Explore the complete architecture diagram and technical specifications.</p>
+                <a href="/grim-architecture" class="btn btn-primary">View Architecture</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tutorials -->
+    <section id="tutorials" class="docs-section">
+        <div class="container">
+            <h2>📚 Tutorials</h2>
+            <p class="section-description">Step-by-step guides to help you master Grim's capabilities.</p>
+            
+            <div class="tutorials-grid">
+                <div class="tutorial-card">
+                    <h3>First Backup</h3>
+                    <p>Learn how to create your first backup and understand the basics of Grim's backup system.</p>
+                    <div class="tutorial-steps">
+                        <div class="step">1. Install Grim</div>
+                        <div class="step">2. Initialize configuration</div>
+                        <div class="step">3. Create your first backup</div>
+                        <div class="step">4. Verify backup integrity</div>
+                    </div>
+                    <a href="#" class="tutorial-link">Read Tutorial →</a>
+                </div>
+
+                <div class="tutorial-card">
+                    <h3>AI-Powered Optimization</h3>
+                    <p>Discover how to leverage Grim's AI capabilities to optimize your backup strategies.</p>
+                    <div class="tutorial-steps">
+                        <div class="step">1. Enable AI features</div>
+                        <div class="step">2. Analyze data patterns</div>
+                        <div class="step">3. Apply recommendations</div>
+                        <div class="step">4. Monitor improvements</div>
+                    </div>
+                    <a href="#" class="tutorial-link">Read Tutorial →</a>
+                </div>
+
+                <div class="tutorial-card">
+                    <h3>Security Hardening</h3>
+                    <p>Secure your Grim installation with enterprise-grade security features.</p>
+                    <div class="tutorial-steps">
+                        <div class="step">1. Configure encryption</div>
+                        <div class="step">2. Set up monitoring</div>
+                        <div class="step">3. Enable threat detection</div>
+                        <div class="step">4. Test security measures</div>
+                    </div>
+                    <a href="#" class="tutorial-link">Read Tutorial →</a>
+                </div>
+
+                <div class="tutorial-card">
+                    <h3>API Integration</h3>
+                    <p>Integrate Grim into your existing workflows using the REST API.</p>
+                    <div class="tutorial-steps">
+                        <div class="step">1. Get API credentials</div>
+                        <div class="step">2. Explore endpoints</div>
+                        <div class="step">3. Build integrations</div>
+                        <div class="step">4. Monitor usage</div>
+                    </div>
+                    <a href="#" class="tutorial-link">Read Tutorial →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Get Started?</h2>
+            <p>Join thousands of developers and enterprises who trust Grim to make their data immortal.</p>
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-primary">Install Grim</a>
+                <a href="/grim-command-reference" class="btn btn-secondary">View Commands</a>
+            </div>
+        </div>
+    </section>
+$endcontent 
