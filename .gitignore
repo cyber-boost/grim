@@ -23,6 +23,21 @@ builds/
 summaries/
 z_archive/
 
+# Project directories to exclude
+ascii/
+bin/
+config/
+db/
+internal/
+go_grim/
+py_grim/
+sh_grim/
+scythe/
+reaper/
+scripts/
+throne/
+src/
+
 # Composer
 /vendor/
 composer.lock
