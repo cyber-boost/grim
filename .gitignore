@@ -38,6 +38,25 @@ scripts/
 throne/
 src/
 
+# Additional files to exclude
+package/
+test-py/
+z_archive/
+--type=service | grep grim
+install_php_dependencies.sh
+js-grim_throne.sh
+master-install.sh
+phpgrim.sh
+populate_error_db.py
+py_grim_throne.sh
+rc.sh
+sh_grim_throne.sh
+test_compress.txt
+test_compress.txt.zstd
+test_grim_debug.py
+test_server_priority.sh
+what-the-grim.txt
+
 # Composer
 /vendor/
 composer.lock
@@ -47,16 +66,6 @@ composer.phar
 /build/
 *.tar.gz
 *.zip
-pkg/*/target/
-pkg/*/dist/
-pkg/*/build/
-*.egg-info/
-*.pyc
-__pycache__/
-test-py/
-*.db
-*.sqlite
-*.sqlite3
 
 # Python
 __pycache__/
