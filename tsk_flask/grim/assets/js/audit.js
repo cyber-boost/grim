@@ -1,687 +1,534 @@
 /**
- * Grim Audit Page - Security & System Auditing
- * Handles security scanning, audit trails, and compliance monitoring
+ * Security Audit System
+ * Real-time security monitoring and audit trail management
  */
 
-class GrimAudit {
+class AuditManager {
     constructor() {
-        this.executor = new GrimExecutor();
-        this.auditResults = {
-            securityIssues: [],
-            complianceViolations: [],
-            accessLogs: [],
-            systemEvents: []
+        this.auditLogs = [];
+        this.vulnerabilities = [];
+        this.currentPage = 1;
+        this.itemsPerPage = 20;
+        this.filters = {
+            type: 'all',
+            user: 'all',
+            timeRange: '24h',
+            search: ''
         };
-        this.auditConfig = {
-            securityLevel: 'high',
-            complianceStandards: ['PCI', 'SOX', 'HIPAA'],
-            retentionDays: 90,
-            realTimeMonitoring: true
-        };
-        
         this.init();
     }
 
     init() {
         this.setupEventListeners();
-        this.loadAuditConfig();
-        this.startSecurityScan();
-        this.updateStats();
-        this.startLiveUpdates();
-        
-        console.log('Grim Audit initialized');
+        this.loadSecurityScore();
+        this.loadAuditLogs();
+        this.loadVulnerabilities();
+        this.loadRecommendations();
+        this.startAutoRefresh();
     }
 
     setupEventListeners() {
-        // Security scan buttons
-        document.getElementById('security-scan-btn')?.addEventListener('click', () => this.startSecurityScan());
-        
-        // Audit actions
-        document.querySelectorAll('.audit-action-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const action = e.currentTarget.getAttribute('data-action');
-                this.performAuditAction(action);
-            });
+        // Control buttons
+        document.getElementById('run-audit-btn')?.addEventListener('click', () => this.runFullAudit());
+        document.getElementById('export-report-btn')?.addEventListener('click', () => this.exportReport());
+        document.getElementById('refresh-audit-btn')?.addEventListener('click', () => this.refresh());
+
+        // Filters
+        document.getElementById('audit-type-filter')?.addEventListener('change', (e) => {
+            this.filters.type = e.target.value;
+            this.currentPage = 1;
+            this.loadAuditLogs();
         });
 
-        // Configuration controls
-        document.querySelectorAll('.audit-config-toggle').forEach(toggle => {
-            toggle.addEventListener('change', (e) => this.updateConfig(e.target));
+        document.getElementById('audit-user-filter')?.addEventListener('change', (e) => {
+            this.filters.user = e.target.value;
+            this.currentPage = 1;
+            this.loadAuditLogs();
         });
-    }
 
-    /**
-     * Start security scan
-     */
-    async startSecurityScan() {
-        try {
-            this.updateAuditStatus('Starting security scan...', 0);
-            this.disableAuditControls();
-            
-            const command = `grim security-scan --level ${this.auditConfig.securityLevel} --comprehensive`;
-            this.currentScan = await this.executor.executeCommand(command);
-            
-            this.monitorSecurityScan();
-            
-        } catch (error) {
-            console.error('Security scan failed:', error);
-            this.updateAuditStatus('Security scan failed: ' + error.message, 0);
-            this.enableAuditControls();
-        }
-    }
+        document.getElementById('audit-time-filter')?.addEventListener('change', (e) => {
+            this.filters.timeRange = e.target.value;
+            this.currentPage = 1;
+            this.loadAuditLogs();
+        });
 
-    /**
-     * Monitor security scan progress
-     */
-    async monitorSecurityScan() {
-        if (!this.currentScan) return;
-        
-        const pollInterval = setInterval(async () => {
-            try {
-                const status = await this.executor.getCommandStatus(this.currentScan.id);
-                
-                if (status.status === 'completed') {
-                    clearInterval(pollInterval);
-                    this.handleSecurityScanComplete(status.result);
-                } else if (status.status === 'failed') {
-                    clearInterval(pollInterval);
-                    this.handleSecurityScanError(status.error);
-                } else {
-                    this.updateAuditProgress(status.progress || 0, status.current_check || 'Scanning...');
-                }
-                
-            } catch (error) {
-                console.error('Error monitoring security scan:', error);
+        document.getElementById('audit-search')?.addEventListener('input', (e) => {
+            this.filters.search = e.target.value;
+            this.currentPage = 1;
+            this.debounceSearch();
+        });
+
+        // Pagination
+        document.getElementById('audit-prev')?.addEventListener('click', () => {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                this.loadAuditLogs();
             }
-        }, 1000);
+        });
+
+        document.getElementById('audit-next')?.addEventListener('click', () => {
+            this.currentPage++;
+            this.loadAuditLogs();
+        });
+
+        // Scanner buttons
+        document.getElementById('quick-scan-btn')?.addEventListener('click', () => this.runQuickScan());
+        document.getElementById('deep-scan-btn')?.addEventListener('click', () => this.runDeepScan());
+        document.getElementById('schedule-scan-btn')?.addEventListener('click', () => this.showScheduleModal());
     }
 
-    /**
-     * Handle security scan completion
-     */
-    handleSecurityScanComplete(result) {
-        this.updateAuditStatus('Security scan completed!', 100);
-        this.enableAuditControls();
-        
-        // Parse security results
-        this.parseSecurityResults(result);
-        this.updateSecurityDisplay();
-        this.updateStats();
-        
-        // Add to activity feed
-        this.addActivityItem('🔒', `Security scan completed: ${this.auditResults.securityIssues.length} issues found`);
-    }
-
-    /**
-     * Parse security scan results
-     */
-    parseSecurityResults(result) {
-        // Reset results
-        this.auditResults.securityIssues = [];
-        
+    async loadSecurityScore() {
         try {
-            const lines = result.output.split('\n');
-            
-            lines.forEach(line => {
-                if (line.includes('CRITICAL:') || line.includes('HIGH:') || line.includes('MEDIUM:') || line.includes('LOW:')) {
-                    this.auditResults.securityIssues.push(this.parseSecurityIssue(line));
-                }
-            });
+            const response = await fetch('/api/audit/security-score');
+            const data = await response.json();
+
+            if (data.success) {
+                this.updateSecurityScore(data);
+            }
         } catch (error) {
-            console.error('Error parsing security results:', error);
+            console.error('Error loading security score:', error);
         }
     }
 
-    /**
-     * Parse security issue from scan output
-     */
-    parseSecurityIssue(line) {
-        // Example: "CRITICAL: Weak password policy detected in /etc/passwd"
-        const match = line.match(/(CRITICAL|HIGH|MEDIUM|LOW):\s+(.+)/);
-        if (match) {
-            return {
-                severity: match[1].toLowerCase(),
-                description: match[2],
-                timestamp: new Date().toISOString(),
-                status: 'open'
-            };
-        }
-        return null;
+    updateSecurityScore(data) {
+        document.getElementById('security-score').textContent = data.score + '%';
+        document.getElementById('security-rating').textContent = this.getSecurityRating(data.score);
+        document.getElementById('vulnerabilities-count').textContent = data.vulnerabilities || '0';
+        document.getElementById('vulnerabilities-label').textContent = this.getVulnerabilityLabel(data.vulnerabilities);
+        document.getElementById('last-audit-time').textContent = this.formatTimeAgo(data.lastAudit);
+        document.getElementById('last-audit-type').textContent = data.lastAuditType || 'Manual scan';
+        document.getElementById('threats-blocked').textContent = data.threatsBlocked || '0';
+
+        // Update security assessment grid
+        this.updateSecurityAssessment(data.assessments);
     }
 
-    /**
-     * Update security issues display
-     */
-    updateSecurityDisplay() {
-        const container = document.querySelector('.security-issues');
-        if (!container) return;
-        
-        // Group issues by severity
-        const critical = this.auditResults.securityIssues.filter(i => i.severity === 'critical');
-        const high = this.auditResults.securityIssues.filter(i => i.severity === 'high');
-        const medium = this.auditResults.securityIssues.filter(i => i.severity === 'medium');
-        const low = this.auditResults.securityIssues.filter(i => i.severity === 'low');
-        
-        container.innerHTML = `
-            <div class="security-category critical">
-                <h4>🚨 Critical Issues (${critical.length})</h4>
-                ${this.renderSecurityIssues(critical)}
-            </div>
-            <div class="security-category high">
-                <h4>⚠️ High Priority (${high.length})</h4>
-                ${this.renderSecurityIssues(high)}
-            </div>
-            <div class="security-category medium">
-                <h4>⚡ Medium Priority (${medium.length})</h4>
-                ${this.renderSecurityIssues(medium)}
-            </div>
-            <div class="security-category low">
-                <h4>ℹ️ Low Priority (${low.length})</h4>
-                ${this.renderSecurityIssues(low)}
-            </div>
-        `;
+    getSecurityRating(score) {
+        if (score >= 90) return 'Excellent';
+        if (score >= 75) return 'Good';
+        if (score >= 60) return 'Fair';
+        return 'Poor';
     }
 
-    /**
-     * Render security issues for a category
-     */
-    renderSecurityIssues(issues) {
-        if (issues.length === 0) {
-            return '<div class="no-issues">No issues found</div>';
-        }
-        
-        return issues.map(issue => `
-            <div class="security-issue ${issue.severity}">
-                <div class="issue-content">
-                    <div class="issue-description">${issue.description}</div>
-                    <div class="issue-timestamp">${this.formatDate(issue.timestamp)}</div>
+    getVulnerabilityLabel(count) {
+        if (count === 0) return 'No vulnerabilities';
+        if (count === 1) return '1 vulnerability';
+        return `${count} vulnerabilities`;
+    }
+
+    updateSecurityAssessment(assessments) {
+        const grid = document.getElementById('security-assessment-grid');
+        if (!grid || !assessments) return;
+
+        grid.innerHTML = assessments.map(item => `
+            <div class="security-item ${this.getScoreClass(item.score)}">
+                <div class="security-header">
+                    <span class="security-icon">${item.icon}</span>
+                    <span class="security-title">${item.title}</span>
+                    <span class="security-score">${item.score}%</span>
                 </div>
-                <div class="issue-actions">
-                    <button class="btn btn-secondary" onclick="grimAudit.fixIssue('${issue.description}')">
-                        <span>🔧</span> Fix
-                    </button>
-                    <button class="btn btn-secondary" onclick="grimAudit.ignoreIssue('${issue.description}')">
-                        <span>👁️</span> Ignore
-                    </button>
+                <div class="security-details">${item.details}</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${item.score}%"></div>
                 </div>
             </div>
         `).join('');
     }
 
-    /**
-     * Fix a security issue
-     */
-    async fixIssue(issueDescription) {
-        try {
-            this.updateAuditStatus('Fixing security issue...', 0);
-            
-            const command = `grim security-scan --fix "${issueDescription}"`;
-            const result = await this.executor.executeCommand(command);
-            
-            if (result.status === 'completed') {
-                this.updateAuditStatus('Issue fixed successfully!', 100);
-                this.addActivityItem('🔧', `Security issue fixed: ${issueDescription}`);
-                
-                // Refresh security scan
-                setTimeout(() => this.startSecurityScan(), 2000);
-            }
-            
-        } catch (error) {
-            console.error('Error fixing issue:', error);
-            this.updateAuditStatus('Failed to fix issue: ' + error.message, 0);
-        }
+    getScoreClass(score) {
+        if (score >= 90) return 'excellent';
+        if (score >= 70) return 'good';
+        return 'poor';
     }
 
-    /**
-     * Ignore a security issue
-     */
-    async ignoreIssue(issueDescription) {
+    async loadAuditLogs() {
         try {
-            const command = `grim security-scan --ignore "${issueDescription}"`;
-            const result = await this.executor.executeCommand(command);
-            
-            if (result.status === 'completed') {
-                this.addActivityItem('👁️', `Security issue ignored: ${issueDescription}`);
-                
-                // Remove from display
-                this.auditResults.securityIssues = this.auditResults.securityIssues.filter(
-                    issue => issue.description !== issueDescription
-                );
-                this.updateSecurityDisplay();
-            }
-            
-        } catch (error) {
-            console.error('Error ignoring issue:', error);
-        }
-    }
-
-    /**
-     * Start compliance audit
-     */
-    async startComplianceAudit() {
-        try {
-            this.updateAuditStatus('Starting compliance audit...', 0);
-            
-            const standards = this.auditConfig.complianceStandards.join(',');
-            const command = `grim audit --compliance --standards "${standards}"`;
-            const result = await this.executor.executeCommand(command);
-            
-            if (result.status === 'completed') {
-                this.handleComplianceAuditComplete(result);
-            }
-            
-        } catch (error) {
-            console.error('Compliance audit failed:', error);
-            this.updateAuditStatus('Compliance audit failed: ' + error.message, 0);
-        }
-    }
-
-    /**
-     * Handle compliance audit completion
-     */
-    handleComplianceAuditComplete(result) {
-        this.updateAuditStatus('Compliance audit completed!', 100);
-        
-        // Parse compliance results
-        this.parseComplianceResults(result);
-        this.updateComplianceDisplay();
-        
-        this.addActivityItem('📋', 'Compliance audit completed');
-    }
-
-    /**
-     * Parse compliance results
-     */
-    parseComplianceResults(result) {
-        this.auditResults.complianceViolations = [];
-        
-        try {
-            const lines = result.output.split('\n');
-            
-            lines.forEach(line => {
-                if (line.includes('VIOLATION:') || line.includes('NON-COMPLIANT:')) {
-                    this.auditResults.complianceViolations.push(this.parseComplianceViolation(line));
-                }
+            const params = new URLSearchParams({
+                type: this.filters.type,
+                user: this.filters.user,
+                timeRange: this.filters.timeRange,
+                search: this.filters.search,
+                page: this.currentPage,
+                limit: this.itemsPerPage
             });
-        } catch (error) {
-            console.error('Error parsing compliance results:', error);
-        }
-    }
 
-    /**
-     * Parse compliance violation
-     */
-    parseComplianceViolation(line) {
-        // Example: "VIOLATION: PCI-DSS 3.4 - Encryption not enabled for sensitive data"
-        const match = line.match(/(VIOLATION|NON-COMPLIANT):\s+(.+)/);
-        if (match) {
-            return {
-                type: match[1].toLowerCase(),
-                description: match[2],
-                timestamp: new Date().toISOString(),
-                status: 'open'
-            };
-        }
-        return null;
-    }
+            const response = await fetch(`/api/audit/logs?${params}`);
+            const data = await response.json();
 
-    /**
-     * Update compliance display
-     */
-    updateComplianceDisplay() {
-        const container = document.querySelector('.compliance-violations');
-        if (!container) return;
-        
-        if (this.auditResults.complianceViolations.length === 0) {
-            container.innerHTML = '<div class="no-violations">✅ All compliance standards met</div>';
-            return;
-        }
-        
-        container.innerHTML = this.auditResults.complianceViolations.map(violation => `
-            <div class="compliance-violation">
-                <div class="violation-content">
-                    <div class="violation-description">${violation.description}</div>
-                    <div class="violation-timestamp">${this.formatDate(violation.timestamp)}</div>
-                </div>
-                <div class="violation-actions">
-                    <button class="btn btn-secondary" onclick="grimAudit.remediateViolation('${violation.description}')">
-                        <span>🔧</span> Remediate
-                    </button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    /**
-     * Remediate compliance violation
-     */
-    async remediateViolation(violationDescription) {
-        try {
-            this.updateAuditStatus('Remediating compliance violation...', 0);
-            
-            const command = `grim audit --remediate "${violationDescription}"`;
-            const result = await this.executor.executeCommand(command);
-            
-            if (result.status === 'completed') {
-                this.updateAuditStatus('Violation remediated successfully!', 100);
-                this.addActivityItem('🔧', `Compliance violation remediated: ${violationDescription}`);
-                
-                // Remove from display
-                this.auditResults.complianceViolations = this.auditResults.complianceViolations.filter(
-                    violation => violation.description !== violationDescription
-                );
-                this.updateComplianceDisplay();
+            if (data.success) {
+                this.auditLogs = data.logs;
+                this.renderAuditLogs();
+                this.updatePagination(data.totalPages);
+                this.updateUserFilter(data.users);
             }
-            
         } catch (error) {
-            console.error('Error remediating violation:', error);
-            this.updateAuditStatus('Failed to remediate violation: ' + error.message, 0);
+            console.error('Error loading audit logs:', error);
         }
     }
 
-    /**
-     * Load access logs
-     */
-    async loadAccessLogs() {
-        try {
-            const command = `grim audit --access-logs --limit 100`;
-            const result = await this.executor.executeCommand(command);
-            
-            if (result.status === 'completed') {
-                this.parseAccessLogs(result.output);
-                this.updateAccessLogsDisplay();
-            }
-            
-        } catch (error) {
-            console.error('Error loading access logs:', error);
-        }
-    }
+    renderAuditLogs() {
+        const tbody = document.getElementById('audit-tbody');
+        if (!tbody) return;
 
-    /**
-     * Parse access logs
-     */
-    parseAccessLogs(output) {
-        this.auditResults.accessLogs = [];
-        
-        try {
-            const lines = output.split('\n');
-            
-            lines.forEach(line => {
-                if (line.trim()) {
-                    const logEntry = this.parseLogEntry(line);
-                    if (logEntry) {
-                        this.auditResults.accessLogs.push(logEntry);
-                    }
-                }
-            });
-        } catch (error) {
-            console.error('Error parsing access logs:', error);
-        }
-    }
-
-    /**
-     * Parse log entry
-     */
-    parseLogEntry(line) {
-        // Example: "2024-01-15 10:30:00 192.168.1.100 admin@grim.so LOGIN_SUCCESS"
-        const match = line.match(/(\S+\s+\S+)\s+(\S+)\s+(\S+)\s+(\S+)/);
-        if (match) {
-            return {
-                timestamp: match[1],
-                ip: match[2],
-                user: match[3],
-                action: match[4]
-            };
-        }
-        return null;
-    }
-
-    /**
-     * Update access logs display
-     */
-    updateAccessLogsDisplay() {
-        const container = document.querySelector('.access-logs');
-        if (!container) return;
-        
-        container.innerHTML = this.auditResults.accessLogs.map(log => `
-            <div class="log-entry ${this.getLogEntryClass(log.action)}">
-                <div class="log-timestamp">${log.timestamp}</div>
-                <div class="log-ip">${log.ip}</div>
-                <div class="log-user">${log.user}</div>
-                <div class="log-action">${log.action}</div>
-            </div>
-        `).join('');
-    }
-
-    /**
-     * Get CSS class for log entry based on action
-     */
-    getLogEntryClass(action) {
-        if (action.includes('SUCCESS')) return 'success';
-        if (action.includes('FAILED') || action.includes('ERROR')) return 'error';
-        if (action.includes('WARNING')) return 'warning';
-        return 'info';
-    }
-
-    /**
-     * Perform specific audit actions
-     */
-    async performAuditAction(action) {
-        const actions = {
-            'compliance-audit': 'grim audit --compliance --full',
-            'access-audit': 'grim audit --access --detailed',
-            'system-audit': 'grim audit --system --comprehensive',
-            'generate-report': 'grim audit --report --format html',
-            'export-audit': 'grim audit --export --json',
-            'audit-health': 'grim audit --health-check',
-            'audit-stats': 'grim audit --statistics',
-            'audit-cleanup': 'grim audit --cleanup --older-than 90'
-        };
-
-        const command = actions[action];
-        if (!command) {
-            console.error('Unknown action:', action);
+        if (this.auditLogs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="loading-message">No audit logs found</td></tr>';
             return;
         }
 
+        tbody.innerHTML = this.auditLogs.map(log => `
+            <tr>
+                <td>${this.formatDateTime(log.timestamp)}</td>
+                <td>${log.user || 'System'}</td>
+                <td>${log.action}</td>
+                <td>${log.resource || '-'}</td>
+                <td>${log.ip_address || '-'}</td>
+                <td><span class="status-badge ${log.status}">${log.status}</span></td>
+                <td>
+                    <button class="btn btn-small" onclick="auditManager.showDetails('${log.id}')">
+                        Details
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    updatePagination(totalPages) {
+        document.getElementById('audit-page-info').textContent = `Page ${this.currentPage} of ${totalPages}`;
+        document.getElementById('audit-prev').disabled = this.currentPage === 1;
+        document.getElementById('audit-next').disabled = this.currentPage === totalPages;
+    }
+
+    updateUserFilter(users) {
+        const select = document.getElementById('audit-user-filter');
+        if (!select || !users) return;
+
+        const currentValue = select.value;
+        select.innerHTML = '<option value="all">All Users</option>' + 
+            users.map(user => `<option value="${user}">${user}</option>`).join('');
+        select.value = currentValue;
+    }
+
+    async loadVulnerabilities() {
         try {
-            this.updateAuditStatus(`Starting ${action}...`, 0);
-            const result = await this.executor.executeCommand(command);
-            
-            if (result.status === 'completed') {
-                this.handleActionComplete(action, result);
+            const response = await fetch('/api/audit/vulnerabilities');
+            const data = await response.json();
+
+            if (data.success) {
+                this.vulnerabilities = data.vulnerabilities;
+                this.renderVulnerabilities();
             }
-            
         } catch (error) {
-            console.error(`${action} failed:`, error);
-            this.updateAuditStatus(`${action} failed: ${error.message}`, 0);
+            console.error('Error loading vulnerabilities:', error);
         }
     }
 
-    /**
-     * Handle action completion
-     */
-    handleActionComplete(action, result) {
-        this.updateAuditStatus(`${action} completed successfully!`, 100);
-        
-        // Add to activity feed
-        const actionNames = {
-            'compliance-audit': 'Compliance Audit',
-            'access-audit': 'Access Audit',
-            'system-audit': 'System Audit',
-            'generate-report': 'Audit Report Generated',
-            'export-audit': 'Audit Data Exported',
-            'audit-health': 'Audit Health Check',
-            'audit-stats': 'Audit Statistics',
-            'audit-cleanup': 'Audit Cleanup'
-        };
-        
-        this.addActivityItem('📊', `${actionNames[action]} completed`);
-        
-        // Refresh data if needed
-        if (action === 'access-audit') {
-            this.loadAccessLogs();
+    renderVulnerabilities() {
+        const container = document.getElementById('vulnerabilities-list');
+        if (!container) return;
+
+        if (this.vulnerabilities.length === 0) {
+            container.innerHTML = '<div class="no-vulnerabilities">No vulnerabilities detected</div>';
+            return;
         }
-    }
 
-    /**
-     * Update audit progress display
-     */
-    updateAuditProgress(percentage, currentCheck) {
-        const progressBar = document.getElementById('audit-progress');
-        const percentageSpan = document.querySelector('.audit-percentage');
-        const currentCheckSpan = document.getElementById('audit-current-check');
-        
-        if (progressBar) progressBar.style.width = percentage + '%';
-        if (percentageSpan) percentageSpan.textContent = percentage + '%';
-        if (currentCheckSpan) currentCheckSpan.textContent = currentCheck;
-    }
-
-    /**
-     * Update audit status
-     */
-    updateAuditStatus(message, percentage) {
-        this.updateAuditProgress(percentage, message);
-    }
-
-    /**
-     * Disable audit controls during operation
-     */
-    disableAuditControls() {
-        const scanBtn = document.getElementById('security-scan-btn');
-        if (scanBtn) scanBtn.disabled = true;
-    }
-
-    /**
-     * Enable audit controls after operation
-     */
-    enableAuditControls() {
-        const scanBtn = document.getElementById('security-scan-btn');
-        if (scanBtn) scanBtn.disabled = false;
-    }
-
-    /**
-     * Update statistics
-     */
-    updateStats() {
-        const criticalIssues = this.auditResults.securityIssues.filter(i => i.severity === 'critical').length;
-        const totalIssues = this.auditResults.securityIssues.length;
-        const complianceViolations = this.auditResults.complianceViolations.length;
-        const accessLogs = this.auditResults.accessLogs.length;
-        
-        // Update stats cards
-        this.updateStatCard('critical-issues', criticalIssues.toString());
-        this.updateStatCard('total-issues', totalIssues.toString());
-        this.updateStatCard('compliance-violations', complianceViolations.toString());
-        this.updateStatCard('access-logs', accessLogs.toString());
-    }
-
-    /**
-     * Update individual stat card
-     */
-    updateStatCard(statId, value) {
-        const statElement = document.querySelector(`[data-stat="${statId}"] .stat-value`);
-        if (statElement) {
-            statElement.textContent = value;
-        }
-    }
-
-    /**
-     * Add activity item to timeline
-     */
-    addActivityItem(icon, title) {
-        const activityFeed = document.querySelector('.activity-feed');
-        if (!activityFeed) return;
-        
-        const activityItem = document.createElement('div');
-        activityItem.className = 'activity-item';
-        activityItem.innerHTML = `
-            <div class="activity-icon" style="background: #dc3545;">${icon}</div>
-            <div class="activity-content">
-                <div class="activity-title">${title}</div>
-                <div class="activity-time">Just now</div>
+        container.innerHTML = this.vulnerabilities.map(vuln => `
+            <div class="vulnerability-item ${vuln.severity}">
+                <div class="vulnerability-header">
+                    <span class="vulnerability-severity">${vuln.severity.toUpperCase()}</span>
+                    <span class="vulnerability-type">${vuln.type}</span>
+                </div>
+                <div class="vulnerability-title">${vuln.title}</div>
+                <div class="vulnerability-description">${vuln.description}</div>
+                <div class="vulnerability-actions">
+                    <button class="btn btn-small" onclick="auditManager.fixVulnerability('${vuln.id}')">
+                        Fix Now
+                    </button>
+                    <button class="btn btn-small" onclick="auditManager.ignoreVulnerability('${vuln.id}')">
+                        Ignore
+                    </button>
+                </div>
             </div>
-        `;
-        
-        activityFeed.insertBefore(activityItem, activityFeed.firstChild);
-        
-        // Remove old items if too many
-        const items = activityFeed.querySelectorAll('.activity-item');
-        if (items.length > 10) {
-            items[items.length - 1].remove();
-        }
+        `).join('');
     }
 
-    /**
-     * Load audit configuration
-     */
-    loadAuditConfig() {
-        const saved = localStorage.getItem('grim-audit-config');
-        if (saved) {
-            this.auditConfig = { ...this.auditConfig, ...JSON.parse(saved) };
-        }
-        
-        this.updateConfigDisplay();
-    }
+    async loadRecommendations() {
+        try {
+            const response = await fetch('/api/audit/recommendations');
+            const data = await response.json();
 
-    /**
-     * Save audit configuration
-     */
-    saveAuditConfig() {
-        localStorage.setItem('grim-audit-config', JSON.stringify(this.auditConfig));
-    }
-
-    /**
-     * Update configuration display
-     */
-    updateConfigDisplay() {
-        // Update toggles
-        Object.keys(this.auditConfig).forEach(key => {
-            const toggle = document.querySelector(`[data-config="${key}"]`);
-            if (toggle) {
-                toggle.checked = this.auditConfig[key];
+            if (data.success) {
+                this.renderRecommendations(data.recommendations);
             }
-        });
+        } catch (error) {
+            console.error('Error loading recommendations:', error);
+        }
     }
 
-    /**
-     * Update configuration
-     */
-    updateConfig(element) {
-        const key = element.getAttribute('data-config');
-        this.auditConfig[key] = element.checked;
-        this.saveAuditConfig();
+    renderRecommendations(recommendations) {
+        const container = document.getElementById('recommendations-list');
+        if (!container) return;
+
+        container.innerHTML = recommendations.map(rec => `
+            <div class="recommendation-item">
+                <div class="recommendation-icon">${rec.icon}</div>
+                <div class="recommendation-content">
+                    <div class="recommendation-title">${rec.title}</div>
+                    <div class="recommendation-description">${rec.description}</div>
+                </div>
+            </div>
+        `).join('');
     }
 
-    /**
-     * Format date for display
-     */
-    formatDate(dateStr) {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+    async runFullAudit() {
+        const btn = document.getElementById('run-audit-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳</span> Running...';
+
+        try {
+            const response = await fetch('/api/audit/run-full', { method: 'POST' });
+            const data = await response.json();
+
+            if (data.success) {
+                this.showNotification('Full audit completed successfully', 'success');
+                this.refresh();
+            } else {
+                this.showNotification('Audit failed: ' + data.error, 'error');
+            }
+        } catch (error) {
+            console.error('Error running audit:', error);
+            this.showNotification('Failed to run audit', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<span>🔍</span> Run Full Audit';
+        }
     }
 
-    /**
-     * Start live updates
-     */
-    startLiveUpdates() {
-        // Update stats every 30 seconds
-        setInterval(() => {
-            this.updateStats();
-        }, 30000);
+    async runQuickScan() {
+        const btn = document.getElementById('quick-scan-btn');
+        btn.disabled = true;
+        btn.textContent = 'Scanning...';
+
+        try {
+            const response = await fetch('/api/audit/scan-quick', { method: 'POST' });
+            const data = await response.json();
+
+            if (data.success) {
+                this.showNotification('Quick scan completed', 'success');
+                this.loadVulnerabilities();
+            }
+        } catch (error) {
+            console.error('Error running quick scan:', error);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Quick Scan';
+        }
+    }
+
+    async runDeepScan() {
+        if (!confirm('Deep scan may take several minutes. Continue?')) return;
+
+        const btn = document.getElementById('deep-scan-btn');
+        btn.disabled = true;
+        btn.textContent = 'Scanning...';
+
+        try {
+            const response = await fetch('/api/audit/scan-deep', { method: 'POST' });
+            const data = await response.json();
+
+            if (data.success) {
+                this.showNotification('Deep scan completed', 'success');
+                this.loadVulnerabilities();
+            }
+        } catch (error) {
+            console.error('Error running deep scan:', error);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Deep Scan';
+        }
+    }
+
+    async exportReport() {
+        try {
+            const response = await fetch('/api/audit/export-report');
+            const blob = await response.blob();
+            
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `security-audit-${new Date().toISOString().split('T')[0]}.pdf`;
+            a.click();
+            
+            this.showNotification('Report exported successfully', 'success');
+        } catch (error) {
+            console.error('Error exporting report:', error);
+            this.showNotification('Failed to export report', 'error');
+        }
+    }
+
+    showDetails(logId) {
+        const log = this.auditLogs.find(l => l.id === logId);
+        if (log) {
+            alert(`Audit Log Details:\n\n${JSON.stringify(log, null, 2)}`);
+        }
+    }
+
+    async fixVulnerability(vulnId) {
+        if (!confirm('Apply automatic fix for this vulnerability?')) return;
+
+        try {
+            const response = await fetch(`/api/audit/vulnerability/${vulnId}/fix`, { method: 'POST' });
+            const data = await response.json();
+
+            if (data.success) {
+                this.showNotification('Vulnerability fixed', 'success');
+                this.loadVulnerabilities();
+            }
+        } catch (error) {
+            console.error('Error fixing vulnerability:', error);
+        }
+    }
+
+    async ignoreVulnerability(vulnId) {
+        try {
+            const response = await fetch(`/api/audit/vulnerability/${vulnId}/ignore`, { method: 'POST' });
+            const data = await response.json();
+
+            if (data.success) {
+                this.loadVulnerabilities();
+            }
+        } catch (error) {
+            console.error('Error ignoring vulnerability:', error);
+        }
+    }
+
+    refresh() {
+        this.loadSecurityScore();
+        this.loadAuditLogs();
+        this.loadVulnerabilities();
+        this.loadRecommendations();
+    }
+
+    formatDateTime(timestamp) {
+        return new Date(timestamp).toLocaleString();
+    }
+
+    formatTimeAgo(timestamp) {
+        if (!timestamp) return 'Never';
         
-        // Load access logs every 5 minutes
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diff = now - date;
+        
+        if (diff < 60000) return 'Just now';
+        if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+        if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+        return `${Math.floor(diff / 86400000)}d ago`;
+    }
+
+    debounceSearch() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(() => {
+            this.loadAuditLogs();
+        }, 300);
+    }
+
+    showNotification(message, type = 'info') {
+        // Simple notification - could be replaced with a better notification system
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 2rem;
+            background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
+            color: white;
+            border-radius: 4px;
+            z-index: 1000;
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    showScheduleModal() {
+        // This would open a modal to schedule scans
+        alert('Schedule scan feature coming soon!');
+    }
+
+    startAutoRefresh() {
+        // Refresh security score every 5 minutes
         setInterval(() => {
-            this.loadAccessLogs();
+            this.loadSecurityScore();
         }, 300000);
     }
 }
 
-// Initialize audit functionality when page loads
+// Initialize audit manager when page loads
+let auditManager;
 document.addEventListener('DOMContentLoaded', () => {
-    window.grimAudit = new GrimAudit();
+    auditManager = new AuditManager();
 });
 
-// Global functions for HTML onclick handlers
-window.startSecurityScan = () => window.grimAudit?.startSecurityScan();
-window.performAuditAction = (action) => window.grimAudit?.performAuditAction(action); 
+// Style for status badges
+const style = document.createElement('style');
+style.textContent = `
+.status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-badge.success {
+    background: #28a745;
+    color: white;
+}
+
+.status-badge.failed {
+    background: #dc3545;
+    color: white;
+}
+
+.status-badge.pending {
+    background: #ffc107;
+    color: black;
+}
+
+.vulnerability-severity {
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+}
+
+.vulnerability-item.critical .vulnerability-severity {
+    background: #dc3545;
+}
+
+.vulnerability-item.high .vulnerability-severity {
+    background: #fd7e14;
+}
+
+.vulnerability-item.medium .vulnerability-severity {
+    background: #ffc107;
+    color: black;
+}
+
+.vulnerability-item.low .vulnerability-severity {
+    background: #28a745;
+}
+
+.no-vulnerabilities {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+`;
+document.head.appendChild(style);

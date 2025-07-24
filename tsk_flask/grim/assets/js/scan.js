@@ -446,6 +446,55 @@ class GrimScan {
     }
 
     /**
+     * Update path display
+     */
+    updatePathDisplay() {
+        const pathItems = document.querySelectorAll('.path-item');
+        pathItems.forEach(item => {
+            const pathName = item.querySelector('.path-name').textContent;
+            const toggleBtn = item.querySelector('.toggle-btn');
+            
+            if (this.scanConfig.paths.includes(pathName)) {
+                toggleBtn.classList.add('active');
+                toggleBtn.textContent = '✓';
+            } else {
+                toggleBtn.classList.remove('active');
+                toggleBtn.textContent = '○';
+            }
+        });
+    }
+
+    /**
+     * Update exclusion display
+     */
+    updateExclusionDisplay() {
+        const exclusionList = document.querySelector('.exclusion-list');
+        if (!exclusionList) return;
+        
+        exclusionList.innerHTML = '';
+        this.scanConfig.exclusions.forEach(pattern => {
+            const item = document.createElement('div');
+            item.className = 'exclusion-item';
+            item.innerHTML = `
+                <span class="exclusion-pattern">${pattern}</span>
+                <button class="remove-btn" onclick="removeExclusion('${pattern}')">×</button>
+            `;
+            exclusionList.appendChild(item);
+        });
+    }
+
+    /**
+     * Update schedule display
+     */
+    updateScheduleDisplay() {
+        // Update schedule settings display
+        const scheduleSelect = document.querySelector('.schedule-select');
+        if (scheduleSelect) {
+            scheduleSelect.value = this.scanConfig.schedule;
+        }
+    }
+
+    /**
      * Toggle scan path
      */
     togglePath(button) {
@@ -481,6 +530,34 @@ class GrimScan {
     }
 
     /**
+     * Remove exclusion pattern
+     */
+    removeExclusion(pattern) {
+        this.scanConfig.exclusions = this.scanConfig.exclusions.filter(p => p !== pattern);
+        this.updateExclusionDisplay();
+        this.saveScanConfig();
+    }
+
+    /**
+     * Toggle switch element
+     */
+    toggleSwitch(element) {
+        element.classList.toggle('active');
+        this.saveScanConfig();
+    }
+
+    /**
+     * Pause current scan
+     */
+    pauseScan() {
+        if (this.currentScan) {
+            this.updateScanStatus('Scan paused', this.currentProgress || 0);
+            this.enableScanControls();
+            // In a real implementation, we'd send a pause command to the backend
+        }
+    }
+
+    /**
      * Start live updates
      */
     startLiveUpdates() {
@@ -502,3 +579,5 @@ window.startQuickScan = () => window.grimScan?.startQuickScan();
 window.pauseScan = () => window.grimScan?.pauseScan();
 window.performScanAction = (action) => window.grimScan?.performScanAction(action);
 window.togglePath = (button) => window.grimScan?.togglePath(button);
+window.toggleSwitch = (element) => window.grimScan?.toggleSwitch(element);
+window.removeExclusion = (pattern) => window.grimScan?.removeExclusion(pattern);

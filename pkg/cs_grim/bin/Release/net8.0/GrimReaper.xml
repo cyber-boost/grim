@@ -1,0 +1,266 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GrimReaper</name>
+    </assembly>
+    <members>
+        <member name="T:GrimReaper.GrimReaper">
+            <summary>
+            Grim Reaper C# Package
+            Real core integration with sh_grim, py_grim, and go_grim
+            No mock files - calls actual core modules and binaries
+            </summary>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of GrimReaper with portable path discovery
+            </summary>
+            <param name="grimRoot">Optional custom Grim root path</param>
+        </member>
+        <member name="P:GrimReaper.GrimReaper.GrimRoot">
+            <summary>
+            Gets the Grim root directory
+            </summary>
+        </member>
+        <member name="P:GrimReaper.GrimReaper.ApiBase">
+            <summary>
+            Gets the API base URL
+            </summary>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.FindGrimRoot">
+            <summary>
+            Finds Grim Reaper installation directory using portable discovery
+            </summary>
+            <returns>Path to Grim installation</returns>
+            <exception cref="T:System.IO.DirectoryNotFoundException">When Grim installation is not found</exception>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.IsGrimInstallation(System.String)">
+            <summary>
+            Checks if path contains a valid Grim installation
+            </summary>
+            <param name="path">Path to check</param>
+            <returns>True if valid Grim installation</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.ExecuteShModuleAsync(System.String,System.String[])">
+            <summary>
+            Executes sh_grim module with proper error handling
+            </summary>
+            <param name="module">Module name</param>
+            <param name="args">Module arguments</param>
+            <returns>Module output</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.ExecuteGoBinaryAsync(System.String,System.String[])">
+            <summary>
+            Executes go_grim binary with proper error handling
+            </summary>
+            <param name="binary">Binary name</param>
+            <param name="args">Binary arguments</param>
+            <returns>Binary output</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.CallPyApiAsync(System.String)">
+            <summary>
+            Calls py_grim FastAPI service
+            </summary>
+            <param name="endpoint">API endpoint</param>
+            <returns>API response as dictionary</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.BackupAsync(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Creates backup using sh_grim/backup.sh
+            </summary>
+            <param name="source">Source path to backup</param>
+            <param name="name">Backup name (optional)</param>
+            <param name="compress">Compression algorithm (default: zstd)</param>
+            <param name="incremental">Create incremental backup</param>
+            <returns>Backup operation result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.RestoreAsync(System.String,System.String,System.Boolean)">
+            <summary>
+            Restores from backup using sh_grim/restore.sh
+            </summary>
+            <param name="backup">Backup file to restore</param>
+            <param name="destination">Destination path</param>
+            <param name="overwrite">Overwrite existing files</param>
+            <returns>Restore operation result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.ListBackupsAsync">
+            <summary>
+            Lists available backups
+            </summary>
+            <returns>List of available backups</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.CompressAsync(System.String,System.String,System.Int32,System.String)">
+            <summary>
+            Compresses file using go_grim compression engine
+            </summary>
+            <param name="filePath">File to compress</param>
+            <param name="algorithm">Compression algorithm (default: zstd)</param>
+            <param name="level">Compression level (default: 6)</param>
+            <param name="output">Output file path (optional)</param>
+            <returns>Compression operation result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.DecompressAsync(System.String,System.String)">
+            <summary>
+            Decompresses file using go_grim
+            </summary>
+            <param name="filePath">File to decompress</param>
+            <param name="output">Output file path (optional)</param>
+            <returns>Decompression operation result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.BenchmarkCompressionAsync(System.String)">
+            <summary>
+            Gets compression benchmarks
+            </summary>
+            <param name="filePath">File to benchmark</param>
+            <returns>Benchmark results</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.StartMonitoringAsync(System.String,System.Int32,System.String)">
+            <summary>
+            Starts monitoring using sh_grim/monitor.sh
+            </summary>
+            <param name="path">Path to monitor</param>
+            <param name="interval">Monitoring interval in seconds (default: 5)</param>
+            <param name="events">Events to monitor (default: all)</param>
+            <returns>Monitoring operation result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.StopMonitoringAsync">
+            <summary>
+            Stops monitoring
+            </summary>
+            <returns>Stop monitoring result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.GetMonitoringStatusAsync">
+            <summary>
+            Gets monitoring status
+            </summary>
+            <returns>Monitoring status</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.ScanAsync(System.String,System.Boolean,System.String,System.String)">
+            <summary>
+            Scans directory using sh_grim/scan.sh
+            </summary>
+            <param name="path">Path to scan</param>
+            <param name="recursive">Recursive scan (default: true)</param>
+            <param name="types">File types to scan (optional)</param>
+            <param name="output">Output file path (optional)</param>
+            <returns>Scan operation result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.SecurityScanAsync(System.String,System.Boolean,System.String)">
+            <summary>
+            Performs security scan using sh_grim/security.sh
+            </summary>
+            <param name="path">Path to scan</param>
+            <param name="deep">Deep security scan</param>
+            <param name="report">Report output file (optional)</param>
+            <returns>Security scan result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.HealthCheckAsync">
+            <summary>
+            Performs system health check using sh_grim/health.sh
+            </summary>
+            <returns>Health check result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.GetStatusAsync">
+            <summary>
+            Gets system status
+            </summary>
+            <returns>System status</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.OptimizeAsync(System.String)">
+            <summary>
+            Optimizes system using sh_grim/blacksmith.sh
+            </summary>
+            <param name="target">Optimization target (default: all)</param>
+            <returns>Optimization result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.HealAsync">
+            <summary>
+            Performs self-healing using sh_grim/healer.sh
+            </summary>
+            <returns>Healing result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.GetApiStatusAsync">
+            <summary>
+            Gets system status via API
+            </summary>
+            <returns>API status response</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.GetBackupInfoAsync">
+            <summary>
+            Gets backup information via API
+            </summary>
+            <returns>Backup information</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.GetMonitoringDataAsync">
+            <summary>
+            Gets monitoring data via API
+            </summary>
+            <returns>Monitoring data</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.ExecuteCommandAsync(System.String,System.String[])">
+            <summary>
+            Executes raw grim command via throne script
+            </summary>
+            <param name="command">Command to execute</param>
+            <param name="args">Command arguments</param>
+            <returns>Command output</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.GetVersionAsync">
+            <summary>
+            Gets Grim version and build info
+            </summary>
+            <returns>Version information</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.CheckServices">
+            <summary>
+            Checks if Grim services are running
+            </summary>
+            <returns>Dictionary of service statuses</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.Dispose">
+            <summary>
+            Disposes resources
+            </summary>
+        </member>
+        <member name="T:GrimReaper.GrimQuick">
+            <summary>
+            Static convenience methods for quick operations
+            </summary>
+        </member>
+        <member name="M:GrimReaper.GrimQuick.BackupAsync(System.String)">
+            <summary>
+            Quick backup with default options
+            </summary>
+            <param name="source">Source path</param>
+            <returns>Backup result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimQuick.RestoreAsync(System.String,System.String)">
+            <summary>
+            Quick restore with default options
+            </summary>
+            <param name="backup">Backup file</param>
+            <param name="destination">Destination path</param>
+            <returns>Restore result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimQuick.CompressAsync(System.String)">
+            <summary>
+            Quick compress with default options
+            </summary>
+            <param name="filePath">File to compress</param>
+            <returns>Compression result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimQuick.HealthCheckAsync">
+            <summary>
+            Quick health check
+            </summary>
+            <returns>Health check result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimQuick.ScanAsync(System.String)">
+            <summary>
+            Quick scan with default options
+            </summary>
+            <param name="path">Path to scan</param>
+            <returns>Scan result</returns>
+        </member>
+    </members>
+</doc>

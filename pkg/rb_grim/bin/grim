@@ -1,0 +1,397 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "thor"
+require "grim_reaper"
+require "colorize"
+require "json"
+require "yaml"
+
+# Grim Reaper CLI - Unified interface for all Grim Reaper modules
+class GrimCLI < Thor
+  class_option :config, type: :string, default: "grim.yml", desc: "Configuration file path"
+  class_option :verbose, type: :boolean, default: false, desc: "Enable verbose output"
+  class_option :json, type: :boolean, default: false, desc: "Output in JSON format"
+  
+  desc "version", "Show Grim Reaper version"
+  def version
+    puts "Grim Reaper v#{GrimReaper::VERSION}".colorize(:green)
+    puts "The Ultimate Backup, Monitoring, and Security System"
+    puts "By Bernie Gengel and his beagle Buddy"
+  end
+  
+  desc "setup-complete", "Setup complete Grim Reaper environment (installs Python, Go, Shell, Scythe components)"
+  def setup_complete
+    puts "🗡️  Setting up complete Grim Reaper environment...".colorize(:cyan)
+    
+    begin
+      installer = GrimReaper::Installer.new
+      installer.setup_complete_environment
+      puts "✅ Complete Grim Reaper environment setup finished!".colorize(:green)
+    rescue => e
+      puts "❌ Setup failed: #{e.message}".colorize(:red)
+      exit 1
+    end
+  end
+  
+  desc "health", "Check health of all Grim Reaper modules"
+  def health
+    puts "🏥 Checking Grim Reaper health...".colorize(:cyan)
+    
+    begin
+      grim = GrimReaper::Core.new(load_config)
+      status_data = grim.status
+      
+      if options[:json]
+        puts JSON.pretty_generate(status_data)
+      else
+        puts "Grim Reaper Health Status:".colorize(:cyan)
+        all_healthy = true
+        
+        status_data.each do |module_name, data|
+          if data[:status] == 'ready' || data[:status] == 'healthy'
+            puts "  ✅ #{module_name}: #{data[:status]}".colorize(:green)
+          else
+            puts "  ❌ #{module_name}: #{data[:status]}".colorize(:red)
+            all_healthy = false
+          end
+        end
+        
+        if all_healthy
+          puts "\n🎉 All modules are healthy!".colorize(:green)
+        else
+          puts "\n⚠️  Some modules have issues.".colorize(:yellow)
+        end
+      end
+    rescue => e
+      puts "❌ Health check failed: #{e.message}".colorize(:red)
+      exit 1
+    end
+  end
+  
+  desc "status", "Show status of all modules"
+  def status
+    grim = GrimReaper::Core.new(load_config)
+    status_data = grim.status
+    
+    if options[:json]
+      puts JSON.pretty_generate(status_data)
+    else
+      puts "Grim Reaper Status:".colorize(:cyan)
+      status_data.each do |module_name, data|
+        status_color = data[:status] == 'ready' ? :green : :red
+        puts "  #{module_name}: #{data[:status]}".colorize(status_color)
+      end
+    end
+  end
+  
+  desc "execute COMMAND [ARGS...]", "Execute command across all modules"
+  def execute(command, *args)
+    grim = GrimReaper::Core.new(load_config)
+    results = grim.execute(command, *args)
+    
+    if options[:json]
+      puts JSON.pretty_generate(results)
+    else
+      puts "Executing '#{command}' across all modules:".colorize(:cyan)
+      results.each do |module_name, result|
+        if result[:error]
+          puts "  #{module_name}: #{result[:error]}".colorize(:red)
+        else
+          puts "  #{module_name}: #{result[:command]}".colorize(:green)
+        end
+      end
+    end
+  end
+  
+  desc "backup [TARGET]", "Run backup operations"
+  def backup(target = "all")
+    puts "Running backup for: #{target}".colorize(:yellow)
+    execute("backup", target)
+  end
+  
+  desc "monitor", "Start monitoring operations"
+  def monitor
+    puts "Starting monitoring...".colorize(:yellow)
+    execute("monitor")
+  end
+  
+  desc "security", "Run security checks"
+  def security
+    puts "Running security checks...".colorize(:yellow)
+    execute("security")
+  end
+  
+  desc "deploy [ENVIRONMENT]", "Deploy to specified environment"
+  def deploy(environment = "staging")
+    puts "Deploying to: #{environment}".colorize(:yellow)
+    execute("deploy", environment)
+  end
+  
+  desc "test [TYPE]", "Run tests"
+  def test(type = "all")
+    puts "Running #{type} tests...".colorize(:yellow)
+    execute("test", type)
+  end
+  
+  desc "build [TARGET]", "Build specified target"
+  def build(target = "all")
+    puts "Building: #{target}".colorize(:yellow)
+    execute("build", target)
+  end
+  
+  desc "clean", "Clean build artifacts"
+  def clean
+    puts "Cleaning build artifacts...".colorize(:yellow)
+    execute("clean")
+  end
+  
+  desc "install", "Install dependencies"
+  def install
+    puts "Installing dependencies...".colorize(:yellow)
+    execute("install")
+  end
+  
+  desc "update", "Update all modules"
+  def update
+    puts "Updating all modules...".colorize(:yellow)
+    execute("update")
+  end
+  
+  # Ruby-specific commands
+  desc "rb-setup", "Setup Ruby environment and dependencies"
+  def rb_setup
+    puts "💎 Setting up Ruby environment...".colorize(:purple)
+    begin
+      installer = GrimReaper::Installer.new
+      installer.setup_ruby_environment
+      puts "✅ Ruby environment setup complete!".colorize(:green)
+    rescue => e
+      puts "❌ Ruby setup failed: #{e.message}".colorize(:red)
+      exit 1
+    end
+  end
+  
+  desc "rb-analyze PATH", "Analyze Ruby code quality and security"
+  def rb_analyze(path)
+    puts "🔍 Analyzing Ruby code in: #{path}".colorize(:purple)
+    begin
+      grim = GrimReaper::Core.new(load_config)
+      result = grim.execute_ruby_command('rb-analyze', path)
+      puts result[:stdout] if result[:stdout]
+      puts result[:stderr] if result[:stderr]
+    rescue => e
+      puts "❌ Analysis failed: #{e.message}".colorize(:red)
+      redirect_to_grim_so("rb-analyze")
+    end
+  end
+  
+  desc "rb-test PATH", "Run RSpec tests"
+  def rb_test(path)
+    puts "🧪 Running RSpec tests in: #{path}".colorize(:purple)
+    begin
+      grim = GrimReaper::Core.new(load_config)
+      result = grim.execute_ruby_command('rb-test', path)
+      puts result[:stdout] if result[:stdout]
+      puts result[:stderr] if result[:stderr]
+    rescue => e
+      puts "❌ Test failed: #{e.message}".colorize(:red)
+      redirect_to_grim_so("rb-test")
+    end
+  end
+  
+  desc "rb-lint PATH", "Ruby syntax and style checking"
+  def rb_lint(path)
+    puts "🔧 Linting Ruby code in: #{path}".colorize(:purple)
+    begin
+      grim = GrimReaper::Core.new(load_config)
+      result = grim.execute_ruby_command('rb-lint', path)
+      puts result[:stdout] if result[:stdout]
+      puts result[:stderr] if result[:stderr]
+    rescue => e
+      puts "❌ Linting failed: #{e.message}".colorize(:red)
+      redirect_to_grim_so("rb-lint")
+    end
+  end
+  
+  desc "rb-deploy PATH", "Deploy Ruby application"
+  def rb_deploy(path)
+    puts "🚀 Deploying Ruby application: #{path}".colorize(:purple)
+    begin
+      grim = GrimReaper::Core.new(load_config)
+      result = grim.execute_ruby_command('rb-deploy', path)
+      puts result[:stdout] if result[:stdout]
+      puts result[:stderr] if result[:stderr]
+    rescue => e
+      puts "❌ Deployment failed: #{e.message}".colorize(:red)
+      redirect_to_grim_so("rb-deploy")
+    end
+  end
+  
+  desc "rb-monitor PATH", "Monitor Ruby application performance"
+  def rb_monitor(path)
+    puts "📊 Monitoring Ruby application: #{path}".colorize(:purple)
+    begin
+      grim = GrimReaper::Core.new(load_config)
+      result = grim.execute_ruby_command('rb-monitor', path)
+      puts result[:stdout] if result[:stdout]
+      puts result[:stderr] if result[:stderr]
+    rescue => e
+      puts "❌ Monitoring failed: #{e.message}".colorize(:red)
+      redirect_to_grim_so("rb-monitor")
+    end
+  end
+  
+  desc "rb-rails ACTION [ARGS...]", "Rails-specific operations"
+  def rb_rails(action, *args)
+    puts "🛤️  Rails operation: #{action}".colorize(:purple)
+    begin
+      grim = GrimReaper::Core.new(load_config)
+      result = grim.execute_ruby_command('rb-rails', action, *args)
+      puts result[:stdout] if result[:stdout]
+      puts result[:stderr] if result[:stderr]
+    rescue => e
+      puts "❌ Rails operation failed: #{e.message}".colorize(:red)
+      redirect_to_grim_so("rb-rails")
+    end
+  end
+  
+  desc "rb-docker ACTION", "Docker Ruby operations"
+  def rb_docker(action)
+    puts "🐳 Docker Ruby operation: #{action}".colorize(:purple)
+    begin
+      grim = GrimReaper::Core.new(load_config)
+      result = grim.execute_ruby_command('rb-docker', action)
+      puts result[:stdout] if result[:stdout]
+      puts result[:stderr] if result[:stderr]
+    rescue => e
+      puts "❌ Docker operation failed: #{e.message}".colorize(:red)
+      redirect_to_grim_so("rb-docker")
+    end
+  end
+  
+  desc "rb-k8s ACTION", "Kubernetes Ruby operations"
+  def rb_k8s(action)
+    puts "☸️  Kubernetes Ruby operation: #{action}".colorize(:purple)
+    begin
+      grim = GrimReaper::Core.new(load_config)
+      result = grim.execute_ruby_command('rb-k8s', action)
+      puts result[:stdout] if result[:stdout]
+      puts result[:stderr] if result[:stderr]
+    rescue => e
+      puts "❌ Kubernetes operation failed: #{e.message}".colorize(:red)
+      redirect_to_grim_so("rb-k8s")
+    end
+  end
+  
+  desc "help", "Show this help message"
+  def help
+    puts "Grim Reaper CLI - Ruby Gem Version (Limited)"
+    puts ""
+    puts "⚠️  This is the Ruby gem version with limited functionality."
+    puts "🌐 For the full Grim Reaper CLI with all commands, visit: https://get.grim.so"
+    puts ""
+    puts "Usage: grim [COMMAND] [OPTIONS]"
+    puts ""
+    puts "Commands:"
+    puts "  version              Show Grim Reaper version"
+    puts "  setup-complete       Setup complete Grim Reaper environment"
+    puts "  health               Check health of all modules"
+    puts "  status               Show status of all modules"
+    puts "  execute COMMAND      Execute command across all modules"
+    puts "  backup [TARGET]      Run backup operations"
+    puts "  monitor              Start monitoring operations"
+    puts "  security             Run security checks"
+    puts "  deploy [ENV]         Deploy to specified environment"
+    puts "  test [TYPE]          Run tests"
+    puts "  build [TARGET]       Build specified target"
+    puts "  clean                Clean build artifacts"
+    puts "  install              Install dependencies"
+    puts "  update               Update all modules"
+    puts ""
+    puts "💎 Ruby-Specific Commands:"
+    puts "  rb-setup             Setup Ruby environment"
+    puts "  rb-analyze PATH      Analyze Ruby code quality"
+    puts "  rb-test PATH         Run RSpec tests"
+    puts "  rb-lint PATH         Ruby syntax checking"
+    puts "  rb-deploy PATH       Deploy Ruby application"
+    puts "  rb-monitor PATH      Monitor Ruby application"
+    puts "  rb-rails ACTION      Rails operations"
+    puts "  rb-docker ACTION     Docker Ruby operations"
+    puts "  rb-k8s ACTION        Kubernetes Ruby operations"
+    puts ""
+    puts "Options:"
+    puts "  --config FILE        Configuration file path (default: grim.yml)"
+    puts "  --verbose            Enable verbose output"
+    puts "  --json               Output in JSON format"
+    puts ""
+    puts "Examples:"
+    puts "  grim setup-complete  # Install all Grim Reaper components"
+    puts "  grim health          # Check health of all modules"
+    puts "  grim rb-setup        # Setup Ruby environment"
+    puts "  grim rb-analyze /app # Analyze Ruby code"
+    puts "  grim status"
+    puts "  grim backup /home/user"
+    puts "  grim deploy production --verbose"
+    puts "  grim execute 'ls -la' --json"
+    puts ""
+    puts "🚀 Full Grim Reaper CLI Features:"
+    puts "  • 50+ backup commands (backup-create, backup-verify, etc.)"
+    puts "  • 30+ monitoring commands (monitor-start, monitor-events, etc.)"
+    puts "  • 20+ security commands (security-audit, quarantine-isolate, etc.)"
+    puts "  • 15+ AI/ML commands (ai-analyze, ai-train, ai-predict, etc.)"
+    puts "  • 10+ optimization commands (optimize-all, heal, etc.)"
+    puts "  • License protection system"
+    puts "  • Emergency commands"
+    puts "  • Web interface and admin server"
+    puts ""
+    puts "💡 For the complete Grim Reaper experience, visit: https://get.grim.so"
+    puts "📦 Or run: curl -sSL https://get.grim.so | bash"
+  end
+  
+  private
+  
+  def load_config
+    config_file = options[:config]
+    return {} unless File.exist?(config_file)
+    
+    begin
+      YAML.load_file(config_file)
+    rescue => e
+      puts "Warning: Could not load config file: #{e.message}".colorize(:yellow)
+      {}
+    end
+  end
+  
+  def redirect_to_grim_so(command)
+    puts "\n💡 Command '#{command}' not available in this installation.".colorize(:yellow)
+    puts "🌐 Visit https://get.grim.so to install the full Grim Reaper CLI".colorize(:cyan)
+    puts "📦 Or run: curl -sSL https://get.grim.so | bash".colorize(:cyan)
+    puts ""
+    puts "Available commands in this installation:".colorize(:green)
+    puts "  grim help              # Show this help"
+    puts "  grim version           # Show version"
+    puts "  grim health            # Check health"
+    puts "  grim status            # Show status"
+    puts "  grim setup-complete    # Setup environment"
+    puts "  grim rb-setup          # Setup Ruby environment"
+    exit 1
+  end
+  
+  # Override method_missing to catch unknown commands
+  def method_missing(method_name, *args)
+    if method_name.to_s.start_with?('rb_')
+      command = method_name.to_s.gsub('rb_', 'rb-')
+      puts "❌ Command '#{command}' not found.".colorize(:red)
+      redirect_to_grim_so(command)
+    else
+      puts "❌ Command '#{method_name}' not found.".colorize(:red)
+      redirect_to_grim_so(method_name.to_s)
+    end
+  end
+end
+
+# Run the CLI if this file is executed directly
+if __FILE__ == $0
+  GrimCLI.start(ARGV)
+end 

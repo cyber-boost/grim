@@ -1,0 +1,33 @@
+[Unit]
+Description=Grim Automatic Backup System
+Documentation=https://github.com/grim/auto-backup
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/reaper
+Environment=GRAVEYARD_DIR=/root/.graveyard
+Environment=MONITOR_DIR=/opt/reaper
+Environment=BACKUP_INTERVAL=300
+Environment=MAX_BACKUPS=50
+Environment=COMPRESSION_ALGORITHM=zstd
+ExecStart=/opt/reaper/sh_grim/auto_backup.sh start
+ExecStop=/opt/reaper/sh_grim/auto_backup.sh stop
+ExecReload=/opt/reaper/sh_grim/auto_backup.sh restart
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=grim-auto-backup
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/root/.graveyard /opt/reaper /var/log /var/run
+
+[Install]
+WantedBy=multi-user.target 

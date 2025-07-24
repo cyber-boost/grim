@@ -1,0 +1,15 @@
+/opt/reaper/pkg/cs_grim/obj/Release/net8.0/GrimReaper.csproj.AssemblyReference.cache
+/opt/reaper/pkg/cs_grim/obj/Release/net8.0/GrimReaper.GeneratedMSBuildEditorConfig.editorconfig
+/opt/reaper/pkg/cs_grim/obj/Release/net8.0/GrimReaper.AssemblyInfoInputs.cache
+/opt/reaper/pkg/cs_grim/obj/Release/net8.0/GrimReaper.AssemblyInfo.cs
+/opt/reaper/pkg/cs_grim/obj/Release/net8.0/GrimReaper.csproj.CoreCompileInputs.cache
+/opt/reaper/pkg/cs_grim/obj/Release/net8.0/GrimReaper.sourcelink.json
+/opt/reaper/pkg/cs_grim/bin/Release/net8.0/GrimReaper.deps.json
+/opt/reaper/pkg/cs_grim/bin/Release/net8.0/GrimReaper.dll
+/opt/reaper/pkg/cs_grim/bin/Release/net8.0/GrimReaper.pdb
+/opt/reaper/pkg/cs_grim/bin/Release/net8.0/GrimReaper.xml
+/opt/reaper/pkg/cs_grim/obj/Release/net8.0/GrimReaper.dll
+/opt/reaper/pkg/cs_grim/obj/Release/net8.0/refint/GrimReaper.dll
+/opt/reaper/pkg/cs_grim/obj/Release/net8.0/GrimReaper.xml
+/opt/reaper/pkg/cs_grim/obj/Release/net8.0/GrimReaper.pdb
+/opt/reaper/pkg/cs_grim/obj/Release/net8.0/ref/GrimReaper.dll

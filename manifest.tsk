@@ -1,10 +1,10 @@
 build_info:
     name: "Grim Reaper"
-    version: "20250723_173752"
-    build_date: "2025-07-23T17:37:54Z"
+    version: "20250723_231638"
+    build_date: "2025-07-23T23:16:40Z"
     build_host: "tuskone"
     build_user: "root"
-    git_commit: "148bf1499fa665cf788ee729170f56ac6ca706c8"
+    git_commit: "36f64641d999acdf25ee8f8298a1340e27966329"
     git_branch: "main"
 
 components:
@@ -74,9 +74,9 @@ features:
     multi_language_sdk: false
 
 checksums:
-    md5: "4d0055c3b2bb8ab89366a18cf2910d81"
-    build_size: "77M"
-    file_count: "2916"
+    md5: "9a1578d3af9759d60e2788b794478744"
+    build_size: "12M"
+    file_count: "172"
 
 deployment:
     nginx_config: "included"

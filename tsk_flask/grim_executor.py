@@ -21,8 +21,11 @@ from datetime import datetime
 import threading
 import queue
 
-# Import TuskLang performance engine
-from performance_engine import render_turbo_template
+# Import TuskLang performance engine (optional)
+try:
+    from performance_engine import render_turbo_template
+except ImportError:
+    render_turbo_template = None
 
 @dataclass
 class CommandResult:
@@ -39,13 +42,17 @@ class CommandResult:
 class GrimExecutor:
     """Secure command executor for Grim admin operations"""
     
-    def __init__(self, base_path: str = "/opt/reaper"):
+    def __init__(self, base_path: str = None):
+        if base_path is None:
+            # Use parent directory of tsk_flask as base
+            base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.base_path = Path(base_path)
         self.logger = self._setup_logging()
         self.command_queue = queue.Queue()
         self.running_commands = {}
         self.command_history = []
         self.max_history = 1000
+        self.command_retention_time = 300  # Keep commands for 5 minutes
         
         # Security settings
         self.allowed_commands = {
@@ -131,7 +138,22 @@ class GrimExecutor:
                         break
                     
                     command_id, command_type, command_args = command_data
-                    result = self._execute_command_safe(command_type, command_args)
+                    # Mark as running
+                    self.running_commands[command_id] = CommandResult(
+                        success=False,
+                        command=f"{command_type}",
+                        output="",
+                        error="",
+                        return_code=-1,
+                        execution_time=0,
+                        timestamp=datetime.now(),
+                        command_id=command_id
+                    )
+                    
+                    # Execute command
+                    result = self._execute_command_safe(command_type, command_args, command_id)
+                    
+                    # Store result
                     self.running_commands[command_id] = result
                     
                 except queue.Empty:
@@ -142,10 +164,11 @@ class GrimExecutor:
         self.processor_thread = threading.Thread(target=processor, daemon=True)
         self.processor_thread.start()
     
-    def _execute_command_safe(self, command_type: str, command_args: Dict[str, Any]) -> CommandResult:
+    def _execute_command_safe(self, command_type: str, command_args: Dict[str, Any], command_id: str = None) -> CommandResult:
         """Execute command with safety checks"""
         start_time = time.time()
-        command_id = hashlib.md5(f"{command_type}_{time.time()}".encode()).hexdigest()[:8]
+        if command_id is None:
+            command_id = hashlib.md5(f"{command_type}_{time.time()}".encode()).hexdigest()[:8]
         
         try:
             # Validate command type
@@ -201,29 +224,84 @@ class GrimExecutor:
         start_time = time.time()
         command_id = hashlib.md5(f"backup_{time.time()}".encode()).hexdigest()[:8]
         
-        backup_type = args.get('type', 'grim')
-        source_path = args.get('source', '')
-        backup_name = args.get('name', f'backup_{int(time.time())}')
+        action = args.get('action', 'create')
         
-        if backup_type == 'grim':
-            cmd = ['grim', 'backup', source_path, '--name', backup_name]
-        elif backup_type == 'scythe':
-            cmd = ['python3', 'scythe/scythe.py', 'backup', source_path, '--name', backup_name]
-        elif backup_type == 'sh_grim':
-            cmd = ['./sh_grim/backup.sh', source_path, backup_name]
+        if action == 'list':
+            # List backups
+            backups_dir = self.base_path / 'backups'
+            cmd = ['bash', '-c', f'ls -la {backups_dir}/ 2>/dev/null || echo "No backups found"']
+            if args.get('format') == 'json':
+                # Try to output JSON format
+                cmd = ['bash', '-c', f'''
+                    if [ -d {backups_dir} ]; then
+                        echo '['
+                        first=true
+                        for f in {backups_dir}/*; do
+                            if [ -f "$f" ]; then
+                                [ "$first" = true ] && first=false || echo ','
+                                size=$(stat -c%s "$f" 2>/dev/null || echo 0)
+                                mtime=$(stat -c%Y "$f" 2>/dev/null || echo 0)
+                                name=$(basename "$f")
+                                echo -n "{{\\"id\\":\\"$name\\",\\"name\\":\\"$name\\",\\"size\\":\\"$size\\",\\"created\\":\\"$mtime\\",\\"type\\":\\"full\\",\\"status\\":\\"completed\\"}}"
+                            fi
+                        done
+                        echo ']'
+                    else
+                        echo '[]'
+                    fi
+                ''']
+        elif action == 'create':
+            backup_type = args.get('type', 'full')
+            tool = args.get('tool', 'sh_grim')
+            backup_name = args.get('name', f'{backup_type}_backup_{int(time.time())}')
+            
+            if tool == 'sh_grim':
+                cmd = ['./sh_grim/backup.sh', 'create', backup_type, backup_name]
+            elif tool == 'go_grim':
+                # Use Go compression tool for incremental backups
+                backups_dir = self.base_path / 'backups'
+                cmd = ['./go_grim/build/grim-compression', '-compress', '-o', f'{backups_dir}/{backup_name}.grim']
+            elif tool == 'py_grim':
+                # Use Python for database backups
+                cmd = ['python3', './py_grim/grim_core.py', 'backup', '--type', backup_type, '--name', backup_name]
+            else:
+                cmd = ['grim', 'backup', '--name', backup_name]
+        
+        elif action == 'restore':
+            backup_id = args.get('backup_id', '')
+            target = args.get('target', str(self.base_path))
+            cmd = ['./sh_grim/restore.sh', 'recover', backup_id, target]
+        
+        elif action == 'verify':
+            backup_id = args.get('backup_id', '')
+            cmd = ['./sh_grim/backup.sh', 'verify', backup_id]
+        
+        elif action == 'delete':
+            backup_id = args.get('backup_id', '')
+            backups_dir = self.base_path / 'backups'
+            cmd = ['rm', '-f', f'{backups_dir}/{backup_id}']
+        
+        elif action == 'stats':
+            backups_dir = self.base_path / 'backups'
+            cmd = ['bash', '-c', f'''
+                total=$(find {backups_dir} -type f 2>/dev/null | wc -l)
+                size=$(du -sh {backups_dir} 2>/dev/null | cut -f1)
+                echo "{{\\"total_backups\\":$total,\\"storage_used\\":\\"$size\\"}}"
+            ''']
+        
         else:
             return CommandResult(
                 success=False,
-                command=f"backup {backup_type}",
+                command=f"backup {action}",
                 output="",
-                error=f"Unknown backup type: {backup_type}",
+                error=f"Unknown backup action: {action}",
                 return_code=1,
                 execution_time=time.time() - start_time,
                 timestamp=datetime.now(),
                 command_id=command_id
             )
         
-        return self._run_subprocess(cmd, command_id, f"backup {backup_type}")
+        return self._run_subprocess(cmd, command_id, f"backup {action}")
     
     def _execute_license_command(self, args: Dict[str, Any]) -> CommandResult:
         """Execute license operations"""
@@ -435,6 +513,32 @@ class GrimExecutor:
                 command_id=command_id
             )
     
+    def execute_command_sync(self, command_type: str, command_args: Dict[str, Any]) -> Optional[CommandResult]:
+        """Execute command synchronously and return result immediately"""
+        # Execute the command directly
+        if command_type == 'backup':
+            return self._execute_backup_command(command_args)
+        elif command_type == 'license':
+            return self._execute_license_command(command_args)
+        elif command_type == 'system':
+            return self._execute_system_command(command_args)
+        elif command_type == 'logs':
+            return self._execute_logs_command(command_args)
+        elif command_type == 'files':
+            return self._execute_files_command(command_args)
+        else:
+            command_id = hashlib.md5(f"{command_type}_{time.time()}".encode()).hexdigest()[:8]
+            return CommandResult(
+                success=False,
+                command=command_type,
+                output="",
+                error=f"Unknown command type: {command_type}",
+                return_code=1,
+                execution_time=0,
+                timestamp=datetime.now(),
+                command_id=command_id
+            )
+    
     async def execute_command_async(self, command_type: str, command_args: Dict[str, Any]) -> str:
         """Execute command asynchronously and return command ID"""
         command_id = hashlib.md5(f"{command_type}_{time.time()}".encode()).hexdigest()[:8]
@@ -444,9 +548,32 @@ class GrimExecutor:
         
         return command_id
     
+    def execute_command_async_sync(self, command_type: str, command_args: Dict[str, Any]) -> str:
+        """Synchronous wrapper for execute_command_async - returns command ID for async execution"""
+        command_id = hashlib.md5(f"{command_type}_{time.time()}".encode()).hexdigest()[:8]
+        
+        # Add to queue for processing
+        self.command_queue.put((command_id, command_type, command_args))
+        
+        self.logger.info(f"Queued command {command_id} of type {command_type}")
+        
+        return command_id
+    
     def get_command_result(self, command_id: str) -> Optional[CommandResult]:
         """Get result of a specific command"""
-        return self.running_commands.get(command_id)
+        result = self.running_commands.get(command_id)
+        
+        self.logger.info(f"Looking for command {command_id}, found in running: {result is not None}")
+        self.logger.info(f"Currently have {len(self.running_commands)} running commands")
+        
+        # Also check command history
+        if not result:
+            for cmd in self.command_history:
+                if cmd.command_id == command_id:
+                    self.logger.info(f"Found command {command_id} in history")
+                    return cmd
+        
+        return result
     
     def get_command_history(self, limit: int = 50) -> List[Dict[str, Any]]:
         """Get command execution history"""

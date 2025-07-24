@@ -223,317 +223,54 @@ class TurboTemplateEngine:
         if template_hash in self._compiled_templates:
             return self._compiled_templates[template_hash]
         
-        # Simple but fast template compilation
-        def compiled_render(context: Dict[str, Any]) -> str:
-            result = template_content
+        # Use simple TSK renderer for compilation
+        try:
+            from simple_tsk_renderer import SimpleTskRenderer
+            simple_renderer = SimpleTskRenderer()
             
-            # Debug logging
-            logging.info(f"Template processing - Context keys: {list(context.keys())}")
-            logging.info(f"Template processing - css_files: {context.get('css_files', 'NOT FOUND')}")
-            
-            # Handle TuskLang nested object syntax FIRST: $object.property
-            import re
-            nested_pattern = r'\$([a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*)'
-            
-            def replace_nested(match):
+            def compiled_render(context: Dict[str, Any]) -> str:
+                """Compiled template renderer using simple TSK renderer"""
                 try:
-                    path = match.group(1)
-                    parts = path.split('.')
-                    current = context
-                    
-                    for part in parts:
-                        if isinstance(current, dict) and part in current:
-                            current = current[part]
-                        else:
-                            return match.group(0)  # Return original if path not found
-                    
-                    return str(current)
+                    # Use the simple TSK renderer for consistent processing
+                    result = simple_renderer.render(template_content, context)
+                    return result
                 except Exception as e:
-                    logging.warning(f"Nested object access failed for {match.group(1)}: {e}")
-                    return match.group(0)
+                    logging.error(f"Compiled template rendering failed: {e}")
+                    return f"<!-- Template Error: {e} -->"
             
-            result = re.sub(nested_pattern, replace_nested, result)
+            # Cache the compiled renderer
+            self._compiled_templates[template_hash] = compiled_render
+            self._template_hashes[template_hash] = template_content
             
-            # Then handle simple variable substitution for both Jinja2 and Flask-TSK syntax
-            for key, value in context.items():
-                # Jinja2 syntax: {{ variable }}
-                jinja2_placeholder = f"{{{{ {key} }}}}"
-                if jinja2_placeholder in result:
-                    result = result.replace(jinja2_placeholder, str(value))
-                
-                # Flask-TSK syntax: $variable (only if not already processed as nested)
-                tsk_placeholder = f"${key}"
-                if tsk_placeholder in result and '.' not in key:
-                    result = result.replace(tsk_placeholder, str(value))
+            logging.info(f"Template compiled successfully, hash: {template_hash[:8]}")
+            return compiled_render
             
-            # Handle TuskLang template inheritance: $extends, $block, $endblock
-            # Handle TuskLang conditional syntax: $if, $for, $endif
-            # Process TuskLang conditionals directly
-            lines = result.split('\n')
-            processed_lines = []
-            i = 0
+        except ImportError as e:
+            logging.warning(f"Simple TSK renderer not available, using fallback: {e}")
             
-            # First pass: handle $extends and $block directives
-            extends_template = None
-            block_content = {}
-            current_block = None
-            in_block = False
-            
-            while i < len(lines):
-                line = lines[i].strip()
+            # Fallback compilation without simple renderer
+            def compiled_render_fallback(context: Dict[str, Any]) -> str:
+                """Fallback compiled template renderer"""
+                result = template_content
                 
-                # Handle $extends directive
-                if line.startswith('$extends '):
-                    extends_template = line[9:].strip().strip('"\'')
-                    i += 1
-                    continue
-                
-                # Handle $block directive
-                elif line.startswith('$block '):
-                    block_name = line[7:].strip()
-                    current_block = block_name
-                    in_block = True
-                    block_content[block_name] = []
-                    i += 1
-                    continue
-                
-                # Handle $endblock directive
-                elif line == '$endblock':
-                    in_block = False
-                    current_block = None
-                    i += 1
-                    continue
-                
-                # Handle $include directive
-                elif line.startswith('$include '):
-                    include_template = line[9:].strip().strip('"\'')
-                    try:
-                        # Load the included template
-                        template_dir = os.path.dirname(__file__)
-                        include_template_path = os.path.join(template_dir, 'grim', include_template)
-                        
-                        if os.path.exists(include_template_path):
-                            with open(include_template_path, 'r', encoding='utf-8') as f:
-                                include_content = f.read()
-                            processed_lines.append(include_content)
-                        else:
-                            logging.warning(f"Included template not found: {include_template_path}")
-                            processed_lines.append(f"<!-- Include not found: {include_template} -->")
-                    except Exception as e:
-                        logging.warning(f"Template include failed: {e}")
-                        processed_lines.append(f"<!-- Include error: {include_template} -->")
-                    i += 1
-                    continue
-                
-                # Collect block content
-                if in_block and current_block:
-                    block_content[current_block].append(lines[i])
-                
-                i += 1
-            
-            # If we have an extends template, load and process it
-            if extends_template:
-                try:
-                    # Load the parent template
-                    template_dir = os.path.dirname(__file__)
-                    parent_template_path = os.path.join(template_dir, 'grim', extends_template)
+                # Basic variable substitution
+                for key, value in context.items():
+                    # Jinja2 syntax: {{ variable }}
+                    jinja2_placeholder = f"{{{{ {key} }}}}"
+                    if jinja2_placeholder in result:
+                        result = result.replace(jinja2_placeholder, str(value))
                     
-                    logging.info(f"Processing template inheritance: {extends_template}")
-                    logging.info(f"Parent template path: {parent_template_path}")
-                    logging.info(f"Block content: {list(block_content.keys())}")
-                    
-                    if os.path.exists(parent_template_path):
-                        with open(parent_template_path, 'r', encoding='utf-8') as f:
-                            parent_content = f.read()
-                        
-                        logging.info(f"Parent template loaded, size: {len(parent_content)} chars")
-                        
-                        # Replace $block directives with content
-                        for block_name, content in block_content.items():
-                            block_pattern = f'$block {block_name}'
-                            if block_pattern in parent_content:
-                                parent_content = parent_content.replace(block_pattern, '\n'.join(content))
-                                logging.info(f"Replaced block: {block_name}")
-                        
-                        # Recursively process the parent template
-                        result = parent_content
-                        logging.info(f"Template inheritance completed, result size: {len(result)} chars")
-                        
-                        # Re-process the inherited template with the same context
-                        logging.info(f"Re-processing inherited template with context: {list(context.keys())}")
-                        # This will be processed in the next iteration of the while loop
-                    else:
-                        logging.warning(f"Parent template not found: {parent_template_path}")
-                except Exception as e:
-                    logging.warning(f"Template inheritance failed: {e}")
+                    # TSK syntax: $variable
+                    tsk_placeholder = f"${key}"
+                    if tsk_placeholder in result:
+                        result = result.replace(tsk_placeholder, str(value))
+                
+                return result
             
-            # Reset for second pass - handle conditionals and loops
-            lines = result.split('\n')
-            processed_lines = []
-            i = 0
+            self._compiled_templates[template_hash] = compiled_render_fallback
+            self._template_hashes[template_hash] = template_content
             
-            logging.info(f"Starting second pass - processing {len(lines)} lines")
-            
-            while i < len(lines):
-                line = lines[i].strip()
-                
-                # Handle $if condition
-                if line.startswith('$if '):
-                    logging.info(f"Processing $if condition: {line}")
-                    condition = line[4:].strip()
-                    # Evaluate the condition
-                    try:
-                        # Convert TuskLang condition to Python evaluation
-                        condition_parts = condition.split('.')
-                        if condition_parts[0].startswith('$'):
-                            var_name = condition_parts[0][1:]
-                            if var_name in context:
-                                current = context[var_name]
-                                for part in condition_parts[1:]:
-                                    if isinstance(current, dict) and part in current:
-                                        current = current[part]
-                                    else:
-                                        current = False
-                                        break
-                                if current:
-                                    processed_lines.append(lines[i])  # Keep the line
-                                else:
-                                    # Skip until $endif
-                                    while i < len(lines) and lines[i].strip() != '$endif':
-                                        i += 1
-                                    if i < len(lines):
-                                        i += 1  # Skip the $endif line
-                                    continue
-                            else:
-                                # Skip until $endif
-                                while i < len(lines) and lines[i].strip() != '$endif':
-                                    i += 1
-                                if i < len(lines):
-                                    i += 1  # Skip the $endif line
-                                continue
-                        else:
-                            processed_lines.append(lines[i])  # Keep the line
-                    except Exception as e:
-                        logging.warning(f"Condition evaluation failed: {e}")
-                        processed_lines.append(lines[i])  # Keep the line
-                
-                # Handle $endif - just skip it
-                elif line == '$endif':
-                    pass  # Skip this line
-                
-                # Handle $endfor - just skip it
-                elif line == '$endfor':
-                    pass  # Skip this line
-                
-                # Handle $for loop
-                elif line.startswith('$for '):
-                    logging.info(f"Processing $for loop: {line}")
-                    logging.info(f"Context available in loop: {list(context.keys())}")
-                    logging.info(f"css_files in context: {context.get('css_files', 'NOT FOUND')}")
-                    # Extract: $for item in items
-                    parts = line[5:].strip().split(' in ')
-                    if len(parts) == 2:
-                        item_var = parts[0].strip()
-                        collection = parts[1].strip()
-                        logging.info(f"Loop variables: item_var={item_var}, collection={collection}")
-                        # Get the collection from context
-                        try:
-                            # Check if collection variable exists in context (with or without $ prefix)
-                            var_name = collection[1:] if collection.startswith('$') else collection
-                            logging.info(f"Looking for collection variable: {var_name}")
-                            if var_name in context:
-                                collection_data = context[var_name]
-                                logging.info(f"Found collection data: {collection_data}")
-                                if isinstance(collection_data, (list, tuple)):
-                                        # Find the loop body
-                                        loop_start = i + 1
-                                        loop_end = i
-                                        j = i + 1
-                                        while j < len(lines) and lines[j].strip() != '$endfor':
-                                            j += 1
-                                        loop_end = j
-                                        
-                                        # Process the loop
-                                        for item in collection_data:
-                                            # Create a temporary context with the item
-                                            temp_context = context.copy()
-                                            temp_context[item_var] = item
-                                            
-                                            # Process each line in the loop body
-                                            for k in range(loop_start, loop_end):
-                                                loop_line = lines[k]
-                                                # Replace variables in the loop line
-                                                for temp_key, temp_value in temp_context.items():
-                                                    loop_line = loop_line.replace(f'${temp_key}', str(temp_value))
-                                                processed_lines.append(loop_line)
-                                            
-                                            # Debug logging
-                                            logging.info(f"Processed loop item: {item_var} = {item}")
-                                            logging.info(f"Loop body lines: {loop_start} to {loop_end}")
-                                        
-                                        # Skip to endfor
-                                        i = loop_end
-                                        if i < len(lines):
-                                            i += 1  # Skip the $endfor line
-                                        continue
-                                else:
-                                    # Collection is not iterable, skip the loop
-                                    while i < len(lines) and lines[i].strip() != '$endfor':
-                                        i += 1
-                                    if i < len(lines):
-                                        i += 1  # Skip the $endfor line
-                                    continue
-                            else:
-                                # Variable not found, skip the loop
-                                while i < len(lines) and lines[i].strip() != '$endfor':
-                                    i += 1
-                                if i < len(lines):
-                                    i += 1  # Skip the $endfor line
-                                continue
-                        except Exception as e:
-                            logging.error(f"Loop processing failed: {e}")
-                            import traceback
-                            logging.error(f"Loop processing traceback: {traceback.format_exc()}")
-                            processed_lines.append(lines[i])  # Keep the line
-                
-                # Regular line
-                else:
-                    processed_lines.append(lines[i])
-                
-                i += 1
-            
-            result = '\n'.join(processed_lines)
-            
-            # Final variable substitution after all processing
-            logging.info(f"Final variable substitution - processing {len(context)} variables")
-            for key, value in context.items():
-                # Flask-TSK syntax: $variable
-                tsk_placeholder = f"${key}"
-                if tsk_placeholder in result:
-                    result = result.replace(tsk_placeholder, str(value))
-                    logging.info(f"Substituted ${key} with {value}")
-            
-            # Handle TuskLang specific syntax
-            if self.tsk:
-                # Process TuskLang functions
-                import re
-                function_pattern = r'\{\{\s*tsk_function\(([^)]+)\)\s*\}\}'
-                
-                def replace_function(match):
-                    try:
-                        func_args = match.group(1).split(',')
-                        if len(func_args) >= 2:
-                            section = func_args[0].strip().strip('"\'')
-                            func_name = func_args[1].strip().strip('"\'')
-                            args = [arg.strip().strip('"\'') for arg in func_args[2:]]
-                            return str(self.tsk.execute_function(section, func_name, *args))
-                    except Exception as e:
-                        logging.warning(f"Function execution failed: {e}")
-                    return match.group(0)
-                
-                result = re.sub(function_pattern, replace_function, result)
-            
-            return result
+            return compiled_render_fallback
         
         self._compiled_templates[template_hash] = compiled_render
         return compiled_render

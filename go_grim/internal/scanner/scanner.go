@@ -18,15 +18,15 @@ type FileScanner struct {
 }
 
 type ScanResult struct {
-	Path        string    `json:"path"`
-	Size        int64     `json:"size"`
-	ModTime     time.Time `json:"mod_time"`
-	IsDir       bool      `json:"is_dir"`
-	FileType    string    `json:"file_type"`
-	MD5Hash     string    `json:"md5_hash,omitempty"`
-	SHA256Hash  string    `json:"sha256_hash,omitempty"`
-	Permissions string    `json:"permissions"`
-	ScanTime    time.Time `json:"scan_time"`
+	Path         string    `json:"path"`
+	Size         int64     `json:"size"`
+	ModTime      time.Time `json:"mod_time"`
+	IsDir        bool      `json:"is_dir"`
+	FileType     string    `json:"file_type"`
+	MD5Hash      string    `json:"md5_hash,omitempty"`
+	SHA256Hash   string    `json:"sha256_hash,omitempty"`
+	Permissions  string    `json:"permissions"`
+	ScanTime     time.Time `json:"scan_time"`
 }
 
 func NewFileScanner(workers int) *FileScanner {
@@ -230,13 +230,13 @@ func (fs *FileScanner) detectFileType(path string, info os.FileInfo) string {
 		"webm": "video/webm",
 
 		// Archive files
-		"zip": "application/zip",
-		"tar": "application/x-tar",
-		"gz":  "application/gzip",
-		"bz2": "application/x-bzip2",
-		"7z":  "application/x-7z-compressed",
-		"rar": "application/x-rar-compressed",
-		"xz":  "application/x-xz",
+		"zip":  "application/zip",
+		"tar":  "application/x-tar",
+		"gz":   "application/gzip",
+		"bz2":  "application/x-bzip2",
+		"7z":   "application/x-7z-compressed",
+		"rar":  "application/x-rar-compressed",
+		"xz":   "application/x-xz",
 
 		// Document files
 		"pdf":  "application/pdf",
@@ -251,12 +251,12 @@ func (fs *FileScanner) detectFileType(path string, info os.FileInfo) string {
 		"odp":  "application/vnd.oasis.opendocument.presentation",
 
 		// Binary files
-		"exe":   "application/x-executable",
-		"dll":   "application/x-msdownload",
-		"so":    "application/x-sharedlib",
+		"exe":  "application/x-executable",
+		"dll":  "application/x-msdownload",
+		"so":   "application/x-sharedlib",
 		"dylib": "application/x-mach-binary",
-		"bin":   "application/octet-stream",
-		"dat":   "application/octet-stream",
+		"bin":  "application/octet-stream",
+		"dat":  "application/octet-stream",
 	}
 
 	if mimeType, exists := fileTypes[ext]; exists {
@@ -313,4 +313,4 @@ func (fs *FileScanner) DetectFileType(path string) string {
 		return "unknown"
 	}
 	return fs.detectFileType(path, info)
-}
+} 

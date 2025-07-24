@@ -11,6 +11,9 @@ grim_venv/
 *.crt
 secrets/
 credentials/
+.secret_key
+tsk_flask/.secret_key
+tsk_flask/ 
 
 # Nested repositories (causing Git conflicts)
 tsk_flask/

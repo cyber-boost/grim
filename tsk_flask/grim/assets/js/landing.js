@@ -92,4 +92,5 @@ document.querySelectorAll('.command-item').forEach(item => {
             icon.remove();
         }
     });
-}); 
+});
+

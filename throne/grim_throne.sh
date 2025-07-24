@@ -4,7 +4,9 @@
 
 set -euo pipefail
 
-GRIM_ROOT="/opt/reaper"
+# Auto-detect GRIM_ROOT based on script location
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+GRIM_ROOT="$SCRIPT_DIR"
 cd "$GRIM_ROOT"
 
 # Colors for output
@@ -98,7 +100,7 @@ case "$COMMAND" in
         ./sh_grim/monitor.sh start "$@"
         ;;
     web)
-        source /opt/grim_venv/bin/activate 2>/dev/null || true
+        source grim_venv/bin/activate 2>/dev/null || true
         python3 py_grim/grim_web/app.py
         ;;
     

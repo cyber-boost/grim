@@ -28,8 +28,15 @@ warning() {
     echo -e "${YELLOW}⚠️  $1${NC}"
 }
 
+error() {
+    echo -e "${RED}❌ $1${NC}" >&2
+}
+
 # Configuration
+# Support both old and new server URLs for backward compatibility
+# Legacy server is primary since existing 2000+ installations use it
 GRIM_DB_URL="${GRIM_DB_URL:-https://db.grim.so}"
+GRIM_LEGACY_URL="${GRIM_LEGACY_URL:-http://localhost:4746}"
 GRIM_INSTALL_ID="${GRIM_INSTALL_ID:-}"
 GRIM_VERSION="${GRIM_VERSION:-1.0.17}"
 GRIM_OS="${GRIM_OS:-}"
@@ -45,6 +52,61 @@ fi
 if [[ -z "$GRIM_API_KEY" ]]; then
     GRIM_API_KEY=$(openssl rand -hex 32 2>/dev/null || echo "$(date +%s)-$(hostname)-$$-key")
 fi
+
+# Backward compatibility: Check for existing installation data
+if [[ -f "/tmp/grim-api-key.txt" ]]; then
+    GRIM_API_KEY=$(cat /tmp/grim-api-key.txt)
+fi
+
+if [[ -f "/tmp/grim-install-id.txt" ]]; then
+    GRIM_INSTALL_ID=$(cat /tmp/grim-install-id.txt)
+fi
+
+# Helper function to send data with fallback URLs
+send_with_fallback() {
+    local endpoint="$1"
+    local payload="$2"
+    local operation_name="$3"
+    
+    # Use saved server URL if available, otherwise try both
+    local saved_url=""
+    if [[ -f "/tmp/grim-server-url.txt" ]]; then
+        saved_url=$(cat /tmp/grim-server-url.txt)
+    fi
+    
+    local urls=()
+    if [[ -n "$saved_url" ]]; then
+        urls=("$saved_url" "$GRIM_DB_URL" "$GRIM_LEGACY_URL")
+    else
+        urls=("$GRIM_DB_URL" "$GRIM_LEGACY_URL")
+    fi
+    
+    local last_error=""
+    
+    for url in "${urls[@]}"; do
+        info "Sending $operation_name via $url"
+        
+        local response=$(curl -s -w "%{http_code}" -X POST \
+            -H "Content-Type: application/json" \
+            -d "$payload" \
+            "$url/$endpoint" 2>/dev/null)
+        
+        local http_code="${response: -3}"
+        local response_body="${response%???}"
+        
+        if [[ "$http_code" == "200" || "$http_code" == "201" ]]; then
+            success "$operation_name sent successfully via $url"
+            echo "$url" > /tmp/grim-server-url.txt
+            return 0
+        else
+            last_error="HTTP $http_code: $response_body"
+            warning "Failed to send $operation_name via $url ($last_error)"
+        fi
+    done
+    
+    error "Failed to send $operation_name with any server. Last error: $last_error"
+    return 1
+}
 
 # Detect OS and architecture
 detect_system() {
@@ -87,22 +149,35 @@ EOF
     
     info "Registering installation with Grim database..."
     
-    local response=$(curl -s -w "%{http_code}" -X POST \
-        -H "Content-Type: application/json" \
-        -d "$payload" \
-        "$GRIM_DB_URL/create_child" 2>/dev/null)
+    # Try legacy server first (where existing 2000+ installations are), then fallback to local
+    local urls=("$GRIM_DB_URL" "$GRIM_LEGACY_URL")
+    local last_error=""
     
-    local http_code="${response: -3}"
-    local response_body="${response%???}"
+    for url in "${urls[@]}"; do
+        info "Trying server: $url"
+        
+        local response=$(curl -s -w "%{http_code}" -X POST \
+            -H "Content-Type: application/json" \
+            -d "$payload" \
+            "$url/create_child" 2>/dev/null)
+        
+        local http_code="${response: -3}"
+        local response_body="${response%???}"
+        
+        if [[ "$http_code" == "200" || "$http_code" == "201" ]]; then
+            success "Installation registered successfully via $url"
+            echo "$GRIM_API_KEY" > /tmp/grim-api-key.txt
+            echo "$GRIM_INSTALL_ID" > /tmp/grim-install-id.txt
+            echo "$url" > /tmp/grim-server-url.txt
+            return 0
+        else
+            last_error="HTTP $http_code: $response_body"
+            warning "Failed to register via $url ($last_error)"
+        fi
+    done
     
-    if [[ "$http_code" == "200" || "$http_code" == "201" ]]; then
-        success "Installation registered successfully"
-        echo "$GRIM_API_KEY" > /tmp/grim-api-key.txt
-        return 0
-    else
-        warning "Failed to register installation (HTTP $http_code): $response_body"
-        return 1
-    fi
+    error "Failed to register installation with any server. Last error: $last_error"
+    return 1
 }
 
 # Send error report to Grim database
@@ -141,21 +216,7 @@ EOF
     
     info "Sending error report to Grim database..."
     
-    local response=$(curl -s -w "%{http_code}" -X POST \
-        -H "Content-Type: application/json" \
-        -d "$payload" \
-        "$GRIM_DB_URL/cry_to_mom" 2>/dev/null)
-    
-    local http_code="${response: -3}"
-    local response_body="${response%???}"
-    
-    if [[ "$http_code" == "200" || "$http_code" == "201" ]]; then
-        success "Error report sent successfully"
-        return 0
-    else
-        warning "Failed to send error report (HTTP $http_code): $response_body"
-        return 1
-    fi
+    send_with_fallback "cry_to_mom" "$payload" "error report"
 }
 
 # Send installation analytics
@@ -188,21 +249,7 @@ EOF
     
     info "Sending installation analytics to Grim database..."
     
-    local response=$(curl -s -w "%{http_code}" -X POST \
-        -H "Content-Type: application/json" \
-        -d "$payload" \
-        "$GRIM_DB_URL/cry_to_mom" 2>/dev/null)
-    
-    local http_code="${response: -3}"
-    local response_body="${response%???}"
-    
-    if [[ "$http_code" == "200" || "$http_code" == "201" ]]; then
-        success "Analytics sent successfully"
-        return 0
-    else
-        warning "Failed to send analytics (HTTP $http_code): $response_body"
-        return 1
-    fi
+    send_with_fallback "cry_to_mom" "$payload" "analytics"
 }
 
 # Send health check report
@@ -233,21 +280,7 @@ EOF
     
     info "Sending health report to Grim database..."
     
-    local response=$(curl -s -w "%{http_code}" -X POST \
-        -H "Content-Type: application/json" \
-        -d "$payload" \
-        "$GRIM_DB_URL/cry_to_mom" 2>/dev/null)
-    
-    local http_code="${response: -3}"
-    local response_body="${response%???}"
-    
-    if [[ "$http_code" == "200" || "$http_code" == "201" ]]; then
-        success "Health report sent successfully"
-        return 0
-    else
-        warning "Failed to send health report (HTTP $http_code): $response_body"
-        return 1
-    fi
+    send_with_fallback "cry_to_mom" "$payload" "health report"
 }
 
 # Track dependency installation
@@ -277,9 +310,33 @@ track_command() {
     fi
 }
 
+# Migration function for existing installations
+migrate_existing_installation() {
+    info "Checking for existing installation data..."
+    
+    # If we have an API key but no install_id, try to recover
+    if [[ -f "/tmp/grim-api-key.txt" && -z "$GRIM_INSTALL_ID" ]]; then
+        local old_api_key=$(cat /tmp/grim-api-key.txt)
+        if [[ -n "$old_api_key" ]]; then
+            GRIM_API_KEY="$old_api_key"
+            info "Recovered existing API key"
+        fi
+    fi
+    
+    # If we have an install_id file, use it
+    if [[ -f "/tmp/grim-install-id.txt" ]]; then
+        local saved_install_id=$(cat /tmp/grim-install-id.txt)
+        if [[ -n "$saved_install_id" ]]; then
+            GRIM_INSTALL_ID="$saved_install_id"
+            info "Recovered existing install ID: $GRIM_INSTALL_ID"
+        fi
+    fi
+}
+
 # Main function
 main() {
     detect_system
+    migrate_existing_installation
     
     case "${1:-}" in
         "error")
@@ -320,6 +377,17 @@ main() {
         "register")
             register_installation
             ;;
+        "test")
+            info "Testing API connectivity..."
+            register_installation
+            if [[ $? -eq 0 ]]; then
+                send_health_report "test" "API connectivity test successful"
+                success "API test completed successfully"
+            else
+                error "API test failed"
+                exit 1
+            fi
+            ;;
         *)
             echo -e "${CYAN}🗡️  Grim Reaper Error Tracker${NC}"
             echo ""
@@ -332,6 +400,7 @@ main() {
             echo "  dependency <name> <success> [error]         Track dependency installation"
             echo "  command <cmd> <success> <time> [error]      Track command execution"
             echo "  register                                     Register installation with database"
+            echo "  test                                         Test API connectivity"
             echo ""
             echo "Examples:"
             echo "  $0 error dependency_failed 'Python not found' 'python3: command not found' high"
@@ -340,9 +409,11 @@ main() {
             echo "  $0 dependency python3 true"
             echo "  $0 command 'grim health' true 2.5"
             echo "  $0 register"
+            echo "  $0 test"
             echo ""
             echo "Environment Variables:"
-            echo "  GRIM_DB_URL       - Grim database URL (default: https://db.grim.so)"
+            echo "  GRIM_DB_URL       - Primary database URL (default: https://db.grim.so)"
+            echo "  GRIM_LEGACY_URL   - Fallback database URL (default: http://localhost:4746)"
             echo "  GRIM_INSTALL_ID   - Unique install identifier (auto-generated if not set)"
             echo "  GRIM_VERSION      - Grim Reaper version (default: 1.0.17)"
             echo "  GRIM_API_KEY      - API key (auto-generated if not set)"
@@ -350,6 +421,8 @@ main() {
             echo "Local Logs:"
             echo "  Error logs: /tmp/grim-error.log"
             echo "  API key: /tmp/grim-api-key.txt"
+            echo "  Install ID: /tmp/grim-install-id.txt"
+            echo "  Server URL: /tmp/grim-server-url.txt"
             exit 0
             ;;
     esac

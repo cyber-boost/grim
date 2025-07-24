@@ -1,0 +1,72 @@
+{
+  "format": 1,
+  "restore": {
+    "/opt/reaper/pkg/cs_grim/GrimReaper.csproj": {}
+  },
+  "projects": {
+    "/opt/reaper/pkg/cs_grim/GrimReaper.csproj": {
+      "version": "1.0.1",
+      "restore": {
+        "projectUniqueName": "/opt/reaper/pkg/cs_grim/GrimReaper.csproj",
+        "projectName": "GrimReaper",
+        "projectPath": "/opt/reaper/pkg/cs_grim/GrimReaper.csproj",
+        "packagesPath": "/root/.nuget/packages/",
+        "outputPath": "/opt/reaper/pkg/cs_grim/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/root/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {},
+          "https://nuget.pkg.github.com/cyber-boost/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
+            "System.Text.Json": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.117/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,81 @@
+# GRIM REAPER SOFTWARE LICENSE AGREEMENT
+
+**Balanced Beneficiary License (BBL)**  
+**Version 1.0**  
+**Effective Date: July 15th, 2025**  
+**Licensor: CyberBoost LLC**
+
+---
+
+## 1. DEFINITIONS
+
+For purposes of this License Agreement ("Agreement"), the following terms shall have the meanings set forth below:
+
+• **"Agreement"** means this Software License Agreement, including all amendments, modifications, and supplements hereto.
+
+• **"Commercial Use"** means any use, reproduction, modification, distribution, or other exploitation of the Software by or for any entity that: (i) has annual gross revenues exceeding US $100,000 in the immediately preceding twelve (12) month period; (ii) is a tax-exempt organization under Section 501(c)(3) of the Internal Revenue Code with annual gross revenues exceeding US $100,000 in the immediately preceding twelve (12) month period; (iii) is owned, controlled by, or under common control with any entity meeting criteria (i) or (ii); (iv) uses the Software in connection with any commercial product, service, or offering that generates or is intended to generate revenue exceeding US $100,000 annually, regardless of the entity's size or funding status; or (v) any entity that CyberBoost LLC, in its sole discretion, determines should obtain a commercial license regardless of revenue thresholds.
+
+• **"Contribution"** means any work of authorship, including code, documentation, configuration files, comments, bug reports, feature requests, test cases, translations, or any other materials, that is intentionally submitted to Licensor for inclusion in or improvement of the Software.
+
+• **"Contributor"** means any individual or Legal Entity that submits a Contribution.
+
+• **"Distribute"** means to make available to third parties, whether by download, physical media, network transmission, or any other method of conveyance.
+
+• **"Legal Entity"** means the union of the acting entity and all other entities that control, are controlled by, or are under common control with that entity. For purposes of this definition, "control" means (i) the power, direct or indirect, to cause the direction or management of such entity, whether by contract or otherwise, or (ii) ownership of fifty percent (50%) or more of the outstanding shares, or (iii) beneficial ownership of such entity.
+
+• **"Licensor"** means CyberBoost LLC, a Florida limited liability company, and its successors and assigns.
+
+• **"Modify"** or **"Modification"** means any addition to, deletion from, or change to the substance or structure of the Software, including but not limited to: (i) any addition to or deletion from the contents of a file containing Software; (ii) any new file that contains any portion of the Software; or (iii) any new file that is contributed or otherwise made available under the terms of this Agreement.
+
+• **"Small Entity"** means any individual or Legal Entity that does not meet the criteria for Commercial Use as defined herein, and that uses the Software solely for internal business operations, research, development, testing, or personal purposes, and not in connection with any revenue-generating commercial product or service.
+
+• **"Software"** means the Grim Reaper software program, including all source code, object code, executable files, documentation, configuration files, data files, and any Modifications thereto, whether in whole or in part, in any form, and on any media, including any updates, upgrades, bug fixes, patches, or new versions provided by Licensor.
+
+• **"You"** or **"Your"** means an individual or Legal Entity exercising permissions granted by this Agreement.
+
+---
+
+## 2. GRANT OF RIGHTS TO SMALL ENTITIES
+
+**2.1 License Grant.** Subject to the terms and conditions of this Agreement, Licensor hereby grants to You, if You qualify as a Small Entity, a worldwide, royalty-free, non-exclusive, non-transferable, revocable license during the term of this Agreement to:
+
+(a) use, execute, and run the Software for Your internal purposes;  
+(b) reproduce the Software for backup and archival purposes;  
+(c) create Modifications of the Software; and  
+(d) distribute the Software and Modifications, provided that such distribution complies with Section 2.2 below.
+
+**2.2 Distribution Requirements.** If You distribute the Software or any Modifications:
+
+(a) You must retain and include with each copy all copyright, patent, trademark, and attribution notices contained in the Software;  
+(b) You must include a complete copy of this Agreement with each distributed copy;  
+(c) You must clearly identify any Modifications You have made;  
+(d) You may not remove or alter any proprietary rights notices;  
+(e) You must ensure that any recipient of the Software receives the same rights under this Agreement that You received; and  
+(f) You may not impose any additional restrictions on the recipients' exercise of the rights granted herein.
+
+---
+
+## 3. COMMERCIAL USE LICENSE REQUIREMENT
+
+**3.1 Commercial License Trigger.** If You engage in Commercial Use of the Software, You must obtain a separate commercial license from Licensor before such Commercial Use commences. The rights granted in Section 2 above do not extend to Commercial Use.
+
+**3.2 Commercial License Terms.** Commercial production license keys are available from Licensor under separate terms and conditions. Contact zoo@phptu.sk for commercial licensing information.
+
+---
+
+## 4. DISCLAIMER OF WARRANTIES
+
+**4.1 AS-IS BASIS.** THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTY OF ANY KIND. LICENSOR EXPRESSLY DISCLAIMS ALL WARRANTIES AND CONDITIONS, WHETHER EXPRESS, IMPLIED, OR STATUTORY.
+
+---
+
+## 5. LIMITATION OF LIABILITY
+
+**5.1 Exclusion of Damages.** TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL LICENSOR BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, PUNITIVE, OR EXEMPLARY DAMAGES.
+
+---
+
+**Last Updated:** July 15th, 2025  
+**Contact Information:** zoo@phptu.sk  
+**Commercial Production License Inquiries:** zoo@phptu.sk  
+**Mailing Address:** CyberBoost LLC, 7901 4th St N STE 300, St. Petersburg, FL 33702

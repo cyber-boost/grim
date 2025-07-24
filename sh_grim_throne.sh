@@ -47,6 +47,7 @@ if [[ $# -eq 0 ]]; then
     echo ""
     echo "Command Categories:"
     echo "  backup-*                 Backup operations"
+    echo "  auto-backup-*            Automatic backup monitoring"
     echo "  monitor-*                Monitoring commands"
     echo "  security-*               Security operations"
     echo "  ai-*                     AI/ML commands"
@@ -57,6 +58,7 @@ if [[ $# -eq 0 ]]; then
     echo "Examples:"
     echo "  grim health              # Check system health"
     echo "  grim backup /data        # Backup directory"
+    echo "  grim auto-backup-start   # Start automatic backup monitoring"
     echo "  grim monitor-start /path # Start monitoring"
     echo "  grim security-audit      # Security audit"
     echo ""
@@ -143,6 +145,23 @@ case "$COMMAND" in
             error "Usage: grim backup-differential <path>"
         fi
         ./sh_grim/backup_core.sh differential "$@"
+        ;;
+    
+    # Auto Backup Commands
+    auto-backup-start)
+        ./sh_grim/auto_backup.sh start
+        ;;
+    auto-backup-stop)
+        ./sh_grim/auto_backup.sh stop
+        ;;
+    auto-backup-restart)
+        ./sh_grim/auto_backup.sh restart
+        ;;
+    auto-backup-status)
+        ./sh_grim/auto_backup.sh status
+        ;;
+    auto-backup-health)
+        ./sh_grim/auto_backup.sh health
         ;;
     
     # Monitoring Commands

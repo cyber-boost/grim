@@ -173,38 +173,10 @@ install_go() {
 install_python_packages() {
     log "Installing Python packages..."
     
-    # Ensure python3-venv is installed
-    if ! python3 -c "import venv" 2>/dev/null; then
-        log "Installing python3-venv package..."
-        case $DISTRO in
-            ubuntu|debian)
-                $SUDO apt-get update
-                $SUDO apt-get install -y python3-venv python3.12-venv || $SUDO apt-get install -y python3-venv
-                ;;
-            centos|rhel|rocky|almalinux)
-                $SUDO yum install -y python3-venv || $SUDO dnf install -y python3-venv
-                ;;
-            fedora)
-                $SUDO dnf install -y python3-venv
-                ;;
-            arch|manjaro)
-                $SUDO pacman -S --noconfirm python-virtualenv
-                ;;
-            *)
-                warning "Unknown distribution: $DISTRO - you may need to install python3-venv manually"
-                ;;
-        esac
-    fi
-    
     # Create virtual environment for Grim
     if [[ ! -d "$GRIM_ROOT/grim_venv" ]]; then
-        log "Creating Python virtual environment..."
-        if python3 -c "import venv" 2>/dev/null; then
-            $SUDO python3 -m venv "$GRIM_ROOT/grim_venv"
-            $SUDO chown -R $(whoami):$(whoami) "$GRIM_ROOT/grim_venv" 2>/dev/null || true
-        else
-            error "Failed to create virtual environment. Please install python3-venv package manually."
-        fi
+        $SUDO python3 -m venv "$GRIM_ROOT/grim_venv"
+        $SUDO chown -R $(whoami):$(whoami) "$GRIM_ROOT/grim_venv" 2>/dev/null || true
     fi
     
     source "$GRIM_ROOT/grim_venv/bin/activate"
@@ -702,8 +674,8 @@ case "${1:-help}" in
             echo "3. Run: sudo systemctl enable grim-admin && sudo systemctl start grim-admin"
             echo ""
             echo "Default admin credentials:"
-echo "  Username: admin"
-echo "  Password: [GENERATED_DURING_INSTALL]"
+            echo "  Username: admin"
+            echo "  Password: grim2025"
         else
             echo "Admin server not installed (tsk_flask not found)"
         fi
@@ -745,7 +717,7 @@ run_validation_tests() {
     fi
     
     # Test Python components
-    source "$GRIM_ROOT/grim_venv/bin/activate"
+    source /opt/grim_venv/bin/activate
     if python3 -c "import fastapi, uvicorn" 2>/dev/null; then
         success "py_grim: Python dependencies available"
     else
@@ -844,7 +816,6 @@ main() {
 }
 
 # Run main installation
-# Handle both direct execution and pipe execution (curl | bash)
-if [[ "${BASH_SOURCE[0]:-}" == "$0" ]] || [[ -z "${BASH_SOURCE[0]:-}" ]]; then
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
     main "$@"
 fi

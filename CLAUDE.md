@@ -11,8 +11,25 @@ The Grim Reaper System is a comprehensive data protection, backup, monitoring, a
 3. **py_grim/** - Python web services with FastAPI and AI integration
 4. **scythe/** - Central orchestrator coordinating all components
 5. **tsk_flask/** - Flask-based admin web interface using Flask-TSK framework
+6. **rb_grim/** - Ruby implementation with gem packaging
+7. **php_grim/** - PHP components with Composer integration
 
 ## Essential Development Commands
+
+### System Build and Deploy
+```bash
+# Master installation (installs all dependencies)
+sudo ./master-install.sh
+
+# Build complete release
+./admin/build.sh build
+
+# Deploy latest build
+sudo ./admin/deploy.sh
+
+# Full system installation
+sudo ./install.sh
+```
 
 ### Go Components (go_grim/)
 ```bash
@@ -33,6 +50,9 @@ cd go_grim && make security
 
 # Quick test all tools
 cd go_grim && make quick-test
+
+# Development mode with hot reload
+cd go_grim && make dev
 ```
 
 ### Python Components (py_grim/)
@@ -43,11 +63,50 @@ cd py_grim && pip install -r requirements.txt
 # Run FastAPI server (development)
 cd py_grim/grim_web && python server.py --dev
 
-# Run tests (if available)
+# Run tests
 cd py_grim && pytest
 
 # TuskLang integration testing
 cd py_grim && python test_tusktsk_integration.py
+
+# Auto-backup service
+cd py_grim && python auto_backup.py --config ../config/auto_backup.yaml
+```
+
+### Ruby Components (rb_grim/)
+```bash
+# Install dependencies
+cd rb_grim && bundle install
+
+# Build gem
+cd rb_grim && gem build grim-reaper.gemspec
+
+# Install gem locally
+cd rb_grim && gem install ./grim-reaper-*.gem
+
+# Run tests
+cd rb_grim && bundle exec rspec
+
+# Linting
+cd rb_grim && bundle exec rubocop
+```
+
+### PHP Components (php_grim/)
+```bash
+# Install dependencies
+cd php_grim && composer install
+
+# Run tests
+cd php_grim && composer test
+
+# Generate coverage report
+cd php_grim && composer test-coverage
+
+# Static analysis
+cd php_grim && composer stan
+
+# Install Grim dependencies
+cd php_grim && composer grim-install-deps
 ```
 
 ### Flask-TSK Admin Server (tsk_flask/)
@@ -63,18 +122,6 @@ cd tsk_flask && python grim_admin_server.py
 cd tsk_flask && python grim_admin_server.py --ssl --port 4746
 ```
 
-### System Build and Deploy
-```bash
-# Build complete release
-./admin/build.sh
-
-# Deploy latest build
-./admin/deploy.sh
-
-# Full system installation
-sudo ./admin/install.sh
-```
-
 ### Testing Commands
 ```bash
 # Run master test suite
@@ -83,8 +130,16 @@ python test_data/master_test_runner.py
 # Run comprehensive testing framework
 ./sh_grim/testing-framework.sh run
 
+# Run specific test categories
+./sh_grim/testing-framework.sh run unit
+./sh_grim/testing-framework.sh run integration
+./sh_grim/testing-framework.sh run performance
+
 # Performance benchmarks
 ./sh_grim/testing-framework.sh benchmark
+
+# CI mode with HTML report
+./sh_grim/testing-framework.sh ci --report-format html
 
 # System health checks
 ./sh_grim/health_fixed.sh check
@@ -96,6 +151,8 @@ python test_data/master_test_runner.py
 - **Bash (sh_grim)**: 60+ system operation modules (backup, monitor, security, etc.)
 - **Go (go_grim)**: High-performance compression, scanning, and transfer tools
 - **Python (py_grim)**: FastAPI web services, AI/ML integration, database operations
+- **Ruby (rb_grim)**: Ruby gem wrapper providing unified access to all modules
+- **PHP (php_grim)**: PHP SDK with Composer package for web integration
 - **Python (tsk_flask)**: Flask-TSK admin interface with Herd authentication
 - **Scythe Orchestrator**: Async Python coordinator for all components
 
@@ -104,6 +161,7 @@ python test_data/master_test_runner.py
 - **Configuration**: YAML-based config (`config.yaml`) and component-specific configs
 - **Logging**: Centralized logging in `logs/` directory with structured JSON
 - **Build System**: Automated builds with manifests in `builds/` directory
+- **Command Routing**: Unified CLI (`grim`) routes to language-specific throne scripts
 
 ### Critical File Locations
 - **Config**: `config.yaml` (main), `config/` (component-specific)
@@ -159,12 +217,26 @@ python test_data/master_test_runner.py
 - All built with comprehensive Makefile
 - JSON output for integration with other components
 - Benchmarking and performance testing built-in
+- Cross-platform builds available via `make build-all`
 
 ### Working with Python Services (py_grim/)
 - FastAPI-based with async support
 - Core modules: `grim_core`, `grim_web`, `grim_gateway`, `grim_monitor`
 - AI/ML integration through TuskLang Python SDK (tusktsk>=2.0.3)
 - Database operations coordinated through shared SQLite
+- Auto-backup system with intelligent compression and hot file detection
+
+### Working with Ruby Components (rb_grim/)
+- Gem-based distribution (grim-reaper gem)
+- Provides Ruby interface to all Grim components
+- Located in `bin/` for executables and `lib/grim_reaper/` for modules
+- Version management through gemspec
+
+### Working with PHP Components (php_grim/)
+- Composer-based package management
+- PSR-4 autoloading standard
+- CLI tools in `bin/` directory
+- Web integration capabilities through SDK
 
 ### Scythe Orchestration
 - Central coordination point in `scythe/core/orchestrator.py`
@@ -179,6 +251,7 @@ python test_data/master_test_runner.py
 - Comprehensive test framework: `./sh_grim/testing-framework.sh`
 - Test suites: integration, performance, smoke, user acceptance
 - Test data in `test_data/` with 400+ test files
+- Language-specific testing: Go (make test), Python (pytest), Ruby (rspec), PHP (composer test)
 
 ### Build Verification
 - Automated builds with manifest generation (`manifest.tsk`)
@@ -229,6 +302,9 @@ python scythe/scythe.py backup /path/to/data --name backup_name
 
 # Restore operations
 ./sh_grim/restore.sh recover backup.tar.gz /restore/path
+
+# Install auto-backup service
+./sh_grim/install_auto_backup.sh
 ```
 
 ### Performance and Optimization
@@ -241,6 +317,20 @@ cd go_grim && make benchmark-compression
 
 # Performance testing
 ./sh_grim/performance_testing.sh
+```
+
+### Web Services Management
+```bash
+# Start all web services
+./sh_grim/web-manager.sh start all
+
+# Individual services
+./sh_grim/web-manager.sh start api     # FastAPI
+./sh_grim/web-manager.sh start admin   # Flask-TSK admin
+./sh_grim/web-manager.sh start monitor # Monitoring UI
+
+# Service status
+./sh_grim/web-manager.sh status
 ```
 
 ## Integration Notes
@@ -257,6 +347,14 @@ cd go_grim && make benchmark-compression
 - Go components handle high-performance operations (compression, scanning)
 - Python components handle complex logic and web interfaces
 - Bash components handle system integration and orchestration
+- Ruby and PHP provide additional language-specific interfaces
 - All components coordinate through shared database and file system
+
+### Package Distribution
+- **NPM**: `npm install grim-reaper` (Node.js package)
+- **PyPI**: Available through pip installation
+- **RubyGems**: `gem install grim-reaper`
+- **Packagist**: `composer require grim/reaper` (PHP)
+- **Go Modules**: `go get github.com/grim/grim`
 
 The system is architected for enterprise-grade data protection with military-level security, comprehensive monitoring, and zero-tolerance for data loss.

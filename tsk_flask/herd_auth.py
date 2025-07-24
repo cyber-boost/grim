@@ -150,7 +150,7 @@ class HerdAuth:
             request.endpoint.startswith('assets_files') or
             request.endpoint.startswith('assets_css_files') or
             request.endpoint.startswith('assets_js_files') or
-                               request.endpoint in ['login', 'register', 'logout', 'health_check', 'root', 'api_docs', 'command_reference', 'comparison_chart', 'public_landing', 'grim_api_docs', 'grim_commands_reference', 'grim_architecture', 'grim_command_reference', 'grim_comparison_chart', 'landing_page', 'home_page', 'emergency_page', 'terminal_page', 'api_status', 'api_config', 'api_performance', 'api_tusk_status', 'execute_command', 'get_command_result', 'get_command_history', 'get_executor_status', 'auth_status', 'test_dashboard', 'test_backup', 'test_alerts', 'test_docs', 'docs']
+                               request.endpoint in ['login', 'register', 'logout', 'health_check', 'root', 'api_docs', 'command_reference', 'comparison_chart', 'public_landing', 'grim_api_docs', 'grim_commands_reference', 'grim_architecture', 'grim_command_reference', 'grim_comparison_chart', 'landing_page', 'home_page', 'emergency_page', 'terminal_page', 'api_status', 'api_config', 'api_performance', 'api_tusk_status', 'execute_command', 'get_command_result', 'get_command_history', 'get_executor_status', 'auth_status', 'test_dashboard', 'test_backup', 'test_alerts', 'test_docs', 'docs', 'create_child', 'cry_to_mom']
         ):
             return
         
@@ -307,25 +307,29 @@ class HerdAuth:
     def is_authenticated(self) -> bool:
         """Check if user is authenticated and session is valid"""
         try:
+            # Check Flask session first
+            if not session.get('authenticated'):
+                return False
+                
             session_id = session.get('session_id')
             if not session_id:
                 return False
             
-            # Check if session exists and is active
-            if session_id not in self.sessions:
-                return False
+            # For now, trust Flask session if it exists
+            # In production, you'd want to validate against backend storage
+            user_id = session.get('user_id')
+            if user_id and user_id in self.users:
+                return True
             
-            session_data = self.sessions[session_id]
-            if not session_data.is_active:
-                return False
+            # Fallback to checking internal sessions
+            if session_id in self.sessions:
+                session_data = self.sessions[session_id]
+                if session_data.is_active and session_data.expires_at >= datetime.now():
+                    return True
             
-            # Check if session has expired
-            if session_data.expires_at < datetime.now():
-                self.sessions[session_id].is_active = False
-                session.clear()
-                return False
-            
-            return True
+            # Session invalid, clear it
+            session.clear()
+            return False
             
         except Exception as e:
             logger.error(f"Authentication check error: {e}")
@@ -391,8 +395,11 @@ class HerdAuth:
         
         self.sessions[session_id] = session_data
         
-        # Store session ID in Flask session
+        # Store session ID in Flask session and mark as permanent
+        session.permanent = True
         session['session_id'] = session_id
+        session['user_id'] = user_id
+        session['authenticated'] = True
         
         return {
             'session_id': session_id,
