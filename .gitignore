@@ -47,6 +47,16 @@ composer.phar
 /build/
 *.tar.gz
 *.zip
+pkg/*/target/
+pkg/*/dist/
+pkg/*/build/
+*.egg-info/
+*.pyc
+__pycache__/
+test-py/
+*.db
+*.sqlite
+*.sqlite3
 
 # Python
 __pycache__/
