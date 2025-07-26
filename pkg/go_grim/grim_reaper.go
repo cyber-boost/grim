@@ -120,14 +120,108 @@ func findGrimRoot() (string, error) {
 		}
 	}
 
-	return "", fmt.Errorf(`could not find Grim Reaper root directory
+	// Grim Reaper not found - attempt automatic installation
+	fmt.Println("Grim Reaper not found. Attempting automatic installation...")
+	installPath, err := installGrimReaper()
+	if err != nil {
+		return "", fmt.Errorf(`could not find Grim Reaper root directory and automatic installation failed: %v
 
 Please ensure Grim Reaper is properly installed using:
   • curl -fsSL https://get.grim.so | sudo bash
   • wget -qO- https://get.grim.so | sudo bash
 
 Or set GRIM_ROOT environment variable:
-  export GRIM_ROOT=/path/to/your/grim/installation`)
+  export GRIM_ROOT=/path/to/your/grim/installation`, err)
+	}
+
+	fmt.Printf("Grim Reaper automatically installed to: %s\n", installPath)
+	return installPath, nil
+}
+
+// installGrimReaper automatically installs Grim Reaper
+func installGrimReaper() (string, error) {
+	// Determine installation directory
+	var installDir string
+	if os.Geteuid() == 0 {
+		// Running as root - install system-wide
+		installDir = "/opt/reaper"
+	} else {
+		// Running as user - install to home directory
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			return "", fmt.Errorf("failed to get home directory: %v", err)
+		}
+		installDir = filepath.Join(homeDir, ".reaper")
+	}
+
+	// Create temporary directory for download
+	tempDir, err := os.MkdirTemp("", "grim-install-*")
+	if err != nil {
+		return "", fmt.Errorf("failed to create temp directory: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	// Download installer
+	installerPath := filepath.Join(tempDir, "install.sh")
+	if err := downloadFile("https://get.grim.so", installerPath); err != nil {
+		return "", fmt.Errorf("failed to download installer: %v", err)
+	}
+
+	// Make installer executable
+	if err := os.Chmod(installerPath, 0755); err != nil {
+		return "", fmt.Errorf("failed to make installer executable: %v", err)
+	}
+
+	// Run installer
+	cmd := exec.Command(installerPath)
+	cmd.Dir = tempDir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	
+	if err := cmd.Run(); err != nil {
+		return "", fmt.Errorf("installer failed: %v", err)
+	}
+
+	// Verify installation
+	if isGrimInstallation(installDir) {
+		return installDir, nil
+	}
+
+	// Try alternative paths
+	altPaths := []string{
+		"/root/.graveyard/reaper",
+		filepath.Join(os.Getenv("HOME"), ".graveyard/reaper"),
+	}
+
+	for _, path := range altPaths {
+		if isGrimInstallation(path) {
+			return path, nil
+		}
+	}
+
+	return "", fmt.Errorf("installation completed but Grim Reaper not found in expected locations")
+}
+
+// downloadFile downloads a file from URL to local path
+func downloadFile(url, filepath string) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("bad status: %s", resp.Status)
+	}
+
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, resp.Body)
+	return err
 }
 
 // isGrimInstallation checks if path contains a valid Grim installation
@@ -498,47 +592,78 @@ func (g *GrimReaper) GetAPIBase() string {
 // CONVENIENCE FUNCTIONS
 // ============================================================================
 
-// QuickBackup creates a backup with default options
+// InstallGrimReaper installs Grim Reaper if not already installed
+func InstallGrimReaper() (string, error) {
+	// First check if already installed
+	if root, err := findGrimRoot(); err == nil {
+		return root, nil
+	}
+	
+	// Not installed - install it
+	return installGrimReaper()
+}
+
+// NewGrimReaperWithInstall creates a new GrimReaper instance, installing if needed
+func NewGrimReaperWithInstall(grimRoot ...string) (*GrimReaper, error) {
+	var root string
+	var err error
+
+	if len(grimRoot) > 0 && grimRoot[0] != "" {
+		root = grimRoot[0]
+	} else {
+		root, err = findGrimRoot() // This now includes auto-installation
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &GrimReaper{
+		GrimRoot: root,
+		APIBase:  "http://localhost:8000",
+	}, nil
+}
+
+// QuickBackup performs a backup with automatic installation if needed
 func QuickBackup(source string) (string, error) {
-	grim, err := NewGrimReaper()
+	grim, err := NewGrimReaperWithInstall()
 	if err != nil {
 		return "", err
 	}
 	return grim.Backup(source, nil)
 }
 
-// QuickRestore restores from backup with default options
+// QuickRestore performs a restore with automatic installation if needed
 func QuickRestore(backup, destination string) (string, error) {
-	grim, err := NewGrimReaper()
+	grim, err := NewGrimReaperWithInstall()
 	if err != nil {
 		return "", err
 	}
 	return grim.Restore(backup, destination, false)
 }
 
-// QuickCompress compresses file with default options
+// QuickCompress compresses a file with automatic installation if needed
 func QuickCompress(filePath string) (string, error) {
-	grim, err := NewGrimReaper()
+	grim, err := NewGrimReaperWithInstall()
 	if err != nil {
 		return "", err
 	}
-	return grim.Compress(filePath, &CompressionOptions{Algorithm: "zstd", Level: 6})
+	return grim.Compress(filePath, nil)
 }
 
-// QuickHealthCheck performs health check
+// QuickHealthCheck performs a health check with automatic installation if needed
 func QuickHealthCheck() (string, error) {
-	grim, err := NewGrimReaper()
+	grim, err := NewGrimReaperWithInstall()
 	if err != nil {
 		return "", err
 	}
 	return grim.HealthCheck()
 }
 
-// QuickScan scans directory with default options
+// QuickScan performs a scan with automatic installation if needed
 func QuickScan(path string) (string, error) {
-	grim, err := NewGrimReaper()
+	grim, err := NewGrimReaperWithInstall()
 	if err != nil {
 		return "", err
 	}
-	return grim.Scan(path, &ScanOptions{Recursive: true})
+	return grim.Scan(path, nil)
 }
