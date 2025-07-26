@@ -4,20 +4,20 @@
     <TargetFramework>net8.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>GrimReaper</PackageId>
-    <PackageVersion>1.0.1</PackageVersion>
+    <PackageVersion>1.0.4</PackageVersion>
     <Authors>Bernie Gengel and his beagle Buddy</Authors>
     <Company>Grim Reaper Systems</Company>
     <Product>Grim Reaper</Product>
-    <Description>When data death comes knocking, Grim ensures resurrection is just a command away. License management, auto backups, highly compressed backups, multi-algorithm compression, content-based deduplication, smart storage tiering save up to 60% space, military-grade encryption, license protection, security surveillance, and automated threat response.</Description>
+    <Description>Death Defying Data Protection - When data death comes knocking, Grim ensures resurrection is just a command away. License management, auto backups, highly compressed backups, multi-algorithm compression, content-based deduplication, smart storage tiering save up to 60% space, military-grade encryption, license protection, security surveillance, and automated threat response.</Description>
     <PackageTags>backup;monitoring;security;grim;compression;encryption;deduplication;license-protection</PackageTags>
     <PackageProjectUrl>https://grim.so</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/grim-reaper/grim</RepositoryUrl>
+    <RepositoryUrl>https://github.com/cyber-boost/grim</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Real core integration - no mock files! Directly calls actual sh_grim modules, go_grim binaries, and py_grim APIs.</PackageReleaseNotes>
     <Copyright>Copyright © 2025 Bernie Gengel</Copyright>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <FileVersion>1.0.4.0</FileVersion>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="System.Text.Json" Version="8.0.0" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 
 </Project>

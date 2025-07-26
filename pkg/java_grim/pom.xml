@@ -7,11 +7,11 @@
 
     <groupId>so.grim</groupId>
     <artifactId>grim-reaper</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
 
     <name>Grim Reaper</name>
-    <description>When data death comes knocking, Grim ensures resurrection is just a command away. License management, auto backups, highly compressed backups, multi-algorithm compression, content-based deduplication, smart storage tiering save up to 60% space, military-grade encryption, license protection, security surveillance, and automated threat response.</description>
+    <description>Death Defying Data Protection - When data death comes knocking, Grim ensures resurrection is just a command away. License management, auto backups, highly compressed backups, multi-algorithm compression, content-based deduplication, smart storage tiering save up to 60% space, military-grade encryption, license protection, security surveillance, and automated threat response.</description>
     <url>https://grim.so</url>
 
     <licenses>
@@ -24,16 +24,16 @@
     <developers>
         <developer>
             <name>Bernie Gengel and his beagle Buddy</name>
-            <email>zoo@phptu.sk</email>
+            <email>rip@grim.so</email>
             <organization>Grim Reaper Systems</organization>
             <organizationUrl>https://grim.so</organizationUrl>
         </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/grim-reaper/grim.git</connection>
-        <developerConnection>scm:git:ssh://github.com:grim-reaper/grim.git</developerConnection>
-        <url>https://github.com/grim-reaper/grim/tree/main</url>
+        <connection>scm:git:git://github.com/cyber-boost/grim.git</connection>
+        <developerConnection>scm:git:ssh://github.com:cyber-boost/grim.git</developerConnection>
+        <url>https://github.com/cyber-boost/grim/tree/main</url>
     </scm>
 
     <properties>
