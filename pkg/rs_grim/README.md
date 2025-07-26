@@ -1,13 +1,15 @@
-# Grim 🗡️
+# Grim Reaper 🗡️ Rust Package
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://grim.so/license)
 [![Crates.io](https://img.shields.io/crates/v/grim-reaper.svg)](https://crates.io/crates/grim-reaper)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/grim-reaper/grim)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/cyber-boost/grim)
 [![Language: Rust](https://img.shields.io/badge/language-rust-orange.svg)](https://www.rust-lang.org/)
 
-When data death comes knocking, Grim ensures resurrection is just a command away. License management, auto backups, highly compressed backups, multi-algorithm compression, content-based deduplication, smart storage tiering save up to 60% space, military-grade encryption, license protection, security surveillance, and automated threat response.
+**When data death comes knocking, Grim ensures resurrection is just a command away.**
 
-## Install
+Enterprise-grade data protection platform with AI-powered backup decisions, military-grade encryption, multi-algorithm compression, content-based deduplication, real-time monitoring, and automated threat response.
+
+## 🚀 Quick Install
 
 ```bash
 # Install via Cargo
@@ -18,41 +20,131 @@ cargo install grim-reaper
 grim-reaper = "1.0.1"
 ```
 
-## Usage
+## 🎯 Quick Start
 
 ```rust
 use grim_reaper::{Grim, Config};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize Grim with default config
+    // Initialize Grim Reaper
     let grim = Grim::new(Config::default())?;
     
-    // Create a backup
+    // Quick backup
     grim.backup("/home/user/data").await?;
     
-    // Scan for important files
-    let scan_results = grim.scan("/var/www").await?;
-    println!("Found {} important files", scan_results.len());
+    // Start monitoring
+    grim.monitor("/var/log").await?;
     
-    // Monitor directory for changes
-    grim.monitor("/etc").await?;
+    // Health check
+    let health = grim.health_check().await?;
+    println!("System Status: {:?}", health.status);
     
     Ok(())
 }
 ```
 
-## All Commands
+## 📋 Complete Command Reference
+
+All commands use the unified Grim Reaper command structure:
+
+### 🤖 AI & Machine Learning
 
 ```bash
-# Core Operations
-grim health                              # Check all systems health
-grim status                              # Overall system status
-grim backup <path>                       # Orchestrated backup (scan→compress→store)
-grim restore <backup>                    # Coordinated restore
-grim scan <path>                         # Unified file scanning
-grim monitor <path>                      # Start monitoring
-grim web                                 # Start web interface
+# AI Decision Engine
+grim ai-decision init                    # Initialize AI decision engine
+grim ai-decision analyze                 # Analyze files for intelligent backup decisions
+grim ai-decision backup-priority         # Determine backup priorities using AI
+grim ai-decision storage-optimize        # Optimize storage allocation with AI
+grim ai-decision resource-manage         # Manage system resources intelligently
+grim ai-decision validate                # Validate AI models and decisions
+grim ai-decision report                  # Generate AI analysis report
+grim ai-decision config                  # Configure AI parameters
+grim ai-decision status                  # Check AI engine status
+
+# AI Integration
+grim ai init                             # Initialize AI integration framework
+grim ai install                          # Install AI dependencies (TensorFlow/PyTorch)
+grim ai train                            # Train AI models on your data
+grim ai predict                          # Generate predictions from models
+grim ai analyze                          # Analyze data patterns
+grim ai optimize                         # Optimize AI performance
+grim ai monitor                          # Monitor AI operations
+grim ai validate                         # Validate model accuracy
+grim ai report                           # Generate integration report
+grim ai config                           # Configure AI integration
+grim ai status                           # Check integration status
+
+# AI Production Deployment
+grim ai-deploy deploy                    # Deploy AI models to production
+grim ai-deploy test                      # Run automated deployment tests
+grim ai-deploy rollback                  # Rollback to previous version
+grim ai-deploy monitor                   # Monitor deployed models
+grim ai-deploy health                    # Check deployment health
+grim ai-deploy backup                    # Backup current deployment
+grim ai-deploy restore                   # Restore from backup
+grim ai-deploy status                    # Check deployment status
+
+# AI Training
+grim ai-train analyze                    # Analyze training data
+grim ai-train train                      # Train base models
+grim ai-train predict                    # Generate predictions
+grim ai-train cluster                    # Perform clustering analysis
+grim ai-train extract                    # Extract features from data
+grim ai-train validate                   # Validate model performance
+grim ai-train report                     # Generate training report
+grim ai-train neural                     # Train neural networks
+grim ai-train ensemble                   # Train ensemble models
+grim ai-train timeseries                 # Time series analysis
+grim ai-train regression                 # Train regression models
+grim ai-train classify                   # Train classification models
+grim ai-train config                     # Configure training parameters
+grim ai-train init                       # Initialize training environment
+
+# AI Velocity Enhancement
+grim ai-turbo turbo                      # Activate turbo mode for AI
+grim ai-turbo optimize                   # Optimize AI performance
+grim ai-turbo benchmark                  # Run performance benchmarks
+grim ai-turbo validate                   # Validate optimizations
+grim ai-turbo deploy                     # Deploy optimized models
+grim ai-turbo monitor                    # Monitor performance gains
+grim ai-turbo report                     # Generate performance report
+```
+
+### 💾 Backup & Recovery
+
+```bash
+# Core Backup Operations
+grim backup create                       # Create intelligent backup
+grim backup verify                       # Verify backup integrity
+grim backup list                         # List all backups
+
+# Core Backup Engine
+grim backup-core create                  # Create core backup with progress
+grim backup-core verify                  # Verify backup checksums
+grim backup-core restore                 # Restore from backup
+grim backup-core status                  # Check backup system status
+grim backup-core init                    # Initialize backup system
+
+# Automatic Backup Daemon
+grim auto-backup start                   # Start automatic backup daemon
+grim auto-backup stop                    # Stop backup daemon
+grim auto-backup restart                 # Restart backup daemon
+grim auto-backup status                  # Check daemon status
+grim auto-backup health                  # Health check with diagnostics
+
+# Restore Operations
+grim restore recover                     # Restore from backup
+grim restore list                        # List available restore points
+grim restore verify                      # Verify restore integrity
+
+# Deduplication
+grim dedup dedup                         # Deduplicate files
+grim dedup restore                       # Restore deduplicated files
+grim dedup cleanup                       # Clean orphaned chunks
+grim dedup stats                         # Show deduplication statistics
+grim dedup verify                        # Verify dedup integrity
+grim dedup benchmark                     # Run deduplication benchmarks
 
 # Backup Operations
 grim backup-create <type> <path>         # Create backup (daily/hourly/weekly)
@@ -277,20 +369,24 @@ if importance > 0.8 {
 - Smart file prioritization
 - Automated optimization
 
-## Links
+## 🔗 Links & Resources
 
-- **Documentation**: [https://grim.so/docs](https://grim.so/docs)
-- **GitHub**: [https://github.com/grim-reaper/grim](https://github.com/grim-reaper/grim)
-- **Crates.io**: [https://crates.io/crates/grim-reaper](https://crates.io/crates/grim-reaper)
-- **Support**: [support@grim.so](mailto:support@grim.so)
+- **Website**: [grim.so](https://grim.so)
+- **GitHub**: [github.com/cyber-boost/grim](https://github.com/cyber-boost/grim)
+- **Download**: [get.grim.so](https://get.grim.so)
+- **Crates.io**: [crates.io/crates/grim-reaper](https://crates.io/crates/grim-reaper)
+- **Documentation**: [grim.so/docs](https://grim.so/docs)
 
-## License
+## 📄 License
 
 By using this software you agree to the official license available at https://grim.so/license
 
 ---
 
-Built by Bernie Gengel and his beagle Buddy 🐕
+<div align="center">
+<strong>🗡️ GRIM REAPER</strong><br>
+<i>"When data death comes knocking, resurrection is just a command away"</i>
+</div>
 | `tokio` | 1.0 | Async runtime |
 | `serde` | 1.0 | Serialization |
 | `clap` | 4.0 | CLI argument parsing |

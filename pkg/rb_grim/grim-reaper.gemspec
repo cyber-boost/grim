@@ -6,12 +6,12 @@ Gem::Specification.new do |spec|
   spec.name = "grim-reaper"
   spec.version = GrimReaper::VERSION
   spec.authors = ["Bernie Gengel and his beagle Buddy"]
-  spec.email = ["bernie@grim.so"]
+  spec.email = ["rip@grim.so"]
 
   spec.summary = "Grim: Unified Data Protection Ecosystem"
   spec.description = "When data death comes knocking, Grim ensures resurrection is just a command away. License management, auto backups, highly compressed backups, multi-algorithm compression, content-based deduplication, smart storage tiering save up to 60% space, military-grade encryption, license protection, security surveillance, and automated threat response."
   spec.homepage = "https://github.com/cyber-boost/grim"
-  spec.license = "BBL"
+  spec.license = "MIT"
   spec.required_ruby_version = ">= 2.7.0"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"

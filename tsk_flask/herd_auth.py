@@ -148,9 +148,10 @@ class HerdAuth:
         if request.endpoint and (
             request.endpoint.startswith('static') or
             request.endpoint.startswith('assets_files') or
+            request.endpoint.startswith('grim_assets_files') or
             request.endpoint.startswith('assets_css_files') or
             request.endpoint.startswith('assets_js_files') or
-                               request.endpoint in ['login', 'register', 'logout', 'health_check', 'root', 'api_docs', 'command_reference', 'comparison_chart', 'public_landing', 'grim_api_docs', 'grim_commands_reference', 'grim_architecture', 'grim_command_reference', 'grim_comparison_chart', 'landing_page', 'home_page', 'emergency_page', 'terminal_page', 'api_status', 'api_config', 'api_performance', 'api_tusk_status', 'execute_command', 'get_command_result', 'get_command_history', 'get_executor_status', 'auth_status', 'test_dashboard', 'test_backup', 'test_alerts', 'test_docs', 'docs']
+                               request.endpoint in ['get-started', 'login', 'register', 'logout', 'health_check', 'root', 'api_docs', 'command_reference', 'comparison_chart', 'public_landing', 'grim_api_docs', 'grim_commands_reference', 'grim_architecture', 'grim_command_reference', 'grim_comparison_chart', 'landing_page', 'home_page', 'emergency_page', 'terminal_page', 'api_status', 'api_config', 'api_performance', 'api_tusk_status', 'execute_command', 'get_command_result', 'get_command_history', 'get_executor_status', 'auth_status', 'test_dashboard', 'test_backup', 'test_alerts', 'test_docs', 'docs', 'create_child', 'cry_to_mom', 'grim_license_validate', 'grim_license_generate', 'architecture', 'commands', 'compare', 'api_docs_main', 'pricing_page', 'affiliate_landing_page', 'create_checkout_session', 'compression_analytics', 'stripe_webhook', 'success_page', 'cancel_page', 'get_started_page', 'api_validate_affiliate', 'api_affiliate_stats']
         ):
             return
         

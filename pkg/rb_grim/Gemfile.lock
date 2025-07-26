@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    grim-reaper (1.0.1)
+    grim-reaper (1.0.29)
       colorize (~> 0.8)
       json (~> 2.6)
       thor (~> 1.2)

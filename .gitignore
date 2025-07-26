@@ -14,6 +14,9 @@ credentials/
 .secret_key
 tsk_flask/.secret_key
 tsk_flask/ 
+throne/
+pkg/
+package/
 
 # Nested repositories (causing Git conflicts)
 tsk_flask/

@@ -5,6 +5,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.IO.Compression;
 
 namespace GrimReaper
 {
@@ -94,14 +95,10 @@ namespace GrimReaper
                 }
             }
 
-            throw new DirectoryNotFoundException(
-                "Could not find Grim Reaper root directory.\n\n" +
-                "Please ensure Grim Reaper is properly installed using:\n" +
-                "  • curl -fsSL https://get.grim.so | sudo bash\n" +
-                "  • wget -qO- https://get.grim.so | sudo bash\n\n" +
-                "Or set GRIM_ROOT environment variable:\n" +
-                "  export GRIM_ROOT=/path/to/your/grim/installation"
-            );
+            Console.WriteLine("🔍 Grim Reaper not found locally");
+            Console.WriteLine("💡 Please run: grim install");
+            Console.WriteLine("   Or install manually: curl -fsSL https://get.grim.so | sudo bash");
+            throw new DirectoryNotFoundException("Grim Reaper not installed. Run 'grim install' to install automatically.");
         }
 
         /// <summary>
@@ -132,6 +129,202 @@ namespace GrimReaper
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Installs Grim Reaper from latest.tar.gz
+        /// </summary>
+        /// <param name="directory">Optional installation directory</param>
+        /// <param name="skipConfirmation">Skip confirmation prompts</param>
+        /// <returns>Installation result</returns>
+        public static async Task<string> InstallAsync(string? directory = null, bool skipConfirmation = false)
+        {
+            Console.WriteLine("🗡️  Grim Reaper Installer");
+            Console.WriteLine("========================\n");
+
+            // Determine installation directory
+            var installDir = directory ?? GetDefaultInstallDirectory();
+            Console.WriteLine($"📁 Installation directory: {installDir}");
+
+            // Check if already installed
+            if (Directory.Exists(installDir) && IsGrimInstallation(installDir))
+            {
+                return $"✅ Grim Reaper is already installed at: {installDir}";
+            }
+
+            // Confirmation prompt
+            if (!skipConfirmation)
+            {
+                Console.Write("🤔 Proceed with installation? [y/N]: ");
+                var input = Console.ReadLine();
+                if (string.IsNullOrEmpty(input) || !input.Trim().ToLower().StartsWith("y"))
+                {
+                    return "❌ Installation cancelled";
+                }
+            }
+
+            try
+            {
+                // Create installation directory
+                Console.WriteLine("📦 Creating installation directory...");
+                Directory.CreateDirectory(installDir);
+
+                // Download latest.tar.gz
+                Console.WriteLine("📥 Downloading Grim Reaper from get.grim.so...");
+                var tempFile = Path.Combine(installDir, "grim-latest.tar.gz");
+
+                using var client = new HttpClient();
+                var response = await client.GetAsync("https://get.grim.so/latest.tar.gz");
+                response.EnsureSuccessStatusCode();
+
+                await File.WriteAllBytesAsync(tempFile, await response.Content.ReadAsByteArrayAsync());
+                Console.WriteLine("✅ Download complete");
+
+                // Extract tarball
+                Console.WriteLine("📦 Extracting Grim Reaper...");
+                var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "tar",
+                        Arguments = $"-xzf {tempFile}",
+                        WorkingDirectory = installDir,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+
+                process.Start();
+                await process.WaitForExitAsync();
+
+                if (process.ExitCode != 0)
+                {
+                    throw new Exception("Failed to extract tarball");
+                }
+
+                // Remove temp file
+                File.Delete(tempFile);
+
+                // Make scripts executable
+                Console.WriteLine("🔧 Making scripts executable...");
+                var scripts = new[]
+                {
+                    "throne/grim_throne.sh",
+                    "throne/sh_grim_throne.sh",
+                    "throne/py_grim_throne.sh",
+                    "throne/go_grim_throne.sh",
+                    "install.sh",
+                    "master-install.sh"
+                };
+
+                foreach (var script in scripts)
+                {
+                    var scriptPath = Path.Combine(installDir, script);
+                    if (File.Exists(scriptPath))
+                    {
+                        var chmodProcess = new Process
+                        {
+                            StartInfo = new ProcessStartInfo
+                            {
+                                FileName = "chmod",
+                                Arguments = $"+x {scriptPath}",
+                                UseShellExecute = false,
+                                CreateNoWindow = true
+                            }
+                        };
+                        chmodProcess.Start();
+                        chmodProcess.WaitForExit();
+                    }
+                }
+
+                // Setup environment (scythe directories and config)
+                Console.WriteLine("🔧 Setting up environment...");
+                var scytheDir = Path.Combine(installDir, ".graveyard", ".rip", ".scythe");
+
+                // Create scythe directories
+                var directories = new[] { "config", "db", "logs", "run", "integrations" };
+                foreach (var dir in directories)
+                {
+                    Directory.CreateDirectory(Path.Combine(scytheDir, dir));
+                }
+
+                // Create log subdirectories
+                var logSubdirs = new[] { "orchestration", "components", "integrations", "security" };
+                foreach (var subdir in logSubdirs)
+                {
+                    Directory.CreateDirectory(Path.Combine(scytheDir, "logs", subdir));
+                }
+
+                // Create integration subdirectories
+                var integrationSubdirs = new[] { "discovered", "configs", "scripts" };
+                foreach (var subdir in integrationSubdirs)
+                {
+                    Directory.CreateDirectory(Path.Combine(scytheDir, "integrations", subdir));
+                }
+
+                // Create scythe configuration
+                var configFile = Path.Combine(scytheDir, "config", "scythe.yaml");
+                if (!File.Exists(configFile))
+                {
+                    var configContent = $@"# Scythe Configuration
+# Central orchestrator settings for Grim Reaper System
+
+scythe:
+  version: ""1.0.5""
+  install_date: {DateTime.UtcNow:yyyy-MM-ddTHH:mm:ssZ}
+
+database:
+  path: ""../db/scythe.db""
+  auto_backup: true
+  backup_interval: ""24h""
+
+logging:
+  level: ""info""
+  path: ""../logs""
+  max_size: ""100MB""
+  max_files: 10
+
+orchestration:
+  enabled: true
+  heartbeat_interval: ""30s""
+  max_concurrent_jobs: 5
+
+integrations:
+  enabled: true
+  scan_interval: ""5m""
+  auto_discover: true
+
+security:
+  encryption: true
+  key_rotation: ""30d""
+  audit_logs: true
+";
+                    await File.WriteAllTextAsync(configFile, configContent);
+                }
+
+                Console.WriteLine("\n✅ Grim Reaper installation complete!");
+                Console.WriteLine($"📁 Installed to: {installDir}");
+                Console.WriteLine("💡 Restart your shell or run: source ~/.bashrc");
+                Console.WriteLine("🗡️  Then use: grim <command>\n");
+
+                return $"✅ Grim Reaper installed successfully to: {installDir}";
+            }
+            catch (Exception ex)
+            {
+                return $"❌ Installation failed: {ex.Message}";
+            }
+        }
+
+        /// <summary>
+        /// Gets the default installation directory
+        /// </summary>
+        /// <returns>Default installation path</returns>
+        private static string GetDefaultInstallDirectory()
+        {
+            var homeDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            return Path.Combine(homeDir, ".grim-reaper");
         }
 
         /// <summary>
@@ -765,6 +958,17 @@ namespace GrimReaper
         {
             using var grim = new GrimReaper();
             return await grim.ScanAsync(path);
+        }
+
+        /// <summary>
+        /// Quick install operation
+        /// </summary>
+        /// <param name="directory">Optional installation directory</param>
+        /// <param name="skipConfirmation">Skip confirmation prompts</param>
+        /// <returns>Installation result</returns>
+        public static async Task<string> InstallAsync(string? directory = null, bool skipConfirmation = false)
+        {
+            return await GrimReaper.InstallAsync(directory, skipConfirmation);
         }
     }
 }

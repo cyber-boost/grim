@@ -2,7 +2,7 @@
   "name": "grim/reaper",
   "description": "Grim: Unified Data Protection Ecosystem. When data death comes knocking, Grim ensures resurrection is just a command away. License management, auto backups, highly compressed backups, multi-algorithm compression, content-based deduplication, smart storage tiering save up to 60% space, military-grade encryption, license protection, security surveillance, and automated threat response.",
   "type": "library",
-  "license": "LicenseRef-Grim",
+  "license": "MIT",
   "authors": [
     {
       "name": "Bernie Gengel and his beagle Buddy",
@@ -61,5 +61,6 @@
     }
   },
   "minimum-stability": "stable",
-  "prefer-stable": true
+  "prefer-stable": true,
+  "version": "1.0.29"
 }

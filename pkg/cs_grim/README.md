@@ -1,13 +1,15 @@
-# Grim 🗡️
+# Grim Reaper 🗡️ C#/.NET Package
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://grim.so/license)
 [![NuGet Version](https://img.shields.io/nuget/v/GrimReaper)](https://www.nuget.org/packages/GrimReaper)
 [![Downloads](https://img.shields.io/nuget/dt/GrimReaper)](https://www.nuget.org/packages/GrimReaper)
 [![.NET](https://img.shields.io/badge/.NET-%3E%3D%206.0-512BD4)](https://dotnet.microsoft.com/)
 
-When data death comes knocking, Grim ensures resurrection is just a command away. License management, auto backups, highly compressed backups, multi-algorithm compression, content-based deduplication, smart storage tiering save up to 60% space, military-grade encryption, license protection, security surveillance, and automated threat response.
+**When data death comes knocking, Grim ensures resurrection is just a command away.**
 
-## Install
+Enterprise-grade data protection platform with AI-powered backup decisions, military-grade encryption, multi-algorithm compression, content-based deduplication, real-time monitoring, and automated threat response.
+
+## 🚀 Quick Install
 
 ```bash
 # Install via .NET CLI
@@ -20,29 +22,29 @@ Install-Package GrimReaper
 <PackageReference Include="GrimReaper" Version="1.0.0" />
 ```
 
-## Usage
+## 🎯 Quick Start
 
 ```csharp
 using GrimReaper;
 
-// Initialize Grim
+// Initialize Grim Reaper
 var grim = new Grim(new GrimConfig
 {
     WorkDir = @"C:\Reaper"
 });
 
-// Create a backup
+// Quick backup
 await grim.BackupAsync(@"C:\Users\Data");
 
-// Scan for important files
-var results = await grim.ScanAsync(@"C:\Projects");
-Console.WriteLine($"Found {results.Count} important files");
-
-// Monitor directory for changes
+// Start monitoring
 await foreach (var change in grim.MonitorAsync(@"C:\Documents"))
 {
     Console.WriteLine($"File changed: {change.Path}");
 }
+
+// Health check
+var health = await grim.HealthCheckAsync();
+Console.WriteLine($"System Status: {health.Status}");
 ```
 
 ## All Commands
@@ -301,17 +303,21 @@ if (importance > 0.8)
 - Smart file prioritization
 - Automated optimization
 
-## Links
+## 🔗 Links & Resources
 
-- **Documentation**: [https://grim.so/docs](https://grim.so/docs)
-- **GitHub**: [https://github.com/grim-reaper/grim](https://github.com/grim-reaper/grim)
-- **NuGet**: [https://www.nuget.org/packages/GrimReaper](https://www.nuget.org/packages/GrimReaper)
-- **Support**: [support@grim.so](mailto:support@grim.so)
+- **Website**: [grim.so](https://grim.so)
+- **GitHub**: [github.com/cyber-boost/grim](https://github.com/cyber-boost/grim)
+- **Download**: [get.grim.so](https://get.grim.so)
+- **NuGet**: [nuget.org/packages/GrimReaper](https://www.nuget.org/packages/GrimReaper)
+- **Documentation**: [grim.so/docs](https://grim.so/docs)
 
-## License
+## 📄 License
 
 By using this software you agree to the official license available at https://grim.so/license
 
 ---
 
-Built by Bernie Gengel and his beagle Buddy 🐕
+<div align="center">
+<strong>🗡️ GRIM REAPER</strong><br>
+<i>"When data death comes knocking, resurrection is just a command away"</i>
+</div>

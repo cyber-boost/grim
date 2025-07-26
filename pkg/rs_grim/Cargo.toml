@@ -1,19 +1,19 @@
 [package]
 name = "grim-reaper"
-version = "1.0.1"
+version = "1.0.30"
 edition = "2021"
-authors = ["Bernie Gengel and his beagle Buddy"]
-description = "Real core integration with sh_grim, py_grim, and go_grim - The Ultimate Backup, Monitoring, and Security System"
+authors = ["Bernie Gengel and his beagle Buddy <rip@grim.so>"]
+description = "Death Defying Data Protection - When data death comes knocking, Grim ensures resurrection is just a command away"
 license = "MIT OR Apache-2.0"
-license-file = "LICENSE"
 repository = "https://github.com/cyber-boost/grim"
 homepage = "https://grim.so"
 keywords = ["backup", "monitoring", "security", "grim", "core-integration"]
 categories = ["command-line-utilities", "filesystem", "compression"]
+exclude = ["target/", "backups/", "deployments/", "*.tar.gz", "grimrust.sh"]
 
 [dependencies]
 # Essential dependencies for core integration
-tokio = { version = "1.32", features = ["macros", "process", "fs", "rt-multi-thread"] }
+tokio = { version = "1.0", features = ["macros", "process", "fs", "rt-multi-thread"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 clap = { version = "4.0", features = ["derive"] }
@@ -29,6 +29,9 @@ walkdir = "2.3"
 # Configuration and utilities
 dirs = "5.0"
 which = "4.4"
+
+[build-dependencies]
+chrono = { version = "0.4", features = ["serde"] }
 
 [dev-dependencies]
 tokio-test = "0.4"

@@ -1,1 +1,1 @@
-/opt/reaper/rs_grim/target/release/grim: /opt/reaper/rs_grim/src/main.rs
+/opt/reaper/pkg/rs_grim/target/release/grim: /opt/reaper/pkg/rs_grim/build.rs /opt/reaper/pkg/rs_grim/src/main.rs

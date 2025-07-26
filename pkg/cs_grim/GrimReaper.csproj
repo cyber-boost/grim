@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>GrimReaper</PackageId>
-    <PackageVersion>1.0.4</PackageVersion>
+    <PackageVersion>1.0.29</PackageVersion>
     <Authors>Bernie Gengel and his beagle Buddy</Authors>
     <Company>Grim Reaper Systems</Company>
     <Product>Grim Reaper</Product>
@@ -16,8 +16,8 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Real core integration - no mock files! Directly calls actual sh_grim modules, go_grim binaries, and py_grim APIs.</PackageReleaseNotes>
     <Copyright>Copyright © 2025 Bernie Gengel</Copyright>
-    <AssemblyVersion>1.0.4.0</AssemblyVersion>
-    <FileVersion>1.0.4.0</FileVersion>
+    <AssemblyVersion>1.0.29.0</AssemblyVersion>
+    <FileVersion>1.0.29.0</FileVersion>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>

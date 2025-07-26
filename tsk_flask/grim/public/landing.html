@@ -1,11 +1,12 @@
 $extends "public/layout.html"
 
 $content
+    <div id="particles-bg"></div>
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-container">
             <div class="hero-content">
-                <h1><img src="/static/svg/grim-logo-primary.svg" alt="Grim Data Reaper" style="height: 60px; width: auto; vertical-align: middle; margin-right: 15px;" />GRIM</h1>
+                <h1>Grim Data Reaper</h1>
                 <p class="subtitle">The Unified Data Protection Ecosystem</p>
                 <p class="description">
                     Stop juggling dozens of backup scripts. Grim unifies 60+ bash modules, 
@@ -33,12 +34,12 @@ $content
                     </div>
                 </div>
 
-                <div class="hero-cta">
-                    <a href="/admin" class="btn btn-primary">
-                        <span><img src="/static/svg/grim-logo-icon.svg" alt="Grim" style="height: 20px; width: auto; vertical-align: middle;" /></span> Start Reaping
+                <div class="hero-cta" style="text-align: center;">
+                    <a href="/pricing" class="btn btn-primary">
+                        <span><img src="/grim/assets/svg/grim-logo-icon.svg" alt="Grim" style="height: 20px; width: auto; vertical-align: middle;" /></span> Start Reaping
                     </a>
-                    <a href="/grim-command-reference" class="btn btn-secondary">
-                        <span><img src="/static/svg/grim-logo-icon.svg" alt="Grim" style="height: 20px; width: auto; vertical-align: middle;" /></span> Explore Commands
+                    <a href="/commands" class="btn btn-secondary">
+                        <span><img src="/grim/assets/svg/grim-logo-icon.svg" alt="Grim" style="height: 20px; width: auto; vertical-align: middle;" /></span> Explore Commands
                     </a>
                 </div>
             </div>
@@ -274,9 +275,9 @@ $content
             </div>
 
             <div class="architecture-visual fade-in">
-                <img src="/grim-architecture" alt="Grim Architecture Diagram" style="width: 100%; max-width: 1200px; height: auto; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);" />
+                <img src="/grim/assets/svg/grim-architecture-diagram.svg" alt="Grim Architecture Diagram" style="width: 100%; max-width: 1200px; height: auto; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);" />
                 <div class="architecture-cta" style="margin-top: 2rem; text-align: center;">
-                    <a href="/grim-architecture" class="btn btn-secondary" target="_blank">
+                    <a href="/architecture" class="btn btn-secondary" target="_blank">
                         <span>🔍</span> View Full Architecture
                     </a>
                 </div>
@@ -289,26 +290,33 @@ $content
         <div class="container">
             <h2 class="fade-in">Your Data's Mortality Ends Today</h2>
             <p class="fade-in">
-                Join thousands of developers and enterprises who trust Grim to make their data immortal. 
+                Join developers and enterprises who trust Grim to make their data immortal. 
                 One command. Total protection. Zero data loss.
             </p>
             
-            <div class="hero-cta fade-in">
-                <a href="/admin" class="btn btn-primary">
-                                            <span><img src="/static/svg/grim-logo-icon.svg" alt="Grim" style="height: 20px; width: auto; vertical-align: middle;" /></span> Install Grim Now
+            <div class="hero-cta" style="text-align: center;">
+                <a href="/pricing" class="btn btn-primary">
+                    <span><img src="/grim/assets/svg/grim-logo-icon.svg" alt="Grim" style="height: 20px; width: auto; vertical-align: middle;" /></span> Install Grim Now
                 </a>
-                <a href="https://github.com/grim-project/grim" class="btn btn-secondary">
-                    <span>🐙</span> View on GitHub
+                <a href="/commands" class="btn btn-secondary">
+                    <span><img src="/grim/assets/svg/grim-logo-icon.svg" alt="Grim" style="height: 20px; width: auto; vertical-align: middle;" /></span> Explore Commands
                 </a>
             </div>
 
             <div class="cta-code fade-in">
                 <pre># Install the reaper in 30 seconds
-curl -sSL get.grim.so | sudo bash
+
+# Install the reaper in 30 seconds
+curl -fsSL get.grim.so | sudo bash 
+
+# Initialize the reaper
 grim init
 
+# Backup your data
+grim backup /important/data
+
 # Your data is now eternal
-grim backup /important/data</pre>
+</pre>
             </div>
         </div>
     </section>

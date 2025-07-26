@@ -1,13 +1,15 @@
-# Grim 🗡️
+# Grim Reaper 🗡️ Java Package
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://grim.so/license)
 [![Maven Central](https://img.shields.io/maven-central/v/so.grim/grim-reaper)](https://search.maven.org/artifact/so.grim/grim-reaper)
 [![Javadoc](https://javadoc.io/badge2/so.grim/grim-reaper/javadoc.svg)](https://javadoc.io/doc/so.grim/grim-reaper)
 [![Java](https://img.shields.io/badge/java-%3E%3D%2011-orange.svg)](https://openjdk.org/)
 
-When data death comes knocking, Grim ensures resurrection is just a command away. License management, auto backups, highly compressed backups, multi-algorithm compression, content-based deduplication, smart storage tiering save up to 60% space, military-grade encryption, license protection, security surveillance, and automated threat response.
+**When data death comes knocking, Grim ensures resurrection is just a command away.**
 
-## Install
+Enterprise-grade data protection platform with AI-powered backup decisions, military-grade encryption, multi-algorithm compression, content-based deduplication, real-time monitoring, and automated threat response.
+
+## 🚀 Quick Install
 
 ```xml
 <!-- Maven -->
@@ -21,7 +23,7 @@ When data death comes knocking, Grim ensures resurrection is just a command away
 implementation 'so.grim:grim-reaper:1.0.0'
 ```
 
-## Usage
+## 🎯 Quick Start
 
 ```java
 import so.grim.Grim;
@@ -29,22 +31,22 @@ import so.grim.GrimConfig;
 
 public class Example {
     public static void main(String[] args) {
-        // Initialize Grim
+        // Initialize Grim Reaper
         Grim grim = Grim.builder()
             .workDir("/opt/reaper")
             .build();
         
-        // Create a backup
+        // Quick backup
         grim.backup("/home/user/data").execute();
         
-        // Scan for important files
-        var results = grim.scan("/var/www").execute();
-        System.out.println("Found " + results.size() + " important files");
-        
-        // Monitor directory for changes
-        grim.monitor("/etc")
+        // Start monitoring
+        grim.monitor("/var/log")
             .onChange(event -> System.out.println("File changed: " + event.getPath()))
             .start();
+        
+        // Health check
+        var health = grim.healthCheck().execute();
+        System.out.println("System Status: " + health.getStatus());
     }
 }
 ```
@@ -302,17 +304,21 @@ if (importance > 0.8) {
 - Smart file prioritization
 - Automated optimization
 
-## Links
+## 🔗 Links & Resources
 
-- **Documentation**: [https://grim.so/docs](https://grim.so/docs)
-- **GitHub**: [https://github.com/grim-reaper/grim](https://github.com/grim-reaper/grim)
-- **Maven Central**: [https://search.maven.org/artifact/so.grim/grim-reaper](https://search.maven.org/artifact/so.grim/grim-reaper)
-- **Support**: [support@grim.so](mailto:support@grim.so)
+- **Website**: [grim.so](https://grim.so)
+- **GitHub**: [github.com/cyber-boost/grim](https://github.com/cyber-boost/grim)
+- **Download**: [get.grim.so](https://get.grim.so)
+- **Maven Central**: [search.maven.org/artifact/so.grim/grim-reaper](https://search.maven.org/artifact/so.grim/grim-reaper)
+- **Documentation**: [grim.so/docs](https://grim.so/docs)
 
-## License
+## 📄 License
 
 By using this software you agree to the official license available at https://grim.so/license
 
 ---
 
-Built by Bernie Gengel and his beagle Buddy 🐕
+<div align="center">
+<strong>🗡️ GRIM REAPER</strong><br>
+<i>"When data death comes knocking, resurrection is just a command away"</i>
+</div>

@@ -91,10 +91,10 @@ class GrimCLI {
     constructor() {
         this.grim = new GrimReaper();
         this.config = {
-            sh_grim_path: path.join(this.grim.grimRoot, 'sh_grim'),
-            scyth_path: path.join(this.grim.grimRoot, 'scythe'),
-            py_grim_path: path.join(this.grim.grimRoot, 'py_grim'),
-            go_grim_path: path.join(this.grim.grimRoot, 'go_grim'),
+            sh_grim_path: null,
+            scyth_path: null,
+            py_grim_path: null,
+            go_grim_path: null,
             verbose: false,
             timeout: 30000
         };
@@ -102,6 +102,17 @@ class GrimCLI {
             input: process.stdin,
             output: process.stdout
         });
+    }
+
+    /**
+     * Initialize paths after GrimReaper is ready
+     */
+    async initializePaths() {
+        await this.grim.initialize();
+        this.config.sh_grim_path = path.join(this.grim.grimRoot, 'sh_grim');
+        this.config.scyth_path = path.join(this.grim.grimRoot, 'scythe');
+        this.config.py_grim_path = path.join(this.grim.grimRoot, 'py_grim');
+        this.config.go_grim_path = path.join(this.grim.grimRoot, 'go_grim');
     }
 
     /**
@@ -228,6 +239,7 @@ class GrimCLI {
      * Core Operations
      */
     async health() {
+        await this.initializePaths();
         console.log('🔍 Checking all Grim systems health...\n');
         
         const systems = [
@@ -248,6 +260,7 @@ class GrimCLI {
     }
 
     async status() {
+        await this.initializePaths();
         console.log('📊 Overall Grim system status...\n');
         
         // Check system resources
@@ -259,7 +272,206 @@ class GrimCLI {
         }
     }
 
+    async check() {
+        await this.initializePaths();
+        
+        // Check if auto-recovery mode is enabled
+        const autoRecovery = process.argv.includes('--auto-recovery') || process.argv.includes('--auto');
+        const maxAttempts = 5;
+        let attempt = 1;
+        
+        while (attempt <= maxAttempts) {
+            console.log(`🔍 Grim System Integrity Check (Attempt ${attempt}/${maxAttempts})\n`);
+            console.log('='.repeat(50));
+            
+            const checks = {
+                critical: [],
+                important: [],
+                optional: []
+            };
+
+        // Critical files and directories
+        const criticalPaths = [
+            { name: 'Grim Root Directory', path: this.grim.grimRoot, type: 'dir' },
+            { name: 'Graveyard Directory', path: path.join(this.grim.grimRoot, '.graveyard'), type: 'dir' },
+            { name: 'RIP Directory', path: path.join(this.grim.grimRoot, '.graveyard', '.rip'), type: 'dir' },
+            { name: 'Mother Database', path: path.join(this.grim.grimRoot, '.graveyard', '.rip', 'mother.db'), type: 'file' },
+            { name: 'Init Info JSON', path: path.join(this.grim.grimRoot, '.graveyard', '.rip', 'init-info.json'), type: 'file' },
+            { name: 'Scythe Directory', path: path.join(this.grim.grimRoot, '.graveyard', '.rip', '.scythe'), type: 'dir' },
+            { name: 'SH Grim Directory', path: this.config.sh_grim_path, type: 'dir' },
+            { name: 'SH Grim Main Script', path: path.join(this.config.sh_grim_path, 'grim.sh'), type: 'file' },
+            { name: 'Backup Directory', path: path.join(this.grim.grimRoot, 'backups'), type: 'dir' },
+            { name: 'Logs Directory', path: path.join(this.grim.grimRoot, 'logs'), type: 'dir' },
+            { name: 'Database Directory', path: path.join(this.grim.grimRoot, 'db'), type: 'dir' }
+        ];
+
+        // Important throne files
+        const thronePaths = [
+            { name: 'Grim Throne Script', path: path.join(this.grim.grimRoot, 'throne', 'grim_throne.sh'), type: 'file' },
+            { name: 'JS Grim Throne', path: path.join(this.grim.grimRoot, 'throne', 'js_grim_throne.sh'), type: 'file' },
+            { name: 'PY Grim Throne', path: path.join(this.grim.grimRoot, 'throne', 'py_grim_throne.sh'), type: 'file' },
+            { name: 'PHP Grim Throne', path: path.join(this.grim.grimRoot, 'throne', 'php_grim_throne.sh'), type: 'file' },
+            { name: 'GO Grim Throne', path: path.join(this.grim.grimRoot, 'throne', 'go_grim_throne.sh'), type: 'file' },
+            { name: 'RS Grim Throne', path: path.join(this.grim.grimRoot, 'throne', 'rs_grim_throne.sh'), type: 'file' },
+            { name: 'RB Grim Throne', path: path.join(this.grim.grimRoot, 'throne', 'rb_grim_throne.sh'), type: 'file' }
+        ];
+
+        // Optional components
+        const optionalPaths = [
+            { name: 'Scythe Path', path: this.config.scyth_path, type: 'dir' },
+            { name: 'PY Grim Path', path: this.config.py_grim_path, type: 'dir' },
+            { name: 'GO Grim Path', path: this.config.go_grim_path, type: 'dir' },
+            { name: 'Package Directory', path: path.join(this.grim.grimRoot, 'pkg'), type: 'dir' },
+            { name: 'Services Directory', path: path.join(this.grim.grimRoot, 'services'), type: 'dir' },
+            { name: 'Config Directory', path: path.join(this.grim.grimRoot, 'config'), type: 'dir' }
+        ];
+
+        // Check critical paths
+        console.log('\n🔴 CRITICAL COMPONENTS:');
+        console.log('-'.repeat(30));
+        for (const item of criticalPaths) {
+            const exists = this.checkPath(item.path, item.type);
+            const status = exists ? '✅' : '❌';
+            console.log(`${status} ${item.name}: ${exists ? 'OK' : 'MISSING'}`);
+            
+            if (!exists) {
+                checks.critical.push(item.name);
+            }
+        }
+
+        // Check throne files
+        console.log('\n🟡 THRONE COMPONENTS:');
+        console.log('-'.repeat(30));
+        for (const item of thronePaths) {
+            const exists = this.checkPath(item.path, item.type);
+            const status = exists ? '✅' : '⚠️';
+            console.log(`${status} ${item.name}: ${exists ? 'OK' : 'MISSING'}`);
+            
+            if (!exists) {
+                checks.important.push(item.name);
+            }
+        }
+
+        // Check optional components
+        console.log('\n🟢 OPTIONAL COMPONENTS:');
+        console.log('-'.repeat(30));
+        for (const item of optionalPaths) {
+            const exists = this.checkPath(item.path, item.type);
+            const status = exists ? '✅' : 'ℹ️';
+            console.log(`${status} ${item.name}: ${exists ? 'OK' : 'NOT FOUND'}`);
+            
+            if (!exists) {
+                checks.optional.push(item.name);
+            }
+        }
+
+        // Summary and recommendations
+        console.log('\n📋 SUMMARY:');
+        console.log('='.repeat(50));
+        
+        if (checks.critical.length === 0) {
+            console.log('✅ All critical components are present');
+        } else {
+            console.log(`❌ ${checks.critical.length} critical component(s) missing:`);
+            checks.critical.forEach(item => console.log(`   - ${item}`));
+        }
+
+        if (checks.important.length > 0) {
+            console.log(`⚠️  ${checks.important.length} throne component(s) missing:`);
+            checks.important.forEach(item => console.log(`   - ${item}`));
+        }
+
+        if (checks.optional.length > 0) {
+            console.log(`ℹ️  ${checks.optional.length} optional component(s) not found:`);
+            checks.optional.forEach(item => console.log(`   - ${item}`));
+        }
+
+        // Backup system check
+        console.log('\n🗄️  BACKUP SYSTEM CHECK:');
+        console.log('-'.repeat(30));
+        this.checkBackupSystem();
+
+        // Recommendations
+        console.log('\n💡 RECOMMENDATIONS:');
+        console.log('-'.repeat(30));
+        this.provideRecommendations(checks);
+
+        console.log('\n' + '='.repeat(50));
+    }
+
+    checkPath(path, type) {
+        try {
+            if (type === 'dir') {
+                return fs.existsSync(path) && fs.statSync(path).isDirectory();
+            } else {
+                return fs.existsSync(path) && fs.statSync(path).isFile();
+            }
+        } catch (error) {
+            return false;
+        }
+    }
+
+    checkBackupSystem() {
+        const backupDir = path.join(this.grim.grimRoot, 'backups');
+        const graveyardDir = path.join(this.grim.grimRoot, '.graveyard');
+        
+        const backupExists = this.checkPath(backupDir, 'dir');
+        const graveyardExists = this.checkPath(graveyardDir, 'dir');
+        
+        console.log(`${backupExists ? '✅' : '❌'} Backup Directory: ${backupExists ? 'OK' : 'MISSING'}`);
+        console.log(`${graveyardExists ? '✅' : '❌'} Graveyard Directory: ${graveyardExists ? 'OK' : 'MISSING'}`);
+        
+        if (!backupExists) {
+            console.log('   ⚠️  Auto-backup and manual backup will fail without backup directory');
+        }
+        
+        if (!graveyardExists) {
+            console.log('   ⚠️  Grim throne operations may fail without graveyard directory');
+        }
+        
+        if (backupExists && graveyardExists) {
+            console.log('   ✅ Backup system appears to be properly configured');
+        }
+    }
+
+    provideRecommendations(checks) {
+        if (checks.critical.length > 0) {
+            console.log('🔴 CRITICAL ISSUES:');
+            console.log('   - Run "grim init" to reinitialize missing critical components');
+            console.log('   - Check file permissions and disk space');
+            console.log('   - Verify Grim installation integrity');
+        }
+        
+        if (checks.important.length > 0) {
+            console.log('🟡 THRONE ISSUES:');
+            console.log('   - Multiple thrones missing may indicate incomplete installation');
+            console.log('   - As long as grim_throne.sh exists in bin, core functionality should work');
+            console.log('   - Consider running throne build scripts to restore missing components');
+        }
+        
+        if (checks.critical.length === 0 && checks.important.length === 0) {
+            console.log('✅ System appears healthy - no immediate action required');
+        }
+        
+        // Specific backup recommendations
+        const backupDir = path.join(this.grim.grimRoot, 'backups');
+        const graveyardDir = path.join(this.grim.grimRoot, '.graveyard');
+        
+        if (!this.checkPath(backupDir, 'dir')) {
+            console.log('🗄️  BACKUP RECOMMENDATION:');
+            console.log('   - Create backup directory: mkdir -p backups');
+            console.log('   - Without .graveyard, backup operations will fail');
+        }
+        
+        if (!this.checkPath(graveyardDir, 'dir')) {
+            console.log('⚰️  GRAVEYARD RECOMMENDATION:');
+            console.log('   - Run "grim init" to create graveyard structure');
+            console.log('   - Graveyard is essential for Grim throne operations');
+        }
+    }
+
     async backup(targetPath) {
+        await this.initializePaths();
         console.log(`🗄️  Starting orchestrated backup of: ${targetPath}\n`);
         
         try {
@@ -277,6 +489,7 @@ class GrimCLI {
     }
 
     async restore(backupPath) {
+        await this.initializePaths();
         console.log(`🔄 Starting coordinated restore from: ${backupPath}\n`);
         
         try {
@@ -293,6 +506,7 @@ class GrimCLI {
     }
 
     async scan(targetPath) {
+        await this.initializePaths();
         console.log(`🔍 Starting unified file scan of: ${targetPath}\n`);
         
         try {
@@ -310,6 +524,7 @@ class GrimCLI {
     }
 
     async monitor(targetPath) {
+        await this.initializePaths();
         console.log(`👁️  Starting monitoring of: ${targetPath}\n`);
         
         try {
@@ -488,13 +703,43 @@ class GrimCLI {
     }
 
     /**
+     * Initialize Grim Reaper system using unified sh_grim/init.sh
+     */
+    async init() {
+        console.log('🏗️  Initializing Grim Reaper system...\n');
+        
+        try {
+            await this.grim.initialize();
+            
+            // Use the unified init.sh script from sh_grim
+            const initScript = path.join(this.grim.grimRoot, 'sh_grim', 'init.sh');
+            if (!fs.existsSync(initScript)) {
+                throw new Error('sh_grim/init.sh not found - Grim installation may be incomplete');
+            }
+            
+            const result = await this.executeBashScript(initScript, ['setup'], { silent: false });
+            console.log('✅ Grim system initialization completed via sh_grim/init.sh');
+            
+            return result;
+        } catch (error) {
+            console.error('❌ Initialization failed:', error.message);
+            throw error;
+        }
+    }
+
+    /**
      * Comprehensive command router - routes to all existing components
      */
     async routeCommand(command, args) {
+        // Initialize paths for all commands that use config paths
+        await this.initializePaths();
+        
         const commandMap = {
             // Core Operations (existing)
+            'init': () => this.init(),
             'health': () => this.health(),
             'status': () => this.status(),
+            'check': () => this.check(),
             'backup': () => this.backup(args[0]),
             'restore': () => this.restore(args[0]),
             'scan': () => this.scan(args[0]),
@@ -674,8 +919,10 @@ class GrimCLI {
 ==================================================
 
 CORE OPERATIONS:
+  grim init                                # Initialize Grim system with .graveyard/.rip
   grim health                              # Check all systems health
   grim status                              # Overall system status
+  grim check                               # Comprehensive system integrity check
   grim backup <path>                       # Orchestrated backup
   grim restore <backup>                    # Coordinated restore
   grim scan <path>                         # Unified file scanning
@@ -871,8 +1118,10 @@ HELP COMMANDS:
 🗡️  GRIM CLI - Unified Command Interface
 
 Core Operations:
+  grim init                                # Initialize Grim system with .graveyard/.rip
   grim health                              # Check all systems health
   grim status                              # Overall system status
+  grim check                               # Comprehensive system integrity check
   grim backup <path>                       # Orchestrated backup
   grim restore <backup>                    # Coordinated restore
   grim scan <path>                         # Unified file scanning

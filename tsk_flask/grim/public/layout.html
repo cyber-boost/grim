@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GRIM - The Unified Data Protection Ecosystem</title>
-    <link rel="stylesheet" href="assets/css/landing.css">
+    <link rel="stylesheet" href="/grim/assets/css/landing.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
     <!-- Particle Background -->
@@ -12,18 +14,31 @@
 
     <!-- Navigation -->
     <nav class="navbar">
-        <div class="container">
-            <a href="#" class="nav-logo">
-                <img src="static/svg/grim-logo-primary.svg" alt="Grim Data Reaper" style="height: 30px; width: auto; vertical-align: middle; margin-right: 8px;" />
-                GRIM
-            </a>
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="#" class="nav-logo">
+                    <img src="/grim/assets/svg/grim-logo-icon.svg" alt="GRIM" />
+                    <div class="logo-text">
+                        <span class="logo-title">GRIM</span>
+                        <span class="logo-subtitle">DATA REAPER</span>
+                    </div>
+                </a>
+            </div>
             <ul class="nav-links">
-                <li><a href="/grim-architecture">Architecture</a></li>
-                <li><a href="/grim-command-reference">Commands</a></li>
-                <li><a href="/grim-comparison-chart">Compare</a></li>
-                <li><a href="/grim-api-docs">API</a></li>
-                <li><a href="/admin" class="btn btn-primary">Admin Login</a></li>
+                <li><a href="/architecture">Architecture</a></li>
+                <li><a href="/commands">Commands</a></li>
+                <li><a href="/compare">Compare</a></li>
+                <li><a href="/api-docs">API</a></li>
+                <li><a href="/pricing">Pricing</a></li>
             </ul>
+            <div class="nav-actions">
+                <a href="/pricing" class="btn btn-primary">Get Started</a>
+                <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -38,7 +53,7 @@
         <div class="footer-container">
             <div class="footer-grid">
                 <div class="footer-brand">
-                    <h3><span><img src="assets/svg/grim-logo-icon.svg" alt="Grim" style="height: 25px; width: auto; vertical-align: middle;" /></span> GRIM</h3>
+                    <h3><span><img src="/grim/assets/svg/grim-logo-icon.svg" alt="Grim" style="height: 25px; width: auto; vertical-align: middle;" /></span> GRIM</h3>
                     <p>The unified data protection ecosystem. When traditional backups fail, 
                     Grim ensures resurrection. Built by developers who've lost data one too many times.</p>
                     <div class="footer-social">
@@ -84,10 +99,10 @@
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; 2025 Grim Project. Death is not the end for your data. Built with <img src="assets/svg/grim-logo-icon.svg" alt="Grim" style="height: 16px; width: auto; vertical-align: middle;" /> for the fearless.</p>
+                <p>&copy; 2025 Grim Project. Death is not the end for your data. Built with <img src="/grim/assets/svg/grim-logo-icon.svg" alt="Grim" style="height: 16px; width: auto; vertical-align: middle;" /> for the fearless.</p>
             </div>
         </div>
     </footer>
-    <script src="assets/js/landing.js"></script>
+    <script src="/grim/assets/js/landing.js"></script>
 </body>
 </html> 

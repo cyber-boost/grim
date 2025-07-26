@@ -44,7 +44,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 // Dynamic nav background on scroll
 window.addEventListener('scroll', () => {
-    const nav = document.querySelector('.nav');
+    const nav = document.querySelector('.navbar');
     if (window.scrollY > 100) {
         nav.style.background = 'rgba(10, 10, 10, 0.98)';
         nav.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.5)';
@@ -53,6 +53,25 @@ window.addEventListener('scroll', () => {
         nav.style.boxShadow = 'none';
     }
 });
+
+// Mobile menu functionality
+const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+const navLinks = document.querySelector('.nav-links');
+
+if (mobileMenuToggle && navLinks) {
+    mobileMenuToggle.addEventListener('click', () => {
+        mobileMenuToggle.classList.toggle('active');
+        navLinks.classList.toggle('mobile-active');
+    });
+    
+    // Close mobile menu when clicking on a link
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenuToggle.classList.remove('active');
+            navLinks.classList.remove('mobile-active');
+        });
+    });
+}
 
 // Terminal typing animation
 const terminalLines = document.querySelectorAll('.terminal-line, .terminal-output, .terminal-success');

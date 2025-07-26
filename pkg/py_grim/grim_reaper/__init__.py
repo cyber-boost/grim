@@ -16,6 +16,19 @@ __version__ = "1.0.9"
 __author__ = "Bernie Gengel and his beagle Buddy"
 __license__ = "BBL"
 
+# Post-install setup
+def _run_post_install():
+    """Run post-install setup if needed"""
+    try:
+        from .post_install import setup_scythe
+        setup_scythe()
+    except ImportError:
+        # Post-install script not available, skip
+        pass
+
+# Run post-install on first import
+_run_post_install()
+
 class GrimReaper:
     """
     Grim Reaper Python interface with real core integration
@@ -398,7 +411,49 @@ def scan(path: str, **kwargs) -> str:
 def main():
     """CLI entry point for grim-reaper command"""
     import sys
-    print("Grim Reaper Python Package")
-    print("Use: from grim_reaper import GrimReaper")
-    print("Or: from grim_reaper import backup, compress, health_check")
-    print("Documentation: https://grim.so")
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Grim Reaper Python CLI")
+    parser.add_argument("command", choices=["backup", "restore", "compress", "health", "scan", "version"], 
+                       help="Command to execute")
+    parser.add_argument("args", nargs="*", help="Command arguments")
+    
+    args = parser.parse_args()
+    
+    try:
+        grim = GrimReaper()
+        
+        if args.command == "backup":
+            if not args.args:
+                print("Error: backup requires a source path")
+                sys.exit(1)
+            result = grim.backup(args.args[0])
+            print(result)
+        elif args.command == "restore":
+            if len(args.args) < 2:
+                print("Error: restore requires backup path and destination")
+                sys.exit(1)
+            result = grim.restore(args.args[0], args.args[1])
+            print(result)
+        elif args.command == "compress":
+            if not args.args:
+                print("Error: compress requires a file path")
+                sys.exit(1)
+            result = grim.compress(args.args[0])
+            print(result)
+        elif args.command == "health":
+            result = grim.health_check()
+            print(result)
+        elif args.command == "scan":
+            if not args.args:
+                print("Error: scan requires a path")
+                sys.exit(1)
+            result = grim.scan(args.args[0])
+            print(result)
+        elif args.command == "version":
+            result = grim.get_version()
+            print(result)
+            
+    except Exception as e:
+        print(f"Error: {e}")
+        sys.exit(1)

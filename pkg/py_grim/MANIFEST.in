@@ -1,6 +1,6 @@
 include README.md
 include grim_throne.sh
-exclude LICENSE
+# exclude LICENSE  # Removed due to metadata issues
 global-exclude *.pyc
 global-exclude *.pyo
 global-exclude *.pyd
