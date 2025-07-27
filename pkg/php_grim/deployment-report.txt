@@ -1,0 +1,32 @@
+Grim Reaper PHP Package Deployment Report
+==========================================
+
+Package: grim/reaper
+Version: 1.0.32
+Deployed: 2025-07-27T19:02:32Z
+Registry: https://packagist.org/packages/grim/reaper
+
+Installation:
+  composer require grim/reaper
+
+Usage:
+  use GrimReaper\GrimCLI;
+  $grim = new GrimCLI();
+  $grim->backup('/path/to/data');
+
+Integration:
+  ✅ Proper sh_grim module integration via shell_exec()
+  ✅ Real go_grim binary calls for compression
+  ✅ py_grim API service integration
+  ✅ PHP-specific convenience methods
+
+Files Included:
+  - src/GrimCLI.php (main CLI class)
+  - composer.json (package definition)
+  - README.md (documentation)
+
+Core Integration:
+  - Calls actual sh_grim/*.sh modules
+  - Uses real go_grim/build/* binaries
+  - Integrates with py_grim FastAPI
+  - Provides PHP-specific wrappers

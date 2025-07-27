@@ -14,6 +14,7 @@ class Installer
     private const GRIM_VERSION = '1.0.0';
     private const REQUIRED_EXTENSIONS = ['json', 'curl', 'openssl', 'zip'];
     private const REQUIRED_COMMANDS = ['rsync', 'tar', 'gzip', 'curl', 'wget'];
+    private const DOWNLOAD_URL = 'https://get.grim.so/latest.tar.gz';
 
     /**
      * Post-installation hook for Composer
@@ -25,7 +26,13 @@ class Installer
         
         try {
             self::checkRequirements($io);
-            self::setupGrimDirectory($io);
+            
+            // CRITICAL: Download latest.tar.gz from get.grim.so
+            $installer = new self();
+            $grimRoot = $installer->downloadLatest($io);
+            
+            self::setupEnvironmentVariables($grimRoot, $io);
+            self::makeScriptsExecutable($grimRoot, $io);
             self::installDependencies($io);
             self::createSymlinks($io);
             self::verifyInstallation($io);
@@ -435,5 +442,206 @@ class Installer
     private static function commandExists(string $command): bool
     {
         return !empty(shell_exec("which $command 2>/dev/null"));
+    }
+
+    /**
+     * Download latest.tar.gz from get.grim.so and extract with proper strip-components=2
+     */
+    private function downloadLatest($io): string
+    {
+        $io->write('<info>📥 Downloading Grim Reaper from get.grim.so...</info>');
+        
+        // Determine GRIM_ROOT with permission checks
+        $grimRoot = $this->determineGrimRoot();
+        $tempFile = sys_get_temp_dir() . '/grim-latest.tar.gz';
+        
+        // Download latest.tar.gz
+        $io->write('<info>📥 Downloading from ' . self::DOWNLOAD_URL . '</info>');
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, self::DOWNLOAD_URL);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Grim-Reaper-PHP/1.0.32');
+        
+        $data = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        
+        if ($data === false || $httpCode !== 200) {
+            throw new \RuntimeException('Failed to download latest.tar.gz: ' . curl_error($ch));
+        }
+        
+        curl_close($ch);
+        
+        if (!file_put_contents($tempFile, $data)) {
+            throw new \RuntimeException('Failed to save downloaded file');
+        }
+        
+        $io->write('<info>✅ Download complete (' . $this->formatBytes(strlen($data)) . ')</info>');
+        
+        // Create GRIM_ROOT directory
+        if (!is_dir($grimRoot)) {
+            if (!mkdir($grimRoot, 0755, true)) {
+                throw new \RuntimeException("Failed to create directory: $grimRoot");
+            }
+        }
+        
+        // Extract with --strip-components=2 to handle graveyard/reaper/ prefix
+        $io->write('<info>📦 Extracting with graveyard/reaper/ structure handling...</info>');
+        
+        $command = sprintf(
+            'cd %s && tar -xzf %s --strip-components=2 2>/dev/null || tar -xzf %s --strip-components=1 2>/dev/null || tar -xzf %s',
+            escapeshellarg($grimRoot),
+            escapeshellarg($tempFile),
+            escapeshellarg($tempFile),
+            escapeshellarg($tempFile)
+        );
+        
+        $output = [];
+        $returnCode = 0;
+        exec($command, $output, $returnCode);
+        
+        if ($returnCode !== 0) {
+            throw new \RuntimeException('Failed to extract archive: ' . implode("\n", $output));
+        }
+        
+        // Clean up temp file
+        unlink($tempFile);
+        
+        $io->write('<info>✅ Extraction complete to: ' . $grimRoot . '</info>');
+        
+        return $grimRoot;
+    }
+
+    /**
+     * Determine optimal GRIM_ROOT with permission checking
+     */
+    private function determineGrimRoot(): string
+    {
+        // Check GRIM_REAPER mode
+        if (getenv('GRIM_REAPER') === 'TRUE') {
+            // Update mode - preserve existing installation
+            $existing = getenv('GRIM_ROOT');
+            if ($existing && is_dir($existing)) {
+                return $existing;
+            }
+        }
+        
+        // Try permission hierarchy: /root → $HOME → local
+        $candidates = [
+            '/root/.grim',
+            ($_SERVER['HOME'] ?? '/tmp') . '/.grim', 
+            getcwd() . '/.grim'
+        ];
+        
+        foreach ($candidates as $path) {
+            $dir = dirname($path);
+            if (is_writable($dir)) {
+                return $path;
+            }
+        }
+        
+        throw new \RuntimeException('No writable directory found. Please chmod +x install.sh or run with proper permissions');
+    }
+
+    /**
+     * Setup environment variables with persistence
+     */
+    private static function setupEnvironmentVariables(string $grimRoot, $io): void
+    {
+        $io->write('<info>🌍 Setting up environment variables...</info>');
+        
+        // Set environment variables
+        putenv("GRIM_ROOT=$grimRoot");
+        putenv("GRIM_LICENSE=FREE");
+        putenv("GRIM_REAPER=FALSE");
+        
+        // Read version from manifest.tsk if available
+        $manifestPath = $grimRoot . '/manifest.tsk';
+        if (file_exists($manifestPath)) {
+            $content = file_get_contents($manifestPath);
+            if (preg_match('/version[:\s]+["\']?([^"\'\s]+)["\']?/i', $content, $matches)) {
+                putenv("GRIM_VERSION=" . $matches[1]);
+                $io->write('<info>📋 Set GRIM_VERSION=' . $matches[1] . ' from manifest</info>');
+            }
+        }
+        
+        // Add to shell profiles for persistence
+        $envContent = "\n# Grim Reaper Environment\n";
+        $envContent .= "export GRIM_ROOT=\"$grimRoot\"\n";
+        $envContent .= "export GRIM_LICENSE=\"FREE\"\n";
+        $envContent .= "export GRIM_REAPER=\"FALSE\"\n";
+        $envContent .= "export PATH=\"\$GRIM_ROOT/throne:\$PATH\"\n";
+        
+        $home = $_SERVER['HOME'] ?? '/root';
+        $profiles = [
+            $home . '/.bashrc',
+            $home . '/.zshrc', 
+            $home . '/.profile'
+        ];
+        
+        foreach ($profiles as $profile) {
+            if (file_exists($profile)) {
+                $content = file_get_contents($profile);
+                if (strpos($content, 'GRIM_ROOT') === false) {
+                    file_put_contents($profile, $envContent, FILE_APPEND);
+                    $io->write('<info>✅ Updated ' . basename($profile) . '</info>');
+                }
+            }
+        }
+        
+        $io->write('<info>✅ Environment variables configured</info>');
+    }
+
+    /**
+     * Make all Grim scripts executable
+     */
+    private static function makeScriptsExecutable(string $grimRoot, $io): void
+    {
+        $io->write('<info>🔧 Making scripts executable...</info>');
+        
+        $scriptPaths = [
+            'reaper.sh',
+            'install.sh', 
+            'throne/*.sh',
+            'sh_grim/*.sh',
+            'scripts/*.sh',
+            'bin/*',
+            '.rip/*',
+            'py_grim/**/*.py',
+            'go_grim/build/*'
+        ];
+        
+        foreach ($scriptPaths as $pattern) {
+            $fullPattern = $grimRoot . '/' . $pattern;
+            
+            if (strpos($pattern, '*') !== false) {
+                // Handle glob patterns
+                $files = glob($fullPattern);
+                foreach ($files as $file) {
+                    if (is_file($file)) {
+                        chmod($file, 0755);
+                    }
+                }
+            } else {
+                // Handle specific files
+                if (file_exists($fullPattern)) {
+                    chmod($fullPattern, 0755);
+                }
+            }
+        }
+        
+        $io->write('<info>✅ Scripts made executable</info>');
+    }
+
+    /**
+     * Format bytes for display
+     */
+    private function formatBytes(int $bytes): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $power = $bytes > 0 ? floor(log($bytes, 1024)) : 0;
+        return number_format($bytes / pow(1024, $power), 2) . ' ' . $units[$power];
     }
 } 
