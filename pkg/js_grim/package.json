@@ -48,10 +48,10 @@
     "inquirer": "^8.2.4",
     "figlet": "^1.5.2",
     "cli-table3": "^0.6.2",
-    "moment": "^2.29.4",
+    "dayjs": "^1.11.10",
     "node-cron": "^3.0.2",
-    "node-fetch": "^2.6.7",
-    "tar": "^6.2.0"
+    "node-fetch": "^3.3.2",
+    "tar": "^6.2.1"
   },
   "devDependencies": {
     "jest": "^29.0.0",
