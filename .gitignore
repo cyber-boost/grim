@@ -107,6 +107,8 @@ __pycache__/
 venv/
 .venv/
 grim_reaper.egg-info/
+build/
+dist/
 
 # PACKAGE ARTIFACTS
 *.gem
@@ -120,6 +122,25 @@ grim_reaper.egg-info/
 *.sha1
 package-lock.json
 go.sum
+
+# DEPLOYMENT SCRIPTS
+*deploy.sh
+*install*.sh
+*grim*.sh
+*throne*.sh
+
+# SENSITIVE CONFIG FILES
+**/config.json
+**/.grim/
+
+# DUPLICATE DOCS
+**/docs copy/
+pkg/pp.md
+pkg/tos.md
+
+# TEST AND BACKUP FILES
+*test*.tar.gz
+*backup*.tar.gz
 
 # IDE FILES
 .vscode/
@@ -153,6 +174,12 @@ pkg/*/*.zip
 pkg/*/*.tgz
 pkg/*/*.whl
 pkg/*/*.tar.gz
+pkg/*/build/
+pkg/*/dist/
+pkg/*/.grim/
+pkg/*/deploy.sh
+pkg/*/install*.sh
+pkg/*/*.egg-info/
 
 # KEEP THESE PUBLIC FILES (explicitly allow)
 !README.md
