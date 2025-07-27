@@ -132,8 +132,11 @@ go.sum
 Thumbs.db
 
 # DOCKER BUILD CONTEXT (keep Dockerfiles but not build context)
+docker-compose.prod.yml
+docker-compose.*.yml
+Dockerfile.grim
+Dockerfile.scythe
 Dockerfile.*
-docker-compose.*
 
 # PACKAGE SPECIFIC IGNORES
 pkg/*/node_modules/
