@@ -52,6 +52,7 @@ sh_grim/
 *.sqlite
 *.sqlite3
 .api_key
+.install_id
 cookies.txt
 emails.txt
 grim.conf
@@ -61,6 +62,7 @@ grim_error_tracking.db
 grim.db
 grim-basic.sh
 install.sh
+install_dependencies.sh
 js-grim_throne.sh
 grim_throne.sh
 master_requirements.txt
@@ -80,10 +82,10 @@ update_grim.sh
 webhook_proof.py
 verify_webhook_working.py
 populate_error_db.py
-install_dependencies.sh
 install_php_dependencies.sh
 manifest-og.tsk
 manifest.tsk
+reaper.sh
 
 # ENVIRONMENT AND CREDENTIALS
 .env
@@ -171,6 +173,5 @@ pkg/*/*.tar.gz
 !go.mod
 !version.go
 !grim_reaper.go
-!reaper.sh
 !svg/
 !svg/**/*.svg
