@@ -99,6 +99,9 @@ reaper.sh
 *Claude*
 claude_*
 Claude_*
+pkg/*/claude*
+pkg/*/Claude*
+pkg/c.txt
 
 # DEPLOYMENT REPORTS
 deploy-report-*.txt
