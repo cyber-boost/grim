@@ -1,17 +1,85 @@
-# Sensitive directories - NEVER commit these
+# SENSITIVE DIRECTORIES - NEVER COMMIT THESE
 admin/
 tsk_flask/
+cloud_storage/
+master_install/
+data/
+db/
+logs/
+cache/
+tmp/
+temp/
+run/
+backups/
+decisions/
+reports/
+web/
+velocity_cache/
+deployment/
+ai_cache/
+models/
+skullstall/
+modules/
+scythe/
+services/
+k8s/
+builds/
+throne/
+z_grim_v1/
+tiers/
+config/
+commands/
+tests/
+up_grim/
+test-tar/
+summaries/
+dist/
+lib/
+vendor/
 .graveyard/
 .claude/
 .cursor/
 grim_venv/
 
-# Database files
+# SENSITIVE FILES
 *.db
 *.sqlite
 *.sqlite3
+.api_key
+cookies.txt
+emails.txt
+grim.conf
+*.log
+scythe.log
+grim_error_tracking.db
+grim.db
+grim-basic.sh
+install.sh
+js-grim_throne.sh
+grim_throne.sh
+master_requirements.txt
+validate_ai_quality.py
+run_velocity_benchmarks.py
+optimize_ai_velocity.py
+deploy_ai_production.py
+predict.py
+train_models.py
+optimize_storage.py
+analyze_decisions.py
+grim-cron-status.sh
+safe_curl_exec.sh
+grim-admin-ecosystem.config.js
+enterprise_calculator.py
+update_grim.sh
+webhook_proof.py
+verify_webhook_working.py
+populate_error_db.py
+install_dependencies.sh
+install_php_dependencies.sh
+manifest-og.tsk
+manifest.tsk
 
-# Environment and credentials
+# ENVIRONMENT AND CREDENTIALS
 .env
 .env.*
 *.key
@@ -21,7 +89,7 @@ grim_venv/
 config.json
 settings.json
 
-# Build artifacts
+# BUILD ARTIFACTS
 node_modules/
 target/
 bin/
@@ -30,27 +98,36 @@ __pycache__/
 *.pyc
 venv/
 .venv/
+grim_reaper.egg-info/
 
-# IDE files
+# PACKAGE ARTIFACTS
+*.gem
+*.nupkg
+*.zip
+*.tgz
+*.whl
+*.tar.gz
+*.asc
+*.md5
+*.sha1
+package-lock.json
+go.sum
+
+# IDE FILES
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# OS files
+# OS FILES
 .DS_Store
 Thumbs.db
 
-# Log files
-*.log
-logs/
+# DOCKER BUILD CONTEXT (keep Dockerfiles but not build context)
+Dockerfile.*
+docker-compose.*
 
-# Temporary files
-tmp/
-temp/
-*.tmp
-
-# Package specific ignores
+# PACKAGE SPECIFIC IGNORES
 pkg/*/node_modules/
 pkg/*/target/
 pkg/*/bin/
@@ -59,5 +136,35 @@ pkg/*/__pycache__/
 pkg/*/venv/
 pkg/*/.venv/
 pkg/*/*.log
+pkg/*/*.gem
+pkg/*/*.nupkg
+pkg/*/*.zip
+pkg/*/*.tgz
+pkg/*/*.whl
+pkg/*/*.tar.gz
 
-# Keep package source code but ignore build artifacts
+# KEEP THESE PUBLIC FILES (explicitly allow)
+!README.md
+!docs/
+!docs/**/*.svg
+!docs/**/*.md
+!pkg/
+!pkg/**/*.md
+!pkg/**/*.json
+!pkg/**/*.toml
+!pkg/**/*.xml
+!pkg/**/*.csproj
+!pkg/**/src/
+!pkg/**/src/**/*
+!go_grim/
+!go_grim/**/*
+!composer.json
+!package.json
+!Cargo.toml
+!grim-reaper.gemspec
+!setup.py
+!MANIFEST.in
+!go.mod
+!version.go
+!grim_reaper.go
+!reaper.sh
