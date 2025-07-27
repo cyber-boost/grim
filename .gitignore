@@ -221,3 +221,4 @@ pkg/*/*.egg-info/
 
 # EXCEPTION: Allow grim-reaper.gemspec at root (Ruby gem spec)
 !grim-reaper.gemspec
+/.g/
