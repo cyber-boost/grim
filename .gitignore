@@ -94,6 +94,12 @@ manifest-og.tsk
 manifest.tsk
 reaper.sh
 
+# AI ASSISTANT REFERENCES (NEVER COMMIT)
+*claude*
+*Claude*
+claude_*
+Claude_*
+
 # DEPLOYMENT REPORTS
 deploy-report-*.txt
 version-manifest.json
@@ -191,6 +197,8 @@ pkg/*/.grim/
 pkg/*/deploy.sh
 pkg/*/install*.sh
 pkg/*/*.egg-info/
+pkg/*/claude*
+pkg/*/Claude*
 
 # KEEP THESE PUBLIC FILES (explicitly allow)
 !README.md
