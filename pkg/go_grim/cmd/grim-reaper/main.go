@@ -1,3 +1,8 @@
+// Grim Reaper CLI - Advanced Backup and System Management Tool
+//
+// Copyright (c) 2025 Bernie Gengel and CyberBoost LLC
+// Licensed under the MIT License
+// See LICENSE file for full terms
 package main
 
 import (

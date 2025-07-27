@@ -1,5 +1,9 @@
 // Package grim provides real core integration with sh_grim, py_grim, and go_grim
 // No mock files - directly calls actual core modules and binaries
+//
+// Copyright (c) 2025 Bernie Gengel and CyberBoost LLC
+// Licensed under the MIT License
+// See LICENSE file for full terms
 package grim
 
 import (
