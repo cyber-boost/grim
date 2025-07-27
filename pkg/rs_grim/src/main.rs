@@ -157,7 +157,7 @@ enum Commands {
 
     /// Setup .scythe directory structure
     SetupScythe,
-    
+
     /// Install Grim Reaper from latest.tar.gz
     Install {
         /// Installation directory
@@ -184,10 +184,12 @@ impl GrimReaper {
                 println!("🔍 Grim Reaper not found locally");
                 println!("💡 Please run: grim install");
                 println!("   Or install manually: curl -fsSL https://get.grim.so | sudo bash");
-                anyhow::bail!("Grim Reaper not installed. Run 'grim install' to install automatically.");
+                anyhow::bail!(
+                    "Grim Reaper not installed. Run 'grim install' to install automatically."
+                );
             }
         };
-        
+
         Ok(Self {
             grim_root,
             api_base: "http://localhost:8000".to_string(),
@@ -210,7 +212,7 @@ impl GrimReaper {
             if Self::is_grim_installation(&current_dir) {
                 return Ok(current_dir);
             }
-            
+
             match current_dir.parent() {
                 Some(parent) => current_dir = parent.to_path_buf(),
                 None => break,
@@ -236,10 +238,7 @@ impl GrimReaper {
 
         // Try user directories
         if let Some(home_dir) = dirs::home_dir() {
-            let user_paths = [
-                home_dir.join("reaper"),
-                home_dir.join(".reaper"),
-            ];
+            let user_paths = [home_dir.join("reaper"), home_dir.join(".reaper")];
             for path in &user_paths {
                 if Self::is_grim_installation(path) {
                     return Ok(path.clone());
@@ -271,15 +270,15 @@ impl GrimReaper {
             "go_grim/build/grim-compression",
         ];
 
-        key_files.iter().any(|key_file| {
-            path.join(key_file).exists()
-        })
+        key_files
+            .iter()
+            .any(|key_file| path.join(key_file).exists())
     }
 
     /// Execute sh_grim module with proper error handling
     async fn execute_sh_module(&self, module: &str, args: &[String]) -> Result<String> {
         let throne_path = self.grim_root.join("throne").join("grim_throne.sh");
-        
+
         if !throne_path.exists() {
             anyhow::bail!("Throne script not found: {}", throne_path.display());
         }
@@ -295,7 +294,9 @@ impl GrimReaper {
             .env("GRIM_ROOT", &self.grim_root)
             .kill_on_drop(true);
 
-        let output = cmd.output().await
+        let output = cmd
+            .output()
+            .await
             .with_context(|| format!("Failed to execute module: {}", module))?;
 
         let stdout = String::from_utf8_lossy(&output.stdout);
@@ -311,7 +312,7 @@ impl GrimReaper {
     /// Execute go_grim binary with proper error handling
     async fn execute_go_binary(&self, binary: &str, args: &[String]) -> Result<String> {
         let binary_path = self.grim_root.join("go_grim").join("build").join(binary);
-        
+
         if !binary_path.exists() {
             anyhow::bail!("Go binary not found: {}", binary);
         }
@@ -321,7 +322,9 @@ impl GrimReaper {
             .current_dir(&self.grim_root)
             .kill_on_drop(true);
 
-        let output = cmd.output().await
+        let output = cmd
+            .output()
+            .await
             .with_context(|| format!("Failed to execute Go binary: {}", binary))?;
 
         if !output.status.success() {
@@ -335,9 +338,10 @@ impl GrimReaper {
     /// Call py_grim FastAPI service
     async fn call_py_api(&self, endpoint: &str) -> Result<Value> {
         let url = format!("{}{}", self.api_base, endpoint);
-        
+
         let client = reqwest::Client::new();
-        let response = client.get(&url)
+        let response = client
+            .get(&url)
             .timeout(std::time::Duration::from_secs(30))
             .send()
             .await
@@ -347,7 +351,9 @@ impl GrimReaper {
             anyhow::bail!("API call failed with status: {}", response.status());
         }
 
-        let json = response.json::<Value>().await
+        let json = response
+            .json::<Value>()
+            .await
             .with_context(|| "Failed to parse API response as JSON")?;
 
         Ok(json)
@@ -356,7 +362,7 @@ impl GrimReaper {
     /// Execute raw grim command via throne script
     async fn execute_command(&self, command: &str, args: &[String]) -> Result<String> {
         let throne_path = self.grim_root.join("throne").join("grim_throne.sh");
-        
+
         let mut cmd_args = vec![command.to_string()];
         cmd_args.extend(args.iter().cloned());
 
@@ -366,7 +372,9 @@ impl GrimReaper {
             .env("GRIM_ROOT", &self.grim_root)
             .kill_on_drop(true);
 
-        let output = cmd.output().await
+        let output = cmd
+            .output()
+            .await
             .with_context(|| format!("Failed to execute command: {}", command))?;
 
         if !output.status.success() {
@@ -383,10 +391,10 @@ async fn install_grim(directory: Option<String>, skip_confirmation: bool) -> Res
     use std::fs;
     use std::io::{self, Write};
     use std::process::Command;
-    
+
     println!("🗡️  Grim Reaper Installer");
     println!("========================\n");
-    
+
     // Determine installation directory
     let install_dir = match directory {
         Some(dir) => PathBuf::from(dir),
@@ -398,80 +406,83 @@ async fn install_grim(directory: Option<String>, skip_confirmation: bool) -> Res
             }
         }
     };
-    
+
     println!("📁 Installation directory: {}", install_dir.display());
-    
+
     // Check if already installed
     if install_dir.exists() && GrimReaper::is_grim_installation(&install_dir) {
-        println!("✅ Grim Reaper is already installed at: {}", install_dir.display());
+        println!(
+            "✅ Grim Reaper is already installed at: {}",
+            install_dir.display()
+        );
         return Ok(());
     }
-    
+
     // Confirmation prompt
     if !skip_confirmation {
         print!("🤔 Proceed with installation? [y/N]: ");
         io::stdout().flush()?;
-        
+
         let mut input = String::new();
         io::stdin().read_line(&mut input)?;
-        
+
         if !input.trim().to_lowercase().starts_with('y') {
             println!("❌ Installation cancelled");
             return Ok(());
         }
     }
-    
+
     // Create installation directory
     println!("📦 Creating installation directory...");
     fs::create_dir_all(&install_dir)?;
-    
+
     // Download latest.tar.gz
     println!("📥 Downloading Grim Reaper from get.grim.so...");
     let temp_file = install_dir.join("grim-latest.tar.gz");
-    
+
     let client = reqwest::Client::new();
     let response = client
         .get("https://get.grim.so/latest.tar.gz")
         .send()
         .await
         .context("Failed to download Grim Reaper")?;
-    
+
     if !response.status().is_success() {
         anyhow::bail!("Failed to download: HTTP {}", response.status());
     }
-    
+
     let bytes = response.bytes().await.context("Failed to read response")?;
     fs::write(&temp_file, &bytes).context("Failed to save download")?;
     println!("✅ Download complete");
-    
+
     // Extract tarball
     println!("📦 Extracting Grim Reaper...");
     let status = Command::new("tar")
-        .args(&["-xzf", temp_file.to_str().unwrap()])
+        .args(&["-xzf", temp_file.to_str().unwrap(), "--strip-components=2"])
         .current_dir(&install_dir)
         .status()
         .context("Failed to extract tarball")?;
-    
+
     if !status.success() {
         anyhow::bail!("Failed to extract tarball");
     }
-    
+
     // Remove temp file
     let _ = fs::remove_file(&temp_file);
-    
+
     // Make scripts executable
     println!("🔧 Making scripts executable...");
     let scripts = [
         "throne/grim_throne.sh",
-        "throne/sh_grim_throne.sh", 
+        "throne/sh_grim_throne.sh",
         "throne/py_grim_throne.sh",
         "throne/go_grim_throne.sh",
         "sh_grim/*.sh",
         "go_grim/build/*",
         "install.sh",
-        "master-install.sh"
+        "master-install.sh",
     ];
-    
+
     for pattern in &scripts {
         if pattern.contains('*') {
             // Handle glob patterns
@@ -490,37 +501,38 @@ async fn install_grim(directory: Option<String>, skip_confirmation: bool) -> Res
             }
         }
     }
-    
+
     // Setup environment
     println!("🔧 Setting up environment...");
     let grim_root = install_dir.to_str().unwrap();
     let scythe_dir = format!("{}/.graveyard/.rip/.scythe", grim_root);
-    
+
     // Create scythe directories
     let directories = ["config", "db", "logs", "run", "integrations"];
     for dir in &directories {
         let dir_path = format!("{}/{}", scythe_dir, dir);
         let _ = fs::create_dir_all(&dir_path);
     }
-    
+
     // Create log subdirectories
     let log_subdirs = ["orchestration", "components", "integrations", "security"];
     for subdir in &log_subdirs {
         let dir_path = format!("{}/logs/{}", scythe_dir, subdir);
         let _ = fs::create_dir_all(&dir_path);
     }
-    
+
     // Create integration subdirectories
     let integration_subdirs = ["discovered", "configs", "scripts"];
     for subdir in &integration_subdirs {
         let dir_path = format!("{}/integrations/{}", scythe_dir, subdir);
         let _ = fs::create_dir_all(&dir_path);
     }
-    
+
     // Create scythe configuration
     let config_file = format!("{}/config/scythe.yaml", scythe_dir);
     if !Path::new(&config_file).exists() {
-        let config_content = format!(r#"# Scythe Configuration
+        let config_content = format!(
+            r#"# Scythe Configuration
 # Central orchestrator settings for Grim Reaper System
 
 scythe:
@@ -552,16 +564,21 @@ security:
   encryption: true
   key_rotation: "30d"
   audit_logs: true
-"#, std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
-        
+"#,
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs()
+        );
+
         let _ = fs::write(&config_file, config_content);
     }
-    
+
     println!("\n✅ Grim Reaper installation complete!");
     println!("📁 Installed to: {}", install_dir.display());
     println!("💡 Restart your shell or run: source ~/.bashrc");
     println!("🗡️  Then use: grim <command>\n");
-    
+
     Ok(())
 }
 
@@ -570,61 +587,56 @@ fn setup_scythe_directories() {
     use std::fs;
     use std::path::Path;
     use std::process::Command;
-    
+
     println!("🗡️  Setting up .scythe directory structure...");
-    
+
     let grim_root = detect_grim_root();
     let scythe_dir = format!("{}/.graveyard/.rip/.scythe", grim_root);
-    
+
     // Create main scythe directories
-    let directories = [
-        "config",
-        "db", 
-        "logs",
-        "run",
-        "integrations"
-    ];
-    
+    let directories = ["config", "db", "logs", "run", "integrations"];
+
     for dir in &directories {
         let dir_path = format!("{}/{}", scythe_dir, dir);
         if let Err(e) = fs::create_dir_all(&dir_path) {
-            eprintln!("⚠️  Warning: Could not create directory {}: {}", dir_path, e);
+            eprintln!(
+                "⚠️  Warning: Could not create directory {}: {}",
+                dir_path, e
+            );
         }
     }
-    
+
     // Create log subdirectories
-    let log_subdirs = [
-        "orchestration",
-        "components", 
-        "integrations",
-        "security"
-    ];
-    
+    let log_subdirs = ["orchestration", "components", "integrations", "security"];
+
     for subdir in &log_subdirs {
         let dir_path = format!("{}/logs/{}", scythe_dir, subdir);
         if let Err(e) = fs::create_dir_all(&dir_path) {
-            eprintln!("⚠️  Warning: Could not create log directory {}: {}", dir_path, e);
+            eprintln!(
+                "⚠️  Warning: Could not create log directory {}: {}",
+                dir_path, e
+            );
         }
     }
-    
-    // Create integration subdirectories  
-    let integration_subdirs = [
-        "discovered",
-        "configs",
-        "scripts"
-    ];
-    
+
+    // Create integration subdirectories
+    let integration_subdirs = ["discovered", "configs", "scripts"];
+
     for subdir in &integration_subdirs {
         let dir_path = format!("{}/integrations/{}", scythe_dir, subdir);
         if let Err(e) = fs::create_dir_all(&dir_path) {
-            eprintln!("⚠️  Warning: Could not create integration directory {}: {}", dir_path, e);
+            eprintln!(
+                "⚠️  Warning: Could not create integration directory {}: {}",
+                dir_path, e
+            );
         }
     }
-    
+
     // Create scythe configuration file
     let config_file = format!("{}/config/scythe.yaml", scythe_dir);
     if !Path::new(&config_file).exists() {
-        let config_content = format!(r#"# Scythe Configuration
+        let config_content = format!(
+            r#"# Scythe Configuration
 # Central orchestrator settings for Grim Reaper System
 
 scythe:
@@ -656,15 +668,20 @@ security:
   encryption: true
   key_rotation: "30d"
   audit_logs: true
-"#, std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
-        
+"#,
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs()
+        );
+
         if let Err(e) = fs::write(&config_file, config_content) {
             eprintln!("⚠️  Warning: Could not create scythe configuration: {}", e);
         } else {
             println!("✅ Created scythe configuration: {}", config_file);
         }
     }
-    
+
     // Try to run the universal setup script if available
     let setup_script = format!("{}/scripts/setup_scythe_dirs.sh", grim_root);
     if Path::new(&setup_script).exists() {
@@ -684,7 +701,7 @@ security:
             }
         }
     }
-    
+
     println!("✅ .scythe directory structure created at: {}", scythe_dir);
 }
 
@@ -694,7 +711,7 @@ fn detect_grim_root() -> String {
     if let Ok(grim_root) = env::var("GRIM_ROOT") {
         return grim_root;
     }
-    
+
     // Check for existing installation
     let possible_paths = [
         format!("{}/.graveyard/reaper", env::var("HOME").unwrap_or_default()),
@@ -702,32 +719,40 @@ fn detect_grim_root() -> String {
         "/root/.graveyard/reaper".to_string(),
         "/root/.graveyard".to_string(),
     ];
-    
+
     for path in &possible_paths {
         if Path::new(path).exists() {
             return path.clone();
         }
     }
-    
+
     // Default fallback
-    format!("{}/.graveyard", env::var("HOME").unwrap_or_else(|_| "/root".to_string()))
+    format!(
+        "{}/.graveyard",
+        env::var("HOME").unwrap_or_else(|_| "/root".to_string())
+    )
 }
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let cli = Cli::parse();
-    
+
     // Handle install command specially - it doesn't need Grim to be installed
     if let Commands::Install { directory, yes } = &cli.command {
         install_grim(directory.clone(), *yes).await?;
         return Ok(());
     }
-    
+
     // For all other commands, Grim must be installed
     let grim = GrimReaper::new()?;
 
     match &cli.command {
-        Commands::Backup { source, name, compress, incremental } => {
+        Commands::Backup {
+            source,
+            name,
+            compress,
+            incremental,
+        } => {
             // The throne script expects: grim backup create <source> [options]
             let mut args = vec!["create".to_string(), source.clone()];
             if let Some(name) = name {
@@ -739,20 +764,31 @@ async fn main() -> Result<()> {
             }
             let result = grim.execute_sh_module("backup", &args).await?;
             println!("{}", result);
-        },
-        Commands::Restore { backup, destination, overwrite } => {
+        }
+        Commands::Restore {
+            backup,
+            destination,
+            overwrite,
+        } => {
             let mut args = vec![backup.clone(), destination.clone()];
             if *overwrite {
                 args.push("--overwrite".to_string());
             }
             let result = grim.execute_sh_module("restore", &args).await?;
             println!("{}", result);
-        },
+        }
         Commands::ListBackups => {
-            let result = grim.execute_sh_module("backup", &["list".to_string()]).await?;
+            let result = grim
+                .execute_sh_module("backup", &["list".to_string()])
+                .await?;
             println!("{}", result);
-        },
-        Commands::Compress { file, algorithm, level, output } => {
+        }
+        Commands::Compress {
+            file,
+            algorithm,
+            level,
+            output,
+        } => {
             let mut args = vec![];
             args.extend(["-a".to_string(), algorithm.clone()]);
             args.extend(["-l".to_string(), level.to_string()]);
@@ -762,7 +798,7 @@ async fn main() -> Result<()> {
             args.push(file.clone());
             let result = grim.execute_go_binary("grim-compression", &args).await?;
             println!("{}", result);
-        },
+        }
         Commands::Decompress { file, output } => {
             let mut args = vec!["-d".to_string()];
             if let Some(output) = output {
@@ -771,8 +807,12 @@ async fn main() -> Result<()> {
             args.push(file.clone());
             let result = grim.execute_go_binary("grim-compression", &args).await?;
             println!("{}", result);
-        },
-        Commands::Monitor { path, interval, events } => {
+        }
+        Commands::Monitor {
+            path,
+            interval,
+            events,
+        } => {
             let args = vec![
                 "start".to_string(),
                 path.clone(),
@@ -783,16 +823,25 @@ async fn main() -> Result<()> {
             ];
             let result = grim.execute_sh_module("monitor", &args).await?;
             println!("{}", result);
-        },
+        }
         Commands::StopMonitor => {
-            let result = grim.execute_sh_module("monitor", &["stop".to_string()]).await?;
+            let result = grim
+                .execute_sh_module("monitor", &["stop".to_string()])
+                .await?;
             println!("{}", result);
-        },
+        }
         Commands::MonitorStatus => {
-            let result = grim.execute_sh_module("monitor", &["status".to_string()]).await?;
+            let result = grim
+                .execute_sh_module("monitor", &["status".to_string()])
+                .await?;
             println!("{}", result);
-        },
-        Commands::Scan { path, recursive, types, output } => {
+        }
+        Commands::Scan {
+            path,
+            recursive,
+            types,
+            output,
+        } => {
             let mut args = vec![path.clone()];
             if *recursive {
                 args.push("--recursive".to_string());
@@ -805,7 +854,7 @@ async fn main() -> Result<()> {
             }
             let result = grim.execute_sh_module("scan", &args).await?;
             println!("{}", result);
-        },
+        }
         Commands::SecurityScan { path, deep, report } => {
             let mut args = vec![path.clone()];
             if *deep {
@@ -816,85 +865,94 @@ async fn main() -> Result<()> {
             }
             let result = grim.execute_sh_module("security", &args).await?;
             println!("{}", result);
-        },
+        }
         Commands::Health => {
-            let result = grim.execute_sh_module("health", &["check".to_string()]).await?;
+            let result = grim
+                .execute_sh_module("health", &["check".to_string()])
+                .await?;
             println!("{}", result);
-        },
+        }
         Commands::Status => {
-            let result = grim.execute_sh_module("health", &["status".to_string()]).await?;
+            let result = grim
+                .execute_sh_module("health", &["status".to_string()])
+                .await?;
             println!("{}", result);
-        },
+        }
         Commands::Optimize { target } => {
             let args = vec!["optimize".to_string(), target.clone()];
             let result = grim.execute_sh_module("blacksmith", &args).await?;
             println!("{}", result);
-        },
+        }
         Commands::Heal => {
-            let result = grim.execute_sh_module("healer", &["heal".to_string()]).await?;
+            let result = grim
+                .execute_sh_module("healer", &["heal".to_string()])
+                .await?;
             println!("{}", result);
-        },
+        }
         Commands::ApiStatus => {
             let result = grim.call_py_api("/api/status").await?;
             println!("{}", serde_json::to_string_pretty(&result)?);
-        },
+        }
         Commands::ApiBackups => {
             let result = grim.call_py_api("/api/backups").await?;
             println!("{}", serde_json::to_string_pretty(&result)?);
-        },
+        }
         Commands::Exec { command, args } => {
             let result = grim.execute_command(command, args).await?;
             println!("{}", result);
-        },
+        }
         Commands::Version => {
             // Try to read manifest file first
-            let manifest_path = grim.grim_root.join("builds").join("latest").join("manifest.tsk");
+            let manifest_path = grim
+                .grim_root
+                .join("builds")
+                .join("latest")
+                .join("manifest.tsk");
             if manifest_path.exists() {
                 match tokio::fs::read_to_string(&manifest_path).await {
                     Ok(content) => println!("{}", content),
                     Err(_) => {
                         let result = grim.execute_command("version", &[]).await?;
                         println!("{}", result);
-                    },
+                    }
                 }
             } else {
                 let result = grim.execute_command("version", &[]).await?;
                 println!("{}", result);
             }
-        },
+        }
         Commands::Services => {
             println!("🗡️  Grim Reaper Services Status");
-            
+
             // Check if services are running using pgrep
             let services = [
                 ("FastAPI", "grim_web"),
                 ("Monitoring", "monitor.sh"),
                 ("Admin Server", "grim_admin_server.py"),
             ];
-            
+
             for (name, process) in &services {
                 let mut cmd = AsyncCommand::new("pgrep");
                 cmd.args(["-f", process]);
-                
+
                 match cmd.output().await {
                     Ok(output) if output.status.success() => {
                         println!("✅ {}: Running", name);
-                    },
+                    }
                     _ => {
                         println!("❌ {}: Not running", name);
-                    },
+                    }
                 }
             }
-        },
+        }
         Commands::SetupScythe => {
             setup_scythe_directories();
             println!("✅ .scythe directory structure setup complete");
-        },
+        }
         Commands::Install { directory, yes } => {
             install_grim(directory.clone(), *yes).await?;
-        },
+        }
     }
 
     Ok(())
 }
-
