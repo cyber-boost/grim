@@ -1,0 +1,9 @@
+# .mailmap - Maps commit authors to canonical names/emails
+# This prevents GitHub from incorrectly detecting "claude" as a contributor
+
+# Map all variations of your identity to a single canonical name
+bgengs <bgengs@gmail.com> Bernie Gengel <berniegengel@gmail.com>
+bgengs <bgengs@gmail.com> bgengs <bgengs@gmail.com>
+
+# Exclude claude from contributor detection (API references, not actual contributor)
+# GitHub sometimes picks up "claude" from file contents as a false contributor 
