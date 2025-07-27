@@ -43,6 +43,9 @@ grim_venv/
 internal/
 mother_db/
 scripts/
+go_grim/
+py_grim/
+sh_grim/
 
 # SENSITIVE FILES
 *.db
@@ -159,8 +162,6 @@ pkg/*/*.tar.gz
 !pkg/**/*.csproj
 !pkg/**/src/
 !pkg/**/src/**/*
-!go_grim/
-!go_grim/**/*
 !composer.json
 !package.json
 !Cargo.toml
@@ -171,3 +172,5 @@ pkg/*/*.tar.gz
 !version.go
 !grim_reaper.go
 !reaper.sh
+!svg/
+!svg/**/*.svg
