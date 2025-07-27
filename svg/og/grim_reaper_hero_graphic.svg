@@ -1,0 +1,179 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a1a"/>
+      <stop offset="100%" style="stop-color:#2d2d2d"/>
+    </linearGradient>
+    
+    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#654321"/>
+      <stop offset="100%" style="stop-color:#8b4513"/>
+    </linearGradient>
+    
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#b8860b"/>
+      <stop offset="100%" style="stop-color:#daa520"/>
+    </linearGradient>
+    
+    <!-- Glow effects -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Pattern for texture -->
+    <pattern id="dataPattern" patternUnits="userSpaceOnUse" width="40" height="40">
+      <rect width="40" height="40" fill="transparent"/>
+      <circle cx="5" cy="5" r="1" fill="#b8860b" opacity="0.3"/>
+      <circle cx="25" cy="15" r="1" fill="#daa520" opacity="0.3"/>
+      <circle cx="35" cy="35" r="1" fill="#cd853f" opacity="0.3"/>
+      <circle cx="15" cy="30" r="1" fill="#b8860b" opacity="0.3"/>
+    </pattern>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  <rect width="1200" height="630" fill="url(#dataPattern)" opacity="0.4"/>
+  
+  <!-- Left side - Branding & Logo -->
+  <g transform="translate(60, 80)">
+    <!-- Enhanced Scythe -->
+    <g transform="scale(1.5)">
+      <!-- Scythe handle -->
+      <line x1="30" y1="120" x2="60" y2="30" stroke="url(#heroGradient)" stroke-width="6" stroke-linecap="round" filter="url(#softGlow)"/>
+      
+      <!-- Scythe blade -->
+      <path d="M60 30 C80 15, 110 22, 125 45 C120 58, 100 65, 85 58 C72 50, 65 38, 60 30" 
+            fill="url(#accentGradient)" stroke="#654321" stroke-width="2" filter="url(#glow)"/>
+      
+      <!-- Blade highlight -->
+      <path d="M65 35 C82 22, 105 28, 118 48" fill="none" stroke="#daa520" stroke-width="2" opacity="0.8"/>
+    </g>
+    
+    <!-- Main Title -->
+    <text x="0" y="200" font-family="Arial Black, sans-serif" font-size="48" font-weight="900" 
+          fill="url(#accentGradient)" filter="url(#glow)">GRIM REAPER</text>
+    
+    <!-- Subtitle -->
+    <text x="0" y="240" font-family="Arial, sans-serif" font-size="24" font-weight="600" 
+          fill="#daa520">Death Defying Data Protection</text>
+    
+    <!-- Key Features -->
+    <g transform="translate(0, 280)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="16" font-weight="600" fill="#cd853f">
+        ⚡ AI-Powered Optimization
+      </text>
+      <text x="0" y="25" font-family="Arial, sans-serif" font-size="16" font-weight="600" fill="#cd853f">
+        🔒 Enterprise Security & Compliance
+      </text>
+      <text x="0" y="50" font-family="Arial, sans-serif" font-size="16" font-weight="600" fill="#cd853f">
+        ☁️ Multi-Cloud & Distributed
+      </text>
+      <text x="0" y="75" font-family="Arial, sans-serif" font-size="16" font-weight="600" fill="#cd853f">
+        📊 Unified Monitoring Platform
+      </text>
+    </g>
+  </g>
+  
+  <!-- Right side - Data visualization -->
+  <g transform="translate(600, 100)">
+    <!-- Data streams being protected -->
+    <g opacity="0.8">
+      <!-- Intact protected data streams -->
+      <rect x="0" y="50" width="120" height="8" fill="#b8860b" rx="4" filter="url(#softGlow)"/>
+      <rect x="0" y="70" width="100" height="8" fill="#daa520" rx="4" filter="url(#softGlow)"/>
+      <rect x="0" y="90" width="110" height="8" fill="#cd853f" rx="4" filter="url(#softGlow)"/>
+      <rect x="0" y="110" width="130" height="8" fill="#b8860b" rx="4" filter="url(#softGlow)"/>
+      
+      <!-- AI Processing indicators -->
+      <circle cx="150" cy="54" r="4" fill="#daa520" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="150" cy="74" r="4" fill="#daa520" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="150" cy="94" r="4" fill="#daa520" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" begin="1s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="150" cy="114" r="4" fill="#daa520" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" begin="1.5s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- Cloud infrastructure -->
+    <g transform="translate(200, 40)">
+      <!-- Cloud shapes -->
+      <ellipse cx="30" cy="30" rx="25" ry="15" fill="#8b4513" opacity="0.6"/>
+      <ellipse cx="50" cy="35" rx="20" ry="12" fill="#8b4513" opacity="0.6"/>
+      <ellipse cx="70" cy="30" rx="25" ry="15" fill="#8b4513" opacity="0.6"/>
+      
+      <!-- Cloud labels -->
+      <text x="20" y="60" font-family="Arial, sans-serif" font-size="10" fill="#daa520">AWS</text>
+      <text x="45" y="60" font-family="Arial, sans-serif" font-size="10" fill="#daa520">Azure</text>
+      <text x="65" y="60" font-family="Arial, sans-serif" font-size="10" fill="#daa520">GCP</text>
+    </g>
+    
+    <!-- Security shield -->
+    <g transform="translate(50, 180)">
+      <path d="M50 0 L80 20 L80 60 L50 80 L20 60 L20 20 Z" 
+            fill="none" stroke="#b8860b" stroke-width="3" filter="url(#glow)"/>
+      <path d="M50 10 L70 25 L70 55 L50 70 L30 55 L30 25 Z" 
+            fill="#654321" opacity="0.3"/>
+      <text x="50" y="45" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#daa520">🔒</text>
+    </g>
+    
+    <!-- Performance metrics -->
+    <g transform="translate(150, 200)">
+      <rect x="0" y="0" width="120" height="60" fill="none" stroke="#cd853f" stroke-width="2" rx="5"/>
+      <text x="60" y="15" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#daa520">Performance</text>
+      
+      <!-- Animated bars -->
+      <rect x="10" y="45" width="8" height="10" fill="#b8860b">
+        <animate attributeName="height" values="5;15;10;20;10" dur="3s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="25" y="40" width="8" height="15" fill="#daa520">
+        <animate attributeName="height" values="10;5;20;8;15" dur="3s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="40" y="35" width="8" height="20" fill="#cd853f">
+        <animate attributeName="height" values="15;25;10;18;20" dur="3s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="55" y="30" width="8" height="25" fill="#b8860b">
+        <animate attributeName="height" values="20;15;30;22;25" dur="3s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+  </g>
+  
+  <!-- Bottom CTA -->
+  <g transform="translate(60, 520)">
+    <rect x="0" y="0" width="300" height="50" fill="url(#accentGradient)" rx="25" filter="url(#glow)"/>
+    <text x="150" y="32" font-family="Arial, sans-serif" font-size="18" font-weight="700" 
+          text-anchor="middle" fill="#1a1a1a">Start Free • Scale Enterprise</text>
+  </g>
+  
+  <!-- Pricing tiers indicator -->
+  <g transform="translate(800, 480)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#cd853f">
+      Free → Basic → Pro → Master → Reaper → Enterprise
+    </text>
+    <text x="0" y="20" font-family="Arial, sans-serif" font-size="12" fill="#daa520">
+      Land & Expand • High Margins • AI Differentiation
+    </text>
+  </g>
+  
+  <!-- Version/Brand mark -->
+  <text x="1140" y="610" font-family="monospace" font-size="10" text-anchor="end" fill="#8b4513" opacity="0.7">
+    v4.0 • grimreaper.ai
+  </text>
+</svg>
