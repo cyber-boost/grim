@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grim Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        h2 { color: #666; margin-top: 30px; }
+        code { background: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Grim Documentation</h1>
+    <div id="content">
+<div class="content">
+////////////////////////////////////////////
+// curl -fsSL https://grim.so | sudo bash //
+//     ██████╗ ██████╗ ██╗███╗   ███╗     //
+//    ██╔════╝ ██╔══██╗██║████╗ ████║     //
+//    ██║  ███╗██████╔╝██║██╔████╔██║     //
+//    ██║   ██║██╔══██╗██║██║╚██╔╝██║     //
+//    ╚██████╔╝██║  ██║██║██║ ╚═╝ ██║     //
+//     ╚═════╝ ╚═╝  ╚═╝╚═╝╚═╝     ╚═╝     //
+//     Death Defying Data Protection      //
+////////////////////////////////////////////
+<br>
+<h1>📊 System Monitoring & Health</h1>
+<br>
+<strong>The Nervous System of Grim Reaper</strong> - Comprehensive monitoring and health management system that provides real-time visibility into system performance, automated diagnostics, and proactive issue resolution.
+<br>
+<h2>Overview</h2>
+<br>
+The System Monitoring & Health category provides continuous monitoring, health assessment, and automated remediation capabilities. It monitors all aspects of the system including hardware, software, network, and application performance, providing early warning of potential issues and automated resolution.
+<br>
+<h2>Architecture</h2>
+<br>
+<code></code>`
+    📊 SYSTEM MONITORING & HEALTH
+           |
+    ┌──────┼──────┐
+    │      │      │
+Real-time Health Web
+Monitoring  Checks Services
+<code></code>`
+<br>
+<h2>Core Components</h2>
+<br>
+<h3>📡 Real-time Monitoring (sh_grim/monitor.sh)</h3>
+<br>
+<strong>Purpose:</strong> Continuous system monitoring with real-time metrics collection and anomaly detection.
+<br>
+#### Key Features
+- <strong>Real-time Metrics</strong>: CPU, memory, disk, network monitoring
+- <strong>Anomaly Detection</strong>: AI-powered pattern recognition for unusual behavior
+- <strong>Event Logging</strong>: Comprehensive event tracking and correlation
+- <strong>Alert System</strong>: Configurable alerts for critical conditions
+- <strong>Performance Tracking</strong>: Historical performance data analysis
+- <strong>Resource Monitoring</strong>: Disk space, memory usage, process monitoring
+<br>
+#### Commands
+<code></code>`bash
+grim monitor start              # Start system monitoring
+grim monitor stop               # Stop monitoring
+grim monitor status             # Check monitor status
+grim monitor show               # Show current metrics
+grim monitor report             # Generate monitoring report
+grim monitor help               # Display monitor help
+<code></code>`
+<br>
+#### Monitoring Metrics
+- <strong>System Metrics</strong>: CPU usage, memory utilization, disk I/O
+- <strong>Network Metrics</strong>: Bandwidth usage, connection status, latency
+- <strong>Application Metrics</strong>: Process status, response times, error rates
+- <strong>Hardware Metrics</strong>: Temperature, power consumption, fan speeds
+- <strong>Security Metrics</strong>: Failed login attempts, suspicious activity
+<br>
+#### Configuration
+<code></code>`yaml
+monitoring_configuration:
+  metrics:
+    collection_interval: 30
+    retention_days: 30
+    compression: true
+    
+  alerts:
+    cpu_threshold: 80
+    memory_threshold: 85
+    disk_threshold: 90
+    network_threshold: 70
+    
+  storage:
+    database: "sqlite"
+    path: "/opt/grim-reaper/monitoring"
+    max_size: "10GB"
+<code></code>`
+<br>
+<h3>🏥 Health Check System (sh_grim/health.sh)</h3>
+<br>
+<strong>Purpose:</strong> Comprehensive system health assessment with automated issue detection and resolution.
+<br>
+#### Key Features
+- <strong>Comprehensive Diagnostics</strong>: Full system health assessment
+- <strong>Automated Fixes</strong>: Automatic resolution of common issues
+- <strong>Health Reports</strong>: Detailed health status reports
+- <strong>Continuous Monitoring</strong>: Ongoing health monitoring
+- <strong>Dependency Checking</strong>: Verify all system dependencies
+- <strong>Performance Analysis</strong>: System performance evaluation
+<br>
+#### Commands
+<code></code>`bash
+grim health check               # Complete health check
+grim health fix                 # Auto-fix detected issues
+grim health report              # Generate health report
+grim health monitor             # Continuous health monitoring
+grim health help                # Display health help
+<code></code>`
+<br>
+#### Health Checks
+- <strong>System Health</strong>: OS stability, kernel status, system services
+- <strong>Hardware Health</strong>: CPU, memory, disk, network hardware
+- <strong>Software Health</strong>: Application status, dependencies, configurations
+- <strong>Security Health</strong>: Security configurations, vulnerabilities, access controls
+- <strong>Performance Health</strong>: System performance, bottlenecks, optimization opportunities
+<br>
+<h3>🔧 Enhanced Health System (sh_grim/health_fixed.sh)</h3>
+<br>
+<strong>Purpose:</strong> Advanced health checking with enhanced diagnostics and comprehensive service monitoring.
+<br>
+#### Key Features
+- <strong>Service Monitoring</strong>: Monitor all system services
+- <strong>Disk Health</strong>: Comprehensive disk health assessment
+- <strong>Memory Analysis</strong>: Detailed memory usage and health analysis
+- <strong>Network Diagnostics</strong>: Network connectivity and performance testing
+- <strong>Automated Remediation</strong>: Automatic issue resolution
+- <strong>Detailed Reporting</strong>: Comprehensive health reports
+<br>
+#### Commands
+<code></code>`bash
+grim health-check check              # Enhanced health check
+grim health-check services           # Check all services
+grim health-check disk               # Check disk health
+grim health-check memory             # Check memory status
+grim health-check network            # Check network health
+grim health-check fix                # Auto-fix all issues
+grim health-check report             # Detailed health report
+grim health-check help               # Display help
+<code></code>`
+<br>
+#### Enhanced Diagnostics
+- <strong>Service Status</strong>: Check all running services and dependencies
+- <strong>Disk Analysis</strong>: SMART data, filesystem health, I/O performance
+- <strong>Memory Testing</strong>: Memory integrity, usage patterns, swap analysis
+- <strong>Network Testing</strong>: Connectivity, bandwidth, latency, packet loss
+- <strong>Security Scanning</strong>: Vulnerability assessment, configuration validation
+<br>
+<h3>🌐 Web Services (py_grim monitoring via throne)</h3>
+<br>
+<strong>Purpose:</strong> Web-based monitoring interface with REST APIs and real-time dashboards.
+<br>
+#### Key Features
+- <strong>FastAPI Web Server</strong>: High-performance web services
+- <strong>API Gateway</strong>: Load-balanced API access
+- <strong>Real-time Dashboard</strong>: Live monitoring dashboard
+- <strong>WebSocket Support</strong>: Real-time data streaming
+- <strong>REST APIs</strong>: Comprehensive API endpoints
+- <strong>Status Monitoring</strong>: Service status and health monitoring
+<br>
+#### Commands
+<code></code>`bash
+grim web start                                   # Start FastAPI web services
+grim web gateway                                 # Start API gateway
+grim web status                                  # Check web services status
+grim dashboard start                             # Start monitoring dashboard
+grim dashboard stop                              # Stop dashboard
+grim dashboard status                            # Dashboard status
+<code></code>`
+<br>
+#### Web Endpoints
+- <strong>Health Check</strong>: <code>GET /health</code> - System health status
+- <strong>Metrics API</strong>: <code>GET /api/metrics</code> - System metrics
+- <strong>Status API</strong>: <code>GET /api/status</code> - Service status
+- <strong>WebSocket</strong>: <code>ws://localhost:8080/ws</code> - Real-time updates
+- <strong>Dashboard</strong>: <code>http://localhost:8080</code> - Web interface
+<br>
+<h2>Monitoring Strategies</h2>
+<br>
+<h3>1. Proactive Monitoring</h3>
+<code></code>`
+Continuous Monitoring
+├── Real-time Metrics Collection
+├── Anomaly Detection
+├── Predictive Analytics
+└── Automated Alerts
+<code></code>`
+<br>
+<h3>2. Reactive Monitoring</h3>
+<code></code>`
+Issue Response
+├── Problem Detection
+├── Root Cause Analysis
+├── Automated Resolution
+└── Incident Documentation
+<code></code>`
+<br>
+<h3>3. Predictive Monitoring</h3>
+<code></code>`
+AI-Powered Prediction
+├── Pattern Recognition
+├── Trend Analysis
+├── Capacity Planning
+└── Performance Forecasting
+<code></code>`
+<br>
+<h2>Integration Patterns</h2>
+<br>
+<h3>Complete Monitoring Setup</h3>
+<code></code>`bash
+<h1>1. Initialize monitoring system</h1>
+grim monitor init
+<br>
+<h1>2. Start real-time monitoring</h1>
+grim monitor start
+<br>
+<h1>3. Run comprehensive health check</h1>
+grim health-check check
+<br>
+<h1>4. Start web dashboard</h1>
+grim dashboard start
+<br>
+<h1>5. Monitor system status</h1>
+grim web status
+<code></code>`
+<br>
+<h3>AI-Enhanced Monitoring</h3>
+<code></code>`bash
+<h1>1. Analyze monitoring patterns</h1>
+grim ai analyze
+<br>
+<h1>2. Optimize monitoring thresholds</h1>
+grim ai-decision resource-manage
+<br>
+<h1>3. Apply intelligent monitoring</h1>
+grim monitor optimize
+<br>
+<h1>4. Monitor AI performance</h1>
+grim ai monitor
+<code></code>`
+<br>
+<h3>Automated Health Management</h3>
+<code></code>`bash
+<h1>1. Continuous health monitoring</h1>
+grim health monitor
+<br>
+<h1>2. Automatic issue resolution</h1>
+grim health fix
+<br>
+<h1>3. Generate health reports</h1>
+grim health report
+<br>
+<h1>4. Alert on critical issues</h1>
+grim notify send "Health Alert" "Critical issue detected"
+<code></code>`
+<br>
+<h2>Configuration</h2>
+<br>
+<h3>Monitoring System Configuration</h3>
+<code></code>`yaml
+monitoring_system:
+  general:
+    enabled: true
+    log_level: "INFO"
+    data_retention: 30
+    
+  metrics:
+    collection_interval: 30
+    compression: true
+    aggregation: true
+    
+  alerts:
+    email:
+      enabled: true
+      smtp_server: "smtp.gmail.com"
+      recipients: ["admin@example.com"]
+      
+    slack:
+      enabled: true
+      webhook_url: "https://hooks.slack.com/..."
+      
+    thresholds:
+      cpu_critical: 90
+      memory_critical: 95
+      disk_critical: 95
+      network_critical: 80
+      
+  storage:
+    type: "sqlite"
+    path: "/opt/grim-reaper/monitoring"
+    max_size: "10GB"
+    cleanup_interval: 86400
+<code></code>`
+<br>
+<h3>Health Check Configuration</h3>
+<code></code>`yaml
+health_configuration:
+  checks:
+    system:
+      enabled: true
+      interval: 300
+      
+    hardware:
+      enabled: true
+      interval: 600
+      
+    software:
+      enabled: true
+      interval: 300
+      
+    security:
+      enabled: true
+      interval: 3600
+      
+  auto_fix:
+    enabled: true
+    safe_mode: true
+    confirmation: false
+    
+  reporting:
+    format: "html"
+    include_graphs: true
+    email_reports: true
+<code></code>`
+<br>
+<h3>Web Services Configuration</h3>
+<code></code>`yaml
+web_services:
+  fastapi:
+    host: "0.0.0.0"
+    port: 8000
+    workers: 4
+    timeout: 30
+    
+  dashboard:
+    host: "0.0.0.0"
+    port: 8080
+    refresh_interval: 5
+    
+  gateway:
+    host: "0.0.0.0"
+    port: 9000
+    load_balancing: true
+    
+  security:
+    ssl_enabled: false
+    authentication: false
+    rate_limiting: true
+<code></code>`
+<br>
+<h2>Best Practices</h2>
+<br>
+<h3>Monitoring Strategy</h3>
+1. <strong>Comprehensive Coverage</strong>: Monitor all critical system components
+2. <strong>Real-time Alerts</strong>: Set up immediate alerts for critical issues
+3. <strong>Historical Analysis</strong>: Maintain historical data for trend analysis
+4. <strong>Automated Response</strong>: Implement automated issue resolution
+<br>
+<h3>Health Management</h3>
+1. <strong>Regular Checks</strong>: Schedule regular health assessments
+2. <strong>Proactive Maintenance</strong>: Address issues before they become critical
+3. <strong>Documentation</strong>: Document all health check procedures
+4. <strong>Testing</strong>: Regularly test monitoring and alerting systems
+<br>
+<h3>Performance Optimization</h3>
+1. <strong>Efficient Data Collection</strong>: Optimize metrics collection intervals
+2. <strong>Data Compression</strong>: Compress historical data to save storage
+3. <strong>Selective Monitoring</strong>: Focus on critical metrics
+4. <strong>Resource Management</strong>: Monitor monitoring system resource usage
+<br>
+<h2>Troubleshooting</h2>
+<br>
+<h3>Common Issues</h3>
+<br>
+#### Monitoring Failures
+<code></code>`bash
+<h1>Check monitoring status</h1>
+grim monitor status
+<br>
+<h1>View monitoring logs</h1>
+grim log tail monitor.log
+<br>
+<h1>Restart monitoring service</h1>
+grim monitor restart
+<br>
+<h1>Check system resources</h1>
+grim health check
+<code></code>`
+<br>
+#### Health Check Issues
+<code></code>`bash
+<h1>Run comprehensive health check</h1>
+grim health-check check
+<br>
+<h1>Check specific components</h1>
+grim health-check disk
+grim health-check memory
+grim health-check network
+<br>
+<h1>Auto-fix detected issues</h1>
+grim health-check fix
+<code></code>`
+<br>
+#### Web Service Issues
+<code></code>`bash
+<h1>Check web service status</h1>
+grim web status
+<br>
+<h1>Restart web services</h1>
+grim web restart
+<br>
+<h1>Check port availability</h1>
+grim health-check network
+<br>
+<h1>View web service logs</h1>
+grim log tail web.log
+<code></code>`
+<br>
+#### Performance Issues
+<code></code>`bash
+<h1>Check system performance</h1>
+grim performance-test full
+<br>
+<h1>Analyze resource usage</h1>
+grim ai analyze
+<br>
+<h1>Optimize monitoring</h1>
+grim monitor optimize
+<br>
+<h1>Check for bottlenecks</h1>
+grim health-check services
+<code></code>`
+<br>
+<h2>Performance Metrics</h2>
+<br>
+<h3>Key Performance Indicators</h3>
+- <strong>System Uptime</strong>: >99.9%
+- <strong>Response Time</strong>: <100ms for web services
+- <strong>Alert Accuracy</strong>: >95% true positive rate
+- <strong>Issue Resolution</strong>: <15 minutes for critical issues
+- <strong>Data Retention</strong>: 30 days of historical data
+<br>
+<h3>Monitoring Dashboard</h3>
+Access monitoring metrics at:
+- <strong>Web Dashboard</strong>: http://localhost:8080
+- <strong>API Endpoint</strong>: http://localhost:8000/api/metrics
+- <strong>Real-time Monitoring</strong>: WebSocket connection for live updates
+- <strong>Health Status</strong>: http://localhost:8000/health
+<br>
+<h2>Alert Management</h2>
+<br>
+<h3>Alert Levels</h3>
+- <strong>Critical</strong>: Immediate attention required
+- <strong>Warning</strong>: Attention needed soon
+- <strong>Info</strong>: Informational messages
+- <strong>Debug</strong>: Debugging information
+<br>
+<h3>Alert Channels</h3>
+- <strong>Email</strong>: SMTP-based email alerts
+- <strong>Slack</strong>: Slack webhook integration
+- <strong>SMS</strong>: Text message alerts
+- <strong>Webhook</strong>: Custom webhook integration
+- <strong>Dashboard</strong>: In-dashboard notifications
+<br>
+<h3>Alert Configuration</h3>
+<code></code>`yaml
+alerts:
+  channels:
+    email:
+      enabled: true
+      smtp_server: "smtp.gmail.com"
+      smtp_port: 587
+      username: "alerts@example.com"
+      password: "secure_password"
+      
+    slack:
+      enabled: true
+      webhook_url: "https://hooks.slack.com/..."
+      channel: "#alerts"
+      
+  rules:
+    cpu_high:
+      condition: "cpu_usage > 80"
+      level: "warning"
+      channels: ["email", "slack"]
+      
+    disk_full:
+      condition: "disk_usage > 90"
+      level: "critical"
+      channels: ["email", "slack", "sms"]
+<code></code>`
+<br>
+<h2>Future Enhancements</h2>
+<br>
+<h3>Planned Features</h3>
+- <strong>Machine Learning</strong>: AI-powered anomaly detection
+- <strong>Predictive Analytics</strong>: Predictive issue forecasting
+- <strong>Container Monitoring</strong>: Docker and Kubernetes monitoring
+- <strong>Cloud Integration</strong>: Multi-cloud monitoring support
+- <strong>Advanced Visualization</strong>: Interactive dashboards and graphs
+<br>
+<h3>Roadmap</h3>
+- <strong>Q1 2024</strong>: AI-powered anomaly detection
+- <strong>Q2 2024</strong>: Predictive analytics implementation
+- <strong>Q3 2024</strong>: Container monitoring support
+- <strong>Q4 2024</strong>: Advanced visualization dashboard
+<br>
+---
+<br>
+<strong>The System Monitoring & Health system provides comprehensive visibility into system performance with proactive issue detection and automated resolution capabilities.</strong> </div>
+    </div>
+</body>
+</html>

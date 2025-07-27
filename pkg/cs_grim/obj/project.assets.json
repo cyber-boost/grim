@@ -148,7 +148,7 @@
     "/root/.nuget/packages/": {}
   },
   "project": {
-    "version": "1.0.29",
+    "version": "1.0.33",
     "restore": {
       "projectUniqueName": "/opt/reaper/pkg/cs_grim/GrimReaper.csproj",
       "projectName": "GrimReaper",

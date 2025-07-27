@@ -1,6 +1,6 @@
 [package]
 name = "grim-reaper"
-version = "1.0.30"
+version = "1.0.33"
 edition = "2021"
 authors = ["Bernie Gengel and his beagle Buddy <rip@grim.so>"]
 description = "Death Defying Data Protection - When data death comes knocking, Grim ensures resurrection is just a command away"

@@ -100,8 +100,14 @@ publish_package() {
         current_version=$(node -p "require('./package.json').version")
     fi
     
-    # Publish
-    npm publish --access public
+    # Publish with OTP if provided
+    if [[ -n "${OTP_CODE:-}" ]]; then
+        log "Publishing with OTP authentication..."
+        npm publish --access public --otp="$OTP_CODE"
+    else
+        log "Publishing without OTP (if 2FA is enabled, this may fail)..."
+        npm publish --access public
+    fi
     
     success "Published grim-reaper@$current_version to npm"
     log "Install with: npm install -g grim-reaper"
@@ -175,22 +181,53 @@ deploy() {
 show_help() {
     echo "Grim Reaper JavaScript Package Deployment"
     echo ""
-    echo "Usage: $0 [version]"
+    echo "Usage: $0 [version] [--otp OTP_CODE]"
+    echo ""
+    echo "Options:"
+    echo "  --otp CODE      One-time password for npm 2FA authentication"
     echo ""
     echo "Examples:"
-    echo "  $0              # Deploy current version"
-    echo "  $0 1.2.3        # Deploy specific version"
-    echo "  $0 patch        # Bump patch version"
-    echo "  $0 minor        # Bump minor version"
-    echo "  $0 major        # Bump major version"
+    echo "  $0                      # Deploy current version"
+    echo "  $0 1.2.3                # Deploy specific version"
+    echo "  $0 patch                # Bump patch version"
+    echo "  $0 minor                # Bump minor version"
+    echo "  $0 major                # Bump major version"
+    echo "  $0 --otp 123456         # Deploy with OTP"
+    echo "  $0 patch --otp 123456   # Bump version and deploy with OTP"
+    echo ""
+    echo "Environment Variables:"
+    echo "  OTP_CODE        Alternative way to provide OTP code"
 }
 
-# Handle arguments
-case "${1:-deploy}" in
-    help|-h|--help)
-        show_help
-        ;;
-    *)
-        deploy "$@"
-        ;;
-esac
+# Parse arguments
+VERSION=""
+OTP_CODE="${OTP_CODE:-}"
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --otp)
+            OTP_CODE="$2"
+            shift 2
+            ;;
+        help|-h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            if [[ -z "$VERSION" ]]; then
+                VERSION="$1"
+            fi
+            shift
+            ;;
+    esac
+done
+
+# Export OTP_CODE for use in functions
+export OTP_CODE
+
+# Handle deployment
+if [[ -n "$VERSION" ]]; then
+    deploy "$VERSION"
+else
+    deploy
+fi

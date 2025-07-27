@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grim Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        h2 { color: #666; margin-top: 30px; }
+        code { background: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Grim Documentation</h1>
+    <div id="content">
+<div class="content">
+////////////////////////////////////////////
+// curl -fsSL https://grim.so | sudo bash //
+//     ██████╗ ██████╗ ██╗███╗   ███╗     //
+//    ██╔════╝ ██╔══██╗██║████╗ ████║     //
+//    ██║  ███╗██████╔╝██║██╔████╔██║     //
+//    ██║   ██║██╔══██╗██║██║╚██╔╝██║     //
+//    ╚██████╔╝██║  ██║██║██║ ╚═╝ ██║     //
+//     ╚═════╝ ╚═╝  ╚═╝╚═╝╚═╝     ╚═╝     //
+//     Death Defying Data Protection      //
+////////////////////////////////////////////
+<br>
+<h1>🌐 Web Services & APIs</h1>
+<br>
+<strong>The Digital Interface of Grim Reaper</strong> - High-performance web services and REST APIs that provide seamless access to all Grim Reaper capabilities through modern web interfaces, real-time dashboards, and comprehensive API endpoints.
+<br>
+<h2>Overview</h2>
+<br>
+The Web Services & APIs category provides modern web interfaces, REST APIs, and real-time monitoring capabilities. It includes FastAPI-based web services, interactive dashboards, API gateways, and WebSocket support for real-time communication and monitoring.
+<br>
+<h2>Architecture</h2>
+<br>
+<code></code>`
+    🌐 WEB SERVICES & APIs LAYER
+           |
+    ┌──────┼──────┐
+    │      │      │
+FastAPI   Dashboard API
+Services  Interface Gateway
+<code></code>`
+<br>
+<h2>Core Components</h2>
+<br>
+<h3>🚀 FastAPI Web Services (sh_grim/dashboard.sh + py_grim/dashboard integration)</h3>
+<br>
+<strong>Purpose:</strong> High-performance web dashboard with real-time monitoring and management interface.
+<br>
+#### Key Features
+- <strong>Interactive Dashboard</strong>: Real-time system monitoring and control
+- <strong>REST API Integration</strong>: Full API access to all system functions
+- <strong>Real-time Updates</strong>: Live data streaming and updates
+- <strong>Responsive Design</strong>: Mobile-friendly responsive interface
+- <strong>User Management</strong>: Multi-user access and role management
+- <strong>Customizable Views</strong>: Configurable dashboard layouts
+<br>
+#### Commands
+<code></code>`bash
+grim dashboard start            # Start web dashboard
+grim dashboard stop             # Stop dashboard
+grim dashboard restart          # Restart dashboard
+grim dashboard status           # Check dashboard status
+grim dashboard config           # Configure dashboard
+grim dashboard init             # Initialize dashboard
+grim dashboard setup            # Run setup wizard
+grim dashboard logs             # View dashboard logs
+grim dashboard help             # Display dashboard help
+<code></code>`
+<br>
+#### Dashboard Features
+- <strong>System Overview</strong>: Real-time system status and metrics
+- <strong>Performance Monitoring</strong>: Live performance data and graphs
+- <strong>Backup Management</strong>: Backup status and management interface
+- <strong>Security Dashboard</strong>: Security status and threat monitoring
+- <strong>Configuration Management</strong>: System configuration interface
+- <strong>Log Viewer</strong>: Real-time log viewing and analysis
+<br>
+#### Configuration
+<code></code>`yaml
+dashboard_configuration:
+  server:
+    host: "0.0.0.0"
+    port: 8080
+    workers: 4
+    timeout: 30
+    
+  security:
+    ssl_enabled: false
+    authentication: true
+    session_timeout: 3600
+    
+  features:
+    real_time_updates: true
+    websocket_enabled: true
+    api_access: true
+    
+  customization:
+    theme: "dark"
+    refresh_interval: 5
+    max_data_points: 1000
+<code></code>`
+<br>
+<h3>🌐 FastAPI Web Server (py_grim/grim_web/* via throne)</h3>
+<br>
+<strong>Purpose:</strong> High-performance FastAPI web server with comprehensive REST API endpoints.
+<br>
+#### Key Features
+- <strong>FastAPI Framework</strong>: Modern, fast web framework
+- <strong>REST API</strong>: Comprehensive REST API endpoints
+- <strong>OpenAPI Documentation</strong>: Auto-generated API documentation
+- <strong>WebSocket Support</strong>: Real-time bidirectional communication
+- <strong>Middleware Support</strong>: CORS, authentication, rate limiting
+- <strong>Async Support</strong>: High-performance async operations
+<br>
+#### Commands
+<code></code>`bash
+grim web start              # Start FastAPI web server
+grim web stop               # Stop all web services
+grim web restart            # Restart web server
+grim web gateway            # Start API gateway with load balancing
+grim web api                # Start API application
+grim web status             # Show web services status
+grim web help               # Display web help
+<code></code>`
+<br>
+#### API Endpoints
+- <strong>Health Check</strong>: <code>GET /health</code> - System health status
+- <strong>Root Endpoint</strong>: <code>GET /</code> - API documentation and root
+- <strong>TuskLang Integration</strong>: <code>GET /tusktsk/*</code> - TuskLang integration endpoints
+- <strong>REST API</strong>: <code>GET /api/*</code> - Comprehensive REST API endpoints
+- <strong>WebSocket</strong>: <code>ws://localhost:8080/ws</code> - Real-time monitoring
+<br>
+#### API Documentation
+<code></code>`yaml
+api_endpoints:
+  health:
+    path: "/health"
+    method: "GET"
+    description: "System health check"
+    
+  metrics:
+    path: "/api/metrics"
+    method: "GET"
+    description: "System metrics"
+    
+  status:
+    path: "/api/status"
+    method: "GET"
+    description: "Service status"
+    
+  backup:
+    path: "/api/backup"
+    method: "POST"
+    description: "Create backup"
+    
+  restore:
+    path: "/api/restore"
+    method: "POST"
+    description: "Restore from backup"
+<code></code>`
+<br>
+<h3>🚪 API Gateway (py_grim/grim_gateway/gateway.py via throne)</h3>
+<br>
+<strong>Purpose:</strong> Load-balanced API gateway with advanced routing and security features.
+<br>
+#### Key Features
+- <strong>Load Balancing</strong>: Intelligent load balancing across services
+- <strong>Rate Limiting</strong>: API rate limiting and throttling
+- <strong>Authentication</strong>: Centralized authentication and authorization
+- <strong>Request Routing</strong>: Advanced request routing and filtering
+- <strong>Monitoring</strong>: Gateway performance monitoring
+- <strong>Security</strong>: API security and protection features
+<br>
+#### Commands
+<code></code>`bash
+grim gateway start                       # Start API gateway
+grim gateway stop                        # Stop gateway
+grim gateway status                      # Gateway status
+grim gateway config                      # Configure gateway
+grim gateway help                        # Display gateway help
+<code></code>`
+<br>
+#### Gateway Features
+- <strong>Load Balancing</strong>: Round-robin, least connections, weighted
+- <strong>Health Checks</strong>: Service health monitoring and failover
+- <strong>SSL Termination</strong>: SSL/TLS termination and management
+- <strong>Request Filtering</strong>: Request validation and filtering
+- <strong>Response Caching</strong>: Intelligent response caching
+- <strong>Logging</strong>: Comprehensive request/response logging
+<br>
+<h3>🔌 WebSocket Support</h3>
+<br>
+<strong>Purpose:</strong> Real-time bidirectional communication for live monitoring and updates.
+<br>
+#### Key Features
+- <strong>Real-time Updates</strong>: Live data streaming and updates
+- <strong>Bidirectional Communication</strong>: Full-duplex communication
+- <strong>Connection Management</strong>: Automatic connection management
+- <strong>Event Broadcasting</strong>: Broadcast events to multiple clients
+- <strong>Authentication</strong>: WebSocket authentication and security
+- <strong>Performance Optimization</strong>: Optimized for high-performance
+<br>
+#### WebSocket Endpoints
+- <strong>Monitoring</strong>: <code>ws://localhost:8080/ws/monitoring</code> - Real-time monitoring
+- <strong>Alerts</strong>: <code>ws://localhost:8080/ws/alerts</code> - Real-time alerts
+- <strong>Logs</strong>: <code>ws://localhost:8080/ws/logs</code> - Live log streaming
+- <strong>Metrics</strong>: <code>ws://localhost:8080/ws/metrics</code> - Live metrics
+<br>
+#### WebSocket Events
+<code></code>`json
+{
+  "type": "system_update",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "data": {
+    "cpu_usage": 45.2,
+    "memory_usage": 67.8,
+    "disk_usage": 23.1
+  }
+}
+<code></code>`
+<br>
+<h2>API Reference</h2>
+<br>
+<h3>Core API Endpoints</h3>
+<br>
+#### System Management
+<code></code>`http
+GET /api/system/status          # Get system status
+GET /api/system/health          # Get system health
+GET /api/system/info            # Get system information
+POST /api/system/restart        # Restart system services
+<code></code>`
+<br>
+#### Backup Management
+<code></code>`http
+GET /api/backup/list            # List all backups
+POST /api/backup/create         # Create new backup
+GET /api/backup/{id}/status     # Get backup status
+POST /api/backup/{id}/restore   # Restore from backup
+DELETE /api/backup/{id}         # Delete backup
+<code></code>`
+<br>
+#### Monitoring
+<code></code>`http
+GET /api/monitoring/metrics     # Get system metrics
+GET /api/monitoring/alerts      # Get active alerts
+POST /api/monitoring/start      # Start monitoring
+POST /api/monitoring/stop       # Stop monitoring
+<code></code>`
+<br>
+#### Security
+<code></code>`http
+GET /api/security/scan          # Run security scan
+GET /api/security/status        # Get security status
+POST /api/security/fix          # Fix security issues
+GET /api/security/report        # Get security report
+<code></code>`
+<br>
+<h3>Authentication & Authorization</h3>
+<br>
+#### API Authentication
+<code></code>`http
+POST /api/auth/login            # Login
+POST /api/auth/logout           # Logout
+GET /api/auth/status            # Check authentication status
+POST /api/auth/refresh          # Refresh token
+<code></code>`
+<br>
+#### API Keys
+<code></code>`http
+GET /api/keys/list              # List API keys
+POST /api/keys/create           # Create new API key
+DELETE /api/keys/{id}           # Delete API key
+<code></code>`
+<br>
+<h3>Response Formats</h3>
+<br>
+#### Success Response
+<code></code>`json
+{
+  "success": true,
+  "data": {
+    "id": "backup_123",
+    "status": "completed",
+    "size": "1.2GB",
+    "created_at": "2024-01-15T10:30:00Z"
+  },
+  "message": "Backup created successfully"
+}
+<code></code>`
+<br>
+#### Error Response
+<code></code>`json
+{
+  "success": false,
+  "error": {
+    "code": "BACKUP_FAILED",
+    "message": "Backup operation failed",
+    "details": "Insufficient disk space"
+  },
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+<code></code>`
+<br>
+<h2>Integration Patterns</h2>
+<br>
+<h3>Complete Web Service Setup</h3>
+<code></code>`bash
+<h1>1. Initialize web services</h1>
+grim web init
+<br>
+<h1>2. Start FastAPI server</h1>
+grim web start
+<br>
+<h1>3. Start API gateway</h1>
+grim web gateway
+<br>
+<h1>4. Start dashboard</h1>
+grim dashboard start
+<br>
+<h1>5. Verify services</h1>
+grim web status
+<code></code>`
+<br>
+<h3>API Integration Example</h3>
+<code></code>`bash
+<h1>Health check</h1>
+curl http://localhost:8000/health
+<br>
+<h1>Create backup via API</h1>
+curl -X POST http://localhost:8000/api/backup/create \
+  -H "Content-Type: application/json" \
+  -d '{"name": "api_backup", "path": "/data"}'
+<br>
+<h1>Get system metrics</h1>
+curl http://localhost:8000/api/metrics
+<br>
+<h1>WebSocket connection</h1>
+wscat -c ws://localhost:8080/ws/monitoring
+<code></code>`
+<br>
+<h3>Dashboard Integration</h3>
+<code></code>`bash
+<h1>Access dashboard</h1>
+open http://localhost:8080
+<br>
+<h1>API documentation</h1>
+open http://localhost:8000/docs
+<br>
+<h1>Health status</h1>
+curl http://localhost:8000/health
+<br>
+<h1>System status</h1>
+curl http://localhost:8000/api/status
+<code></code>`
+<br>
+<h2>Configuration</h2>
+<br>
+<h3>Web Services Configuration</h3>
+<code></code>`yaml
+web_services_configuration:
+  fastapi:
+    host: "0.0.0.0"
+    port: 8000
+    workers: 4
+    timeout: 30
+    reload: false
+    
+  dashboard:
+    host: "0.0.0.0"
+    port: 8080
+    refresh_interval: 5
+    theme: "dark"
+    
+  gateway:
+    host: "0.0.0.0"
+    port: 9000
+    load_balancing: true
+    rate_limiting: true
+    
+  security:
+    ssl_enabled: false
+    authentication: true
+    cors_enabled: true
+    rate_limit: 1000
+<code></code>`
+<br>
+<h3>API Configuration</h3>
+<code></code>`yaml
+api_configuration:
+  endpoints:
+    health_check: "/health"
+    metrics: "/api/metrics"
+    status: "/api/status"
+    
+  authentication:
+    enabled: true
+    method: "jwt"
+    token_expiry: 3600
+    
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 1000
+    burst_limit: 100
+    
+  logging:
+    level: "INFO"
+    format: "json"
+    file: "/var/log/grim/api.log"
+<code></code>`
+<br>
+<h3>Dashboard Configuration</h3>
+<code></code>`yaml
+dashboard_configuration:
+  interface:
+    theme: "dark"
+    language: "en"
+    timezone: "UTC"
+    
+  features:
+    real_time_updates: true
+    websocket_enabled: true
+    api_access: true
+    
+  customization:
+    refresh_interval: 5
+    max_data_points: 1000
+    chart_types: ["line", "bar", "pie"]
+    
+  security:
+    session_timeout: 3600
+    max_sessions: 10
+    ip_whitelist: []
+<code></code>`
+<br>
+<h2>Best Practices</h2>
+<br>
+<h3>API Design</h3>
+1. <strong>RESTful Design</strong>: Follow REST principles
+2. <strong>Consistent Naming</strong>: Use consistent naming conventions
+3. <strong>Error Handling</strong>: Implement proper error handling
+4. <strong>Versioning</strong>: Use API versioning
+5. <strong>Documentation</strong>: Maintain comprehensive documentation
+<br>
+<h3>Security</h3>
+1. <strong>Authentication</strong>: Implement proper authentication
+2. <strong>Authorization</strong>: Use role-based access control
+3. <strong>Rate Limiting</strong>: Implement rate limiting
+4. <strong>Input Validation</strong>: Validate all inputs
+5. <strong>HTTPS</strong>: Use HTTPS in production
+<br>
+<h3>Performance</h3>
+1. <strong>Caching</strong>: Implement appropriate caching
+2. <strong>Load Balancing</strong>: Use load balancing
+3. <strong>Monitoring</strong>: Monitor API performance
+4. <strong>Optimization</strong>: Optimize database queries
+5. <strong>Compression</strong>: Use response compression
+<br>
+<h2>Troubleshooting</h2>
+<br>
+<h3>Common Issues</h3>
+<br>
+#### Web Service Failures
+<code></code>`bash
+<h1>Check web service status</h1>
+grim web status
+<br>
+<h1>View web service logs</h1>
+grim log tail web.log
+<br>
+<h1>Restart web services</h1>
+grim web restart
+<br>
+<h1>Check port availability</h1>
+grim health-check network
+<code></code>`
+<br>
+#### Dashboard Issues
+<code></code>`bash
+<h1>Check dashboard status</h1>
+grim dashboard status
+<br>
+<h1>Restart dashboard</h1>
+grim dashboard restart
+<br>
+<h1>View dashboard logs</h1>
+grim dashboard logs
+<br>
+<h1>Check dashboard configuration</h1>
+grim dashboard config
+<code></code>`
+<br>
+#### API Gateway Issues
+<code></code>`bash
+<h1>Check gateway status</h1>
+grim gateway status
+<br>
+<h1>Restart gateway</h1>
+grim gateway restart
+<br>
+<h1>Check gateway configuration</h1>
+grim gateway config
+<br>
+<h1>View gateway logs</h1>
+grim log tail gateway.log
+<code></code>`
+<br>
+#### WebSocket Issues
+<code></code>`bash
+<h1>Test WebSocket connection</h1>
+wscat -c ws://localhost:8080/ws/monitoring
+<br>
+<h1>Check WebSocket status</h1>
+grim web status --websocket
+<br>
+<h1>View WebSocket logs</h1>
+grim log tail websocket.log
+<code></code>`
+<br>
+<h2>Performance Metrics</h2>
+<br>
+<h3>Key Performance Indicators</h3>
+- <strong>Response Time</strong>: <100ms for API requests
+- <strong>Throughput</strong>: >1000 requests/second
+- <strong>Uptime</strong>: >99.9%
+- <strong>Error Rate</strong>: <0.1%
+- <strong>Concurrent Connections</strong>: >1000 WebSocket connections
+<br>
+<h3>Monitoring Dashboard</h3>
+Access web service metrics at:
+- <strong>API Dashboard</strong>: http://localhost:8080/api-metrics
+- <strong>Performance Dashboard</strong>: http://localhost:8080/performance
+- <strong>Health Dashboard</strong>: http://localhost:8080/health
+- <strong>API Documentation</strong>: http://localhost:8000/docs
+<br>
+<h2>Development</h2>
+<br>
+<h3>API Development</h3>
+<code></code>`bash
+<h1>Start development server</h1>
+grim web start --dev
+<br>
+<h1>Run API tests</h1>
+grim test-framework web
+<br>
+<h1>Generate API documentation</h1>
+grim docs generate api-docs
+<br>
+<h1>Validate API schema</h1>
+grim web validate-schema
+<code></code>`
+<br>
+<h3>Dashboard Development</h3>
+<code></code>`bash
+<h1>Start dashboard in development mode</h1>
+grim dashboard start --dev
+<br>
+<h1>Customize dashboard</h1>
+grim dashboard customize
+<br>
+<h1>Add custom widgets</h1>
+grim dashboard add-widget
+<br>
+<h1>Test dashboard functionality</h1>
+grim dashboard test
+<code></code>`
+<br>
+<h2>Future Enhancements</h2>
+<br>
+<h3>Planned Features</h3>
+- <strong>GraphQL Support</strong>: GraphQL API implementation
+- <strong>Microservices</strong>: Microservices architecture
+- <strong>Container Support</strong>: Docker and Kubernetes support
+- <strong>Cloud Integration</strong>: Multi-cloud API management
+- <strong>Advanced Analytics</strong>: Advanced analytics and reporting
+<br>
+<h3>Roadmap</h3>
+- <strong>Q1 2024</strong>: GraphQL API implementation
+- <strong>Q2 2024</strong>: Microservices architecture
+- <strong>Q3 2024</strong>: Container support
+- <strong>Q4 2024</strong>: Cloud integration
+<br>
+---
+<br>
+<strong>The Web Services & APIs provide modern, high-performance interfaces for accessing all Grim Reaper capabilities through web dashboards and REST APIs.</strong> </div>
+    </div>
+</body>
+</html>

@@ -41,6 +41,20 @@
             <param name="path">Path to check</param>
             <returns>True if valid Grim installation</returns>
         </member>
+        <member name="M:GrimReaper.GrimReaper.InstallAsync(System.String,System.Boolean)">
+            <summary>
+            Installs Grim Reaper from latest.tar.gz
+            </summary>
+            <param name="directory">Optional installation directory</param>
+            <param name="skipConfirmation">Skip confirmation prompts</param>
+            <returns>Installation result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.GetDefaultInstallDirectory">
+            <summary>
+            Gets the default installation directory
+            </summary>
+            <returns>Default installation path</returns>
+        </member>
         <member name="M:GrimReaper.GrimReaper.ExecuteShModuleAsync(System.String,System.String[])">
             <summary>
             Executes sh_grim module with proper error handling
@@ -261,6 +275,14 @@
             </summary>
             <param name="path">Path to scan</param>
             <returns>Scan result</returns>
+        </member>
+        <member name="M:GrimReaper.GrimQuick.InstallAsync(System.String,System.Boolean)">
+            <summary>
+            Quick install operation
+            </summary>
+            <param name="directory">Optional installation directory</param>
+            <param name="skipConfirmation">Skip confirmation prompts</param>
+            <returns>Installation result</returns>
         </member>
     </members>
 </doc>

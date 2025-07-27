@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grim Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        h2 { color: #666; margin-top: 30px; }
+        code { background: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Grim Documentation</h1>
+    <div id="content">
+<div class="content">
+<h1>monitor Module</h1>
+<br>
+Grimm Monitor Module: Real-time filesystem monitoring and change detection
+<br>
+<h2>Version</h2>
+<br>
+1.0.0
+<br>
+<h2>Overview</h2>
+<br>
+Grimm Monitor Module: Real-time filesystem monitoring and change detection
+Initialize monitoring database tables
+Start monitoring a directory
+Stop monitoring a directory
+Show monitoring status
+<br>
+<h2>Commands</h2>
+<br>
+No specific commands documented.
+<br>
+<h2>Configuration</h2>
+<br>
+| Variable | Default | Description |
+|----------|---------|-------------|
+| <code>SCRIPT_PATH</code> | <code>$(readlink -f $0)</code> | Configuration setting |
+| <code>GRIM_ROOT</code> | <code>$(cd $(dirname $SCRIPT_PATH)/.. && pwd)</code> | Configuration setting |
+| <code>DB_PATH</code> | <code>${DB_DIR:-$GRIM_ROOT/db}/grimm.db</code> | Configuration setting |
+| <code>LOG_FILE</code> | <code>${LOG_DIR:-$GRIM_ROOT/logs}/monitor.log</code> | Configuration setting |
+| <code>NOTIFY_MODULE</code> | <code>$GRIM_ROOT/sh_grim/notify.sh</code> | Configuration setting |
+<br>
+<h2>Examples</h2>
+<br>
+See the module help for usage examples.
+<br>
+<h2>Troubleshooting</h2>
+<br>
+<h3>Common Issues</h3>
+<br>
+- <strong>Issue</strong>: echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: $1" | tee -a "$LOG_FILE" >&2
+  - <strong>Solution</strong>: Check configuration and permissions
+<br>
+<h2>API Reference</h2>
+<br>
+<h3>Functions</h3>
+<br>
+- <code>log {()</code> - Module function
+- <code>log_error {()</code> - Module function
+- <code>show_help {()</code> - Module function
+- <code>init_monitor_db {()</code> - Module function
+- <code>start_monitoring {()</code> - Module function
+- <code>stop_monitoring {()</code> - Module function
+- <code>show_status {()</code> - Module function
+- <code>list_monitored {()</code> - Module function
+- <code>show_events {()</code> - Module function
+- <code>configure_monitoring {()</code> - Module function
+</div>
+    </div>
+</body>
+</html>

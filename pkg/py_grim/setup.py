@@ -180,7 +180,7 @@ security:
 
 setup(
     name="grim-reaper",
-    version="1.0.30",
+    version="1.0.33",
     author="Bernie Gengel and his beagle Buddy", 
     author_email="rip@grim.so",
     description="Grim: Unified Data Protection Ecosystem. When data death comes knocking, Grim ensures resurrection is just a command away. License management, auto backups, highly compressed backups, multi-algorithm compression, content-based deduplication, smart storage tiering save up to 60% space, military-grade encryption, license protection, security surveillance, and automated threat response.",
@@ -211,27 +211,7 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     python_requires=">=3.8",
-    install_requires=read_requirements(),
-    extras_require={
-        "dev": [
-            "pytest>=6.0",
-            "pytest-cov>=2.0",
-            "black>=21.0",
-            "flake8>=3.8",
-            "mypy>=0.800",
-        ],
-        "full": [
-            "flask>=2.0",
-            "fastapi>=0.68",
-            "uvicorn>=0.15",
-            "websockets>=10.0",
-            "aiofiles>=0.7",
-            "psycopg2-binary>=2.9",
-            "pymongo>=4.0",
-            "redis>=4.0",
-            "celery>=5.2",
-        ],
-    },
+    # Dependencies and license are now handled in pyproject.toml
     entry_points={
         "console_scripts": [
             "grim=grim_reaper:main",
@@ -265,7 +245,6 @@ setup(
         "machine-learning",
         "grim-reaper",
     ],
-    # license="MIT",  # Removed due to metadata issues
     platforms=["any"],
 )
 

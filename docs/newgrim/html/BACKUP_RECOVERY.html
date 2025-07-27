@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grim Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        h2 { color: #666; margin-top: 30px; }
+        code { background: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Grim Documentation</h1>
+    <div id="content">
+<div class="content">
+////////////////////////////////////////////
+// curl -fsSL https://grim.so | sudo bash //
+//     ██████╗ ██████╗ ██╗███╗   ███╗     //
+//    ██╔════╝ ██╔══██╗██║████╗ ████║     //
+//    ██║  ███╗██████╔╝██║██╔████╔██║     //
+//    ██║   ██║██╔══██╗██║██║╚██╔╝██║     //
+//    ╚██████╔╝██║  ██║██║██║ ╚═╝ ██║     //
+//     ╚═════╝ ╚═╝  ╚═╝╚═╝╚═╝     ╚═╝     //
+//     Death Defying Data Protection      //
+////////////////////////////////////////////
+<br>
+<h1>💾 Backup & Recovery</h1>
+<br>
+<strong>The Foundation of Data Protection</strong> - Comprehensive backup and recovery system that ensures data integrity, provides multiple recovery options, and maintains business continuity through intelligent backup strategies.
+<br>
+<h2>Overview</h2>
+<br>
+The Backup & Recovery category forms the core of Grim Reaper's data protection capabilities. It provides intelligent, automated backup solutions with advanced features like deduplication, compression, encryption, and multi-tier recovery options. The system supports both traditional backup methods and modern cloud-native approaches.
+<br>
+<h2>Architecture</h2>
+<br>
+<code></code>`
+    💾 BACKUP & RECOVERY SYSTEM
+           |
+    ┌──────┼──────┐
+    │      │      │
+Intelligent Deduplication Recovery
+Backup    Engine   Engine
+<code></code>`
+<br>
+<h2>Core Components</h2>
+<br>
+<h3>🧠 Intelligent Backup System (sh_grim/backup.sh)</h3>
+<br>
+<strong>Purpose:</strong> Smart backup creation with frequency-based scheduling and intelligent file selection.
+<br>
+#### Key Features
+- <strong>Frequency-Based Backups</strong>: Daily, weekly, monthly, and custom schedules
+- <strong>Intelligent File Selection</strong>: AI-powered file importance analysis
+- <strong>Progress Tracking</strong>: Real-time backup progress monitoring
+- <strong>Integrity Verification</strong>: SHA256 checksums for data integrity
+- <strong>Graveyard Recovery</strong>: Automatic recovery from backup graveyard
+- <strong>Remote Storage</strong>: Support for cloud and remote storage locations
+<br>
+#### Commands
+<code></code>`bash
+grim backup create              # Create intelligent backup
+grim backup verify              # Verify backup integrity
+grim backup list                # List all backups
+grim backup help                # Display backup help
+<code></code>`
+<br>
+#### Backup Types
+- <strong>Full Backup</strong>: Complete system backup
+- <strong>Incremental Backup</strong>: Only changed files since last backup
+- <strong>Differential Backup</strong>: All changes since last full backup
+- <strong>Snapshot Backup</strong>: Point-in-time system state
+<br>
+#### Configuration
+<code></code>`yaml
+backup_system:
+  schedules:
+    daily: "0 2 <em> </em> *"
+    weekly: "0 2 <em> </em> 0"
+    monthly: "0 2 1 <em> </em>"
+  
+  retention:
+    daily: 7
+    weekly: 4
+    monthly: 12
+    
+  compression:
+    algorithm: "zstd"
+    level: 6
+    
+  encryption:
+    enabled: true
+    algorithm: "AES-256"
+<code></code>`
+<br>
+<h3>⚙️ Core Backup Engine (sh_grim/backup_core.sh)</h3>
+<br>
+<strong>Purpose:</strong> Advanced backup functionality with enterprise-grade features and multi-tier strategies.
+<br>
+#### Key Features
+- <strong>Multi-Tier Strategies</strong>: Full, incremental, and differential backup support
+- <strong>Automated Scheduling</strong>: Cron-based backup scheduling
+- <strong>Storage Optimization</strong>: Intelligent storage allocation and cleanup
+- <strong>Performance Monitoring</strong>: Backup performance tracking and optimization
+- <strong>Error Recovery</strong>: Automatic retry and error handling
+<br>
+#### Commands
+<code></code>`bash
+grim backup-core create         # Create core backup with progress
+grim backup-core verify         # Verify backup checksums
+grim backup-core restore        # Restore from backup
+grim backup-core status         # Check backup system status
+grim backup-core init           # Initialize backup system
+grim backup-core help           # Display core backup help
+<code></code>`
+<br>
+#### Backup Strategies
+1. <strong>Grandfather-Father-Son (GFS)</strong>: Traditional enterprise backup strategy
+2. <strong>Continuous Data Protection (CDP)</strong>: Real-time backup with minimal RPO
+3. <strong>Snapshot-Based</strong>: Point-in-time recovery capabilities
+4. <strong>Cloud-Native</strong>: Optimized for cloud storage and services
+<br>
+<h3>🤖 Automated Backup Daemon (sh_grim/auto_backup.sh)</h3>
+<br>
+<strong>Purpose:</strong> Continuous, automated backup operations with intelligent scheduling and monitoring.
+<br>
+#### Key Features
+- <strong>Daemon Mode</strong>: Continuous background backup operations
+- <strong>Health Monitoring</strong>: Comprehensive health checks and diagnostics
+- <strong>Intelligent Scheduling</strong>: AI-powered backup timing optimization
+- <strong>Failure Recovery</strong>: Automatic retry and recovery mechanisms
+- <strong>Resource Management</strong>: Intelligent resource allocation
+<br>
+#### Commands
+<code></code>`bash
+grim auto-backup start          # Start automatic backup daemon
+grim auto-backup stop           # Stop backup daemon
+grim auto-backup restart        # Restart backup daemon
+grim auto-backup status         # Check daemon status
+grim auto-backup health         # Health check with diagnostics
+grim auto-backup help           # Display auto-backup help
+<code></code>`
+<br>
+#### Daemon Features
+- <strong>Watchdog Monitoring</strong>: Continuous monitoring of backup processes
+- <strong>Resource Optimization</strong>: Dynamic resource allocation based on system load
+- <strong>Priority Management</strong>: Intelligent backup priority based on file importance
+- <strong>Network Optimization</strong>: Bandwidth-aware backup scheduling
+<br>
+<h3>🔄 Recovery System (sh_grim/restore.sh)</h3>
+<br>
+<strong>Purpose:</strong> Comprehensive file and system recovery with multiple restoration options.
+<br>
+#### Key Features
+- <strong>Selective Restoration</strong>: Restore individual files or entire systems
+- <strong>Integrity Checking</strong>: Verify restored data integrity
+- <strong>Preview Mode</strong>: Preview backup contents before restoration
+- <strong>Search Functionality</strong>: Find specific files across multiple backups
+- <strong>Point-in-Time Recovery</strong>: Restore to specific backup points
+<br>
+#### Commands
+<code></code>`bash
+grim restore recover            # Restore from backup
+grim restore list               # List available restore points
+grim restore verify             # Verify restore integrity
+grim restore help               # Display restore help
+<code></code>`
+<br>
+#### Recovery Options
+- <strong>Full System Recovery</strong>: Complete system restoration
+- <strong>File-Level Recovery</strong>: Individual file restoration
+- <strong>Bare Metal Recovery</strong>: Complete system rebuild
+- <strong>Application Recovery</strong>: Application-specific restoration
+- <strong>Database Recovery</strong>: Database backup and restoration
+<br>
+<h3>🔍 Deduplication Engine (sh_grim/dedup.sh + go_grim/cmd/deduplication/main.go)</h3>
+<br>
+<strong>Purpose:</strong> Advanced deduplication to reduce storage requirements and improve backup efficiency.
+<br>
+#### Key Features
+- <strong>Content-Aware Deduplication</strong>: Intelligent duplicate detection
+- <strong>Chunk-Based Processing</strong>: Efficient storage of unique data chunks
+- <strong>Orphan Cleanup</strong>: Automatic cleanup of orphaned chunks
+- <strong>Performance Optimization</strong>: High-speed deduplication processing
+- <strong>Integrity Verification</strong>: Verify deduplication integrity
+<br>
+#### Commands
+<code></code>`bash
+grim dedup dedup                # Deduplicate files
+grim dedup restore              # Restore deduplicated files
+grim dedup cleanup              # Clean orphaned chunks
+grim dedup stats                # Show deduplication statistics
+grim dedup verify               # Verify dedup integrity
+grim dedup benchmark            # Run deduplication benchmarks
+grim dedup help                 # Display dedup help
+<code></code>`
+<br>
+#### Deduplication Algorithms
+- <strong>Fixed-Size Chunking</strong>: Traditional chunk-based deduplication
+- <strong>Variable-Size Chunking</strong>: Content-defined chunking for better efficiency
+- <strong>Delta Compression</strong>: Store only differences between versions
+- <strong>Reference Counting</strong>: Track chunk usage across backups
+<br>
+<h3>🐍 Python Auto-Backup Service (py_grim/backup.py + auto_backup.py)</h3>
+<br>
+<strong>Purpose:</strong> Python-based backup service with advanced features and web integration.
+<br>
+#### Key Features
+- <strong>Web Service Integration</strong>: REST API for backup operations
+- <strong>Database Integration</strong>: Metadata storage and management
+- <strong>Real-time Monitoring</strong>: Live backup status monitoring
+- <strong>Advanced Analytics</strong>: Backup performance analytics
+- <strong>Cloud Integration</strong>: Native cloud storage support
+<br>
+#### Commands
+<code></code>`bash
+grim auto-backup-py start                  # Start Python auto-backup service
+grim auto-backup-py stop                   # Stop service
+grim auto-backup-py restart                # Restart service
+grim auto-backup-py status                 # Service status
+grim auto-backup-py health                 # Health diagnostics
+grim auto-backup-py help                   # Display help
+<code></code>`
+<br>
+#### Service Features
+- <strong>REST API</strong>: HTTP endpoints for backup operations
+- <strong>WebSocket Support</strong>: Real-time status updates
+- <strong>Database Storage</strong>: SQLite/PostgreSQL metadata storage
+- <strong>Cloud Providers</strong>: AWS S3, Google Cloud Storage, Azure Blob support
+<br>
+<h2>Backup Strategies</h2>
+<br>
+<h3>1. Traditional Backup Strategy</h3>
+<code></code>`
+Daily Backups (7 days retention)
+├── Full Backup (Sunday)
+├── Incremental (Monday-Saturday)
+└── Weekly Archive (4 weeks retention)
+<code></code>`
+<br>
+<h3>2. Modern Backup Strategy</h3>
+<code></code>`
+Continuous Protection
+├── Real-time File Monitoring
+├── Instant Snapshots
+├── Cloud Replication
+└── Disaster Recovery
+<code></code>`
+<br>
+<h3>3. Hybrid Backup Strategy</h3>
+<code></code>`
+Multi-Tier Protection
+├── Local Backups (Fast Recovery)
+├── Network Backups (Medium-term)
+├── Cloud Backups (Long-term)
+└── Offsite Archives (Disaster Recovery)
+<code></code>`
+<br>
+<h2>Integration Patterns</h2>
+<br>
+<h3>Complete Backup Workflow</h3>
+<code></code>`bash
+<h1>1. Initialize backup system</h1>
+grim backup-core init
+<br>
+<h1>2. Start automated backup daemon</h1>
+grim auto-backup start
+<br>
+<h1>3. Monitor backup status</h1>
+grim backup status
+<br>
+<h1>4. Verify backup integrity</h1>
+grim backup verify
+<br>
+<h1>5. Test recovery process</h1>
+grim restore test
+<code></code>`
+<br>
+<h3>AI-Enhanced Backup Optimization</h3>
+<code></code>`bash
+<h1>1. Analyze backup patterns</h1>
+grim ai-decision analyze
+<br>
+<h1>2. Optimize backup schedule</h1>
+grim ai-decision backup-priority
+<br>
+<h1>3. Apply intelligent deduplication</h1>
+grim dedup dedup
+<br>
+<h1>4. Monitor performance</h1>
+grim performance-test backup
+<code></code>`
+<br>
+<h3>Disaster Recovery Preparation</h3>
+<code></code>`bash
+<h1>1. Create full system backup</h1>
+grim backup-core create full
+<br>
+<h1>2. Verify backup integrity</h1>
+grim backup-core verify
+<br>
+<h1>3. Test recovery procedures</h1>
+grim restore test-recovery
+<br>
+<h1>4. Document recovery procedures</h1>
+grim docs generate recovery-procedures
+<code></code>`
+<br>
+<h2>Configuration</h2>
+<br>
+<h3>Backup System Configuration</h3>
+<code></code>`yaml
+backup_configuration:
+  general:
+    backup_root: "/opt/grim-reaper/backups"
+    temp_directory: "/tmp/grim-backup"
+    log_level: "INFO"
+    
+  scheduling:
+    enabled: true
+    timezone: "UTC"
+    max_concurrent_backups: 3
+    
+  storage:
+    local:
+      enabled: true
+      path: "/opt/grim-reaper/backups/local"
+      max_size: "1TB"
+      
+    remote:
+      enabled: true
+      type: "s3"
+      bucket: "grim-backups"
+      region: "us-west-2"
+      
+  compression:
+    algorithm: "zstd"
+    level: 6
+    parallel: true
+    
+  encryption:
+    enabled: true
+    algorithm: "AES-256-GCM"
+    key_rotation: 90
+    
+  deduplication:
+    enabled: true
+    chunk_size: "1MB"
+    algorithm: "sha256"
+    cleanup_orphans: true
+<code></code>`
+<br>
+<h3>Recovery Configuration</h3>
+<code></code>`yaml
+recovery_configuration:
+  verification:
+    checksum_verification: true
+    integrity_check: true
+    test_restore: false
+    
+  performance:
+    parallel_restore: true
+    max_workers: 4
+    buffer_size: "64MB"
+    
+  safety:
+    dry_run: false
+    confirmation_prompt: true
+    backup_before_restore: true
+<code></code>`
+<br>
+<h2>Best Practices</h2>
+<br>
+<h3>Backup Strategy</h3>
+1. <strong>3-2-1 Rule</strong>: 3 copies, 2 different media, 1 offsite
+2. <strong>Regular Testing</strong>: Test recovery procedures monthly
+3. <strong>Documentation</strong>: Maintain detailed recovery procedures
+4. <strong>Monitoring</strong>: Monitor backup success rates and performance
+<br>
+<h3>Performance Optimization</h3>
+1. <strong>Parallel Processing</strong>: Use parallel backup operations
+2. <strong>Incremental Backups</strong>: Use incremental backups for efficiency
+3. <strong>Deduplication</strong>: Enable deduplication to reduce storage
+4. <strong>Compression</strong>: Use appropriate compression levels
+<br>
+<h3>Security</h3>
+1. <strong>Encryption</strong>: Encrypt all backup data
+2. <strong>Access Control</strong>: Implement proper access controls
+3. <strong>Key Management</strong>: Secure encryption key storage
+4. <strong>Audit Logging</strong>: Log all backup and recovery operations
+<br>
+<h2>Troubleshooting</h2>
+<br>
+<h3>Common Issues</h3>
+<br>
+#### Backup Failures
+<code></code>`bash
+<h1>Check backup status</h1>
+grim backup status
+<br>
+<h1>View backup logs</h1>
+grim log tail backup.log
+<br>
+<h1>Test backup creation</h1>
+grim backup create --test
+<br>
+<h1>Check disk space</h1>
+grim health check disk
+<code></code>`
+<br>
+#### Recovery Issues
+<code></code>`bash
+<h1>Verify backup integrity</h1>
+grim backup verify
+<br>
+<h1>Test recovery process</h1>
+grim restore test
+<br>
+<h1>Check file permissions</h1>
+grim security audit permissions
+<br>
+<h1>Validate backup metadata</h1>
+grim backup-core verify
+<code></code>`
+<br>
+#### Performance Issues
+<code></code>`bash
+<h1>Check system resources</h1>
+grim health check
+<br>
+<h1>Optimize backup performance</h1>
+grim performance-test backup
+<br>
+<h1>Adjust compression settings</h1>
+grim backup config --compression-level 3
+<br>
+<h1>Enable parallel processing</h1>
+grim backup config --parallel true
+<code></code>`
+<br>
+<h2>Performance Metrics</h2>
+<br>
+<h3>Key Performance Indicators</h3>
+- <strong>Backup Success Rate</strong>: >99.5%
+- <strong>Recovery Time</strong>: <4 hours for full system recovery
+- <strong>Backup Window</strong>: <2 hours for daily backups
+- <strong>Storage Efficiency</strong>: >80% deduplication ratio
+- <strong>Data Integrity</strong>: 100% checksum verification
+<br>
+<h3>Monitoring Dashboard</h3>
+Access backup metrics at:
+- <strong>Web Dashboard</strong>: http://localhost:8080/backup-metrics
+- <strong>API Endpoint</strong>: http://localhost:8000/api/backup/status
+- <strong>Real-time Monitoring</strong>: WebSocket connection for live updates
+<br>
+<h2>Disaster Recovery</h2>
+<br>
+<h3>Recovery Time Objectives (RTO)</h3>
+- <strong>Critical Systems</strong>: <1 hour
+- <strong>Important Systems</strong>: <4 hours
+- <strong>Non-Critical Systems</strong>: <24 hours
+<br>
+<h3>Recovery Point Objectives (RPO)</h3>
+- <strong>Critical Data</strong>: <15 minutes
+- <strong>Important Data</strong>: <1 hour
+- <strong>Non-Critical Data</strong>: <24 hours
+<br>
+<h3>Recovery Procedures</h3>
+1. <strong>Assessment</strong>: Assess damage and determine recovery scope
+2. <strong>Prioritization</strong>: Prioritize systems for recovery
+3. <strong>Recovery</strong>: Execute recovery procedures
+4. <strong>Verification</strong>: Verify system functionality
+5. <strong>Documentation</strong>: Document recovery actions
+<br>
+<h2>Future Enhancements</h2>
+<br>
+<h3>Planned Features</h3>
+- <strong>Continuous Data Protection</strong>: Real-time backup with minimal RPO
+- <strong>Cloud-Native Backup</strong>: Optimized for cloud environments
+- <strong>Machine Learning</strong>: AI-powered backup optimization
+- <strong>Block-Level Backup</strong>: Efficient block-level backup operations
+- <strong>Instant Recovery</strong>: Near-instant recovery capabilities
+<br>
+<h3>Roadmap</h3>
+- <strong>Q1 2024</strong>: Continuous data protection implementation
+- <strong>Q2 2024</strong>: Cloud-native backup optimization
+- <strong>Q3 2024</strong>: AI-powered backup intelligence
+- <strong>Q4 2024</strong>: Instant recovery capabilities
+<br>
+---
+<br>
+<strong>The Backup & Recovery system ensures data protection and business continuity through intelligent, automated backup strategies with comprehensive recovery options.</strong> </div>
+    </div>
+</body>
+</html>

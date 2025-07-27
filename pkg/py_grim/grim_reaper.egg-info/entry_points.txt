@@ -1,0 +1,2 @@
+[console_scripts]
+grim = grim_reaper:main

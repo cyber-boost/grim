@@ -1,6 +1,6 @@
 {
   "name": "grim-reaper",
-  "version": "1.0.30",
+  "version": "1.0.33",
   "description": "Grim: Unified Data Protection Ecosystem. When data death comes knocking, Grim ensures resurrection is just a command away. License management, auto backups, highly compressed backups, multi-algorithm compression, content-based deduplication, smart storage tiering save up to 60% space, military-grade encryption, license protection, security surveillance, and automated threat response.",
   "main": "grim.js",
   "bin": {
@@ -84,14 +84,14 @@
     "group": "grim"
   },
   "metadata": {
-    "build_date": "2025-01-18T13:30:00Z",
+    "build_date": "2025-01-27T17:30:00Z",
     "build_host": "grim-reaper-build-server",
     "git_commit": "abc123def456",
     "git_branch": "main",
     "checksum": "sha256:deadbeef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
   },
   "grim": {
-    "version": "1.0.29",
+    "version": "1.0.33",
     "components": {
       "sh_grim": "Bash-based backup and system operations",
       "scyth": "File scanning and analysis",

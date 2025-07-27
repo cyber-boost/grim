@@ -397,6 +397,32 @@ class GrimCLI {
         this.provideRecommendations(checks);
 
         console.log('\n' + '='.repeat(50));
+        
+        // Auto-recovery logic
+        if (autoRecovery && checks.critical.length > 0) {
+            console.log('\n🔄 AUTO-RECOVERY MODE:');
+            console.log('-'.repeat(30));
+            console.log('Attempting automatic recovery...');
+            
+            try {
+                await this.init();
+                console.log('✅ Auto-recovery completed successfully');
+                return;
+            } catch (error) {
+                console.log(`❌ Auto-recovery failed: ${error.message}`);
+                if (attempt < maxAttempts) {
+                    console.log(`Retrying... (${attempt + 1}/${maxAttempts})`);
+                    attempt++;
+                    continue;
+                } else {
+                    console.log('❌ Auto-recovery exhausted all attempts');
+                    break;
+                }
+            }
+        } else {
+            break; // Exit the while loop if not in auto-recovery mode
+        }
+        }
     }
 
     checkPath(path, type) {

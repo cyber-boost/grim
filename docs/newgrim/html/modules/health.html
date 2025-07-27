@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grim Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        h2 { color: #666; margin-top: 30px; }
+        code { background: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Grim Documentation</h1>
+    <div id="content">
+<div class="content">
+<h1>health Module</h1>
+<br>
+Grimm Health Module: System health checks and diagnostics
+<br>
+<h2>Version</h2>
+<br>
+1.0.0
+<br>
+<h2>Overview</h2>
+<br>
+Grimm Health Module: System health checks and diagnostics
+Initialize health database tables
+Record health check result
+Record metric
+Check disk space
+<br>
+<h2>Commands</h2>
+<br>
+No specific commands documented.
+<br>
+<h2>Configuration</h2>
+<br>
+| Variable | Default | Description |
+|----------|---------|-------------|
+| <code>SCRIPT_PATH</code> | <code>$(readlink -f $0)</code> | Configuration setting |
+| <code>GRIM_ROOT</code> | <code>$(cd $(dirname $SCRIPT_PATH)/.. && pwd)</code> | Configuration setting |
+| <code>DB_PATH</code> | <code>${DB_DIR:-$GRIM_ROOT/db}/grimm.db</code> | Configuration setting |
+| <code>LOG_FILE</code> | <code>${LOG_DIR:-$GRIM_ROOT/logs}/health.log</code> | Configuration setting |
+| <code>NOTIFY_MODULE</code> | <code>$GRIM_ROOT/sh_grim/notify.sh</code> | Configuration setting |
+| <code>RED</code> | <code>'\033[0;31m'</code> | Configuration setting |
+| <code>GREEN</code> | <code>'\033[0;32m'</code> | Configuration setting |
+| <code>YELLOW</code> | <code>'\033[1;33m'</code> | Configuration setting |
+| <code>BLUE</code> | <code>'\033[0;34m'</code> | Configuration setting |
+| <code>PURPLE</code> | <code>'\033[0;35m'</code> | Configuration setting |
+<br>
+<h2>Examples</h2>
+<br>
+See the module help for usage examples.
+<br>
+<h2>Troubleshooting</h2>
+<br>
+<h3>Common Issues</h3>
+<br>
+- <strong>Issue</strong>: echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: $1" | tee -a "$LOG_FILE" >&2
+  - <strong>Solution</strong>: Check configuration and permissions
+<br>
+<h2>API Reference</h2>
+<br>
+<h3>Functions</h3>
+<br>
+- <code>log {()</code> - Module function
+- <code>log_error {()</code> - Module function
+- <code>show_help {()</code> - Module function
+- <code>init_health_db {()</code> - Module function
+- <code>record_health_check {()</code> - Module function
+- <code>record_metric {()</code> - Module function
+- <code>check_disk {()</code> - Module function
+- <code>cleanup_disk_space {()</code> - Module function
+- <code>check_memory {()</code> - Module function
+- <code>cleanup_memory {()</code> - Module function
+</div>
+    </div>
+</body>
+</html>

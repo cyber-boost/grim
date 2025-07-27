@@ -13,7 +13,7 @@ use tokio::process::Command as AsyncCommand;
 #[derive(Parser)]
 #[command(name = "grim")]
 #[command(about = "Grim Reaper - Real core integration with sh_grim, py_grim, and go_grim")]
-#[command(version = "1.0.1")]
+#[command(version = "1.0.33")]
 struct Cli {
     #[command(subcommand)]
     command: Commands,

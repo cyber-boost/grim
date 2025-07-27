@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grim Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        h2 { color: #666; margin-top: 30px; }
+        code { background: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Grim Documentation</h1>
+    <div id="content">
+<div class="content">
+<h1>Grim & Scythe Operational Runbooks</h1>
+<br>
+<h2>Table of Contents</h2>
+1. [Emergency Response Procedures](#emergency-response-procedures)
+2. [Deployment Procedures](#deployment-procedures)
+3. [Monitoring and Alerting](#monitoring-and-alerting)
+4. [Backup and Recovery](#backup-and-recovery)
+5. [Security Incident Response](#security-incident-response)
+6. [Performance Troubleshooting](#performance-troubleshooting)
+7. [Database Maintenance](#database-maintenance)
+8. [License Management](#license-management)
+<br>
+---
+<br>
+<h2>Emergency Response Procedures</h2>
+<br>
+<h3>Service Outage Response</h3>
+<br>
+<strong>Symptoms:</strong>
+- Grim API returns 5xx errors
+- Scythe license checks failing
+- High error rates in monitoring dashboards
+<br>
+<strong>Immediate Actions:</strong>
+1. <strong>Check Service Status</strong>
+   <code></code>`bash
+   # Check all services
+   docker-compose -f docker-compose.prod.yml ps
+   
+   # Check individual service health
+   curl -f http://grim-api:8080/health
+   curl -f http://scythe-api:8081/health
+   <code></code>`
+<br>
+2. <strong>Check Logs</strong>
+   <code></code>`bash
+   # Check recent logs
+   docker-compose -f docker-compose.prod.yml logs --tail=100 grim-api
+   docker-compose -f docker-compose.prod.yml logs --tail=100 scythe-api
+   
+   # Check system logs
+   journalctl -u grim-api --since "10 minutes ago"
+   <code></code>`
+<br>
+3. <strong>Restart Services if Needed</strong>
+   <code></code>`bash
+   # Restart specific service
+   docker-compose -f docker-compose.prod.yml restart grim-api
+   
+   # Restart all services
+   docker-compose -f docker-compose.prod.yml restart
+   <code></code>`
+<br>
+4. <strong>Escalate if Issues Persist</strong>
+   - Contact on-call engineer
+   - Check infrastructure status
+   - Consider rolling back to previous version
+<br>
+<h3>Database Connection Issues</h3>
+<br>
+<strong>Symptoms:</strong>
+- Database connection timeouts
+- High database response times
+- Connection pool exhaustion
+<br>
+<strong>Immediate Actions:</strong>
+1. <strong>Check Database Status</strong>
+   <code></code>`bash
+   # Check PostgreSQL
+   docker exec grim-postgres pg_isready -U grim_admin
+   
+   # Check connection count
+   docker exec grim-postgres psql -U grim_admin -d grim -c "SELECT count(*) FROM pg_stat_activity;"
+   <code></code>`
+<br>
+2. <strong>Check Database Resources</strong>
+   <code></code>`bash
+   # Check disk space
+   docker exec grim-postgres df -h
+   
+   # Check memory usage
+   docker exec grim-postgres free -h
+   <code></code>`
+<br>
+3. <strong>Restart Database if Necessary</strong>
+   <code></code>`bash
+   docker-compose -f docker-compose.prod.yml restart grim-postgres
+   <code></code>`
+<br>
+---
+<br>
+<h2>Deployment Procedures</h2>
+<br>
+<h3>Production Deployment</h3>
+<br>
+<strong>Pre-deployment Checklist:</strong>
+- [ ] All tests passing in CI/CD
+- [ ] Security scan completed
+- [ ] Performance tests passed
+- [ ] Backup completed
+- [ ] Stakeholders notified
+<br>
+<strong>Deployment Steps:</strong>
+1. <strong>Create Backup</strong>
+   <code></code>`bash
+   ./scripts/backup-manager.sh full
+   <code></code>`
+<br>
+2. <strong>Deploy to Production</strong>
+   <code></code>`bash
+   # Pull latest images
+   docker-compose -f docker-compose.prod.yml pull
+   
+   # Deploy with zero downtime
+   docker-compose -f docker-compose.prod.yml up -d --no-deps grim-api
+   docker-compose -f docker-compose.prod.yml up -d --no-deps scythe-api
+   <code></code>`
+<br>
+3. <strong>Verify Deployment</strong>
+   <code></code>`bash
+   # Health checks
+   curl -f http://grim-api:8080/health
+   curl -f http://scythe-api:8081/health
+   
+   # Smoke tests
+   ./scripts/smoke-tests.sh
+   <code></code>`
+<br>
+4. <strong>Monitor Post-deployment</strong>
+   - Watch error rates for 15 minutes
+   - Check performance metrics
+   - Verify all functionality
+<br>
+<h3>Rollback Procedure</h3>
+<br>
+<strong>If Issues Detected:</strong>
+1. <strong>Immediate Rollback</strong>
+   <code></code>`bash
+   # Rollback to previous version
+   docker-compose -f docker-compose.prod.yml up -d --no-deps grim-api:previous
+   docker-compose -f docker-compose.prod.yml up -d --no-deps scythe-api:previous
+   <code></code>`
+<br>
+2. <strong>Verify Rollback</strong>
+   <code></code>`bash
+   # Health checks
+   curl -f http://grim-api:8080/health
+   curl -f http://scythe-api:8081/health
+   <code></code>`
+<br>
+3. <strong>Investigate Issues</strong>
+   - Review logs
+   - Analyze metrics
+   - Document findings
+<br>
+---
+<br>
+<h2>Monitoring and Alerting</h2>
+<br>
+<h3>Key Metrics to Monitor</h3>
+<br>
+<strong>Grim System:</strong>
+- Backup success rate
+- Compression ratios
+- Storage usage
+- API response times
+- Error rates
+<br>
+<strong>Scythe System:</strong>
+- License check success rate
+- License violations
+- API response times
+- Database performance
+<br>
+<strong>Infrastructure:</strong>
+- CPU usage
+- Memory usage
+- Disk usage
+- Network I/O
+<br>
+<h3>Alert Severity Levels</h3>
+<br>
+<strong>Critical (Immediate Response Required):</strong>
+- Service completely down
+- Database unavailable
+- Security breach detected
+- Data loss risk
+<br>
+<strong>High (Response within 30 minutes):</strong>
+- High error rates (>5%)
+- Performance degradation
+- License violations
+- Backup failures
+<br>
+<strong>Medium (Response within 2 hours):</strong>
+- Elevated resource usage
+- Slow response times
+- Minor functionality issues
+<br>
+<strong>Low (Response within 24 hours):</strong>
+- Informational alerts
+- Maintenance notifications
+- Performance warnings
+<br>
+<h3>Alert Response Procedures</h3>
+<br>
+1. <strong>Acknowledge Alert</strong>
+   - Respond to alert channel
+   - Assess severity level
+   - Begin investigation
+<br>
+2. <strong>Investigate Issue</strong>
+   - Check monitoring dashboards
+   - Review recent logs
+   - Identify root cause
+<br>
+3. <strong>Take Corrective Action</strong>
+   - Follow appropriate runbook
+   - Implement fix
+   - Verify resolution
+<br>
+4. <strong>Document Incident</strong>
+   - Record timeline
+   - Document actions taken
+   - Update runbooks if needed
+<br>
+---
+<br>
+<h2>Backup and Recovery</h2>
+<br>
+<h3>Backup Verification</h3>
+<br>
+<strong>Daily Checks:</strong>
+<code></code>`bash
+<h1>Check backup status</h1>
+./scripts/backup-manager.sh status
+<br>
+<h1>Verify recent backups</h1>
+./scripts/backup-manager.sh verify /backups/database_full_20250101_020000.sql.gz
+<code></code>`
+<br>
+<strong>Weekly Tests:</strong>
+<code></code>`bash
+<h1>Test recovery procedure</h1>
+./scripts/backup-manager.sh recover /backups/database_full_20250101_020000.sql.gz database
+<code></code>`
+<br>
+<h3>Disaster Recovery</h3>
+<br>
+<strong>Complete System Recovery:</strong>
+1. <strong>Stop All Services</strong>
+   <code></code>`bash
+   docker-compose -f docker-compose.prod.yml down
+   <code></code>`
+<br>
+2. <strong>Restore Database</strong>
+   <code></code>`bash
+   ./scripts/backup-manager.sh recover /backups/database_full_20250101_020000.sql.gz database
+   <code></code>`
+<br>
+3. <strong>Restore Configuration</strong>
+   <code></code>`bash
+   ./scripts/backup-manager.sh recover /backups/config_20250101_020000.tar.gz configuration
+   <code></code>`
+<br>
+4. <strong>Restart Services</strong>
+   <code></code>`bash
+   docker-compose -f docker-compose.prod.yml up -d
+   <code></code>`
+<br>
+5. <strong>Verify Recovery</strong>
+   <code></code>`bash
+   # Health checks
+   curl -f http://grim-api:8080/health
+   curl -f http://scythe-api:8081/health
+   
+   # Data integrity checks
+   ./scripts/integrity-check.sh
+   <code></code>`
+<br>
+---
+<br>
+<h2>Security Incident Response</h2>
+<br>
+<h3>Security Alert Response</h3>
+<br>
+<strong>Immediate Actions:</strong>
+1. <strong>Assess Threat Level</strong>
+   - Review alert details
+   - Check affected systems
+   - Determine scope
+<br>
+2. <strong>Contain Threat</strong>
+   <code></code>`bash
+   # Block malicious IPs
+   ./scripts/security-monitor.sh block 192.168.1.100
+   
+   # Isolate affected systems
+   docker-compose -f docker-compose.prod.yml stop grim-api
+   <code></code>`
+<br>
+3. <strong>Investigate Incident</strong>
+   - Review security logs
+   - Check system integrity
+   - Identify attack vector
+<br>
+4. <strong>Remediate Issues</strong>
+   - Apply security patches
+   - Update configurations
+   - Restore from clean backup if needed
+<br>
+5. <strong>Document Incident</strong>
+   - Record all actions taken
+   - Update security procedures
+   - Notify stakeholders
+<br>
+<h3>License Violation Response</h3>
+<br>
+<strong>Detection:</strong>
+- Monitor Scythe logs for violations
+- Check license usage metrics
+- Review customer reports
+<br>
+<strong>Response:</strong>
+1. <strong>Verify Violation</strong>
+   - Check license details
+   - Confirm usage patterns
+   - Review customer history
+<br>
+2. <strong>Take Action</strong>
+   - Contact customer
+   - Implement usage limits
+   - Escalate if necessary
+<br>
+3. <strong>Update Records</strong>
+   - Document violation
+   - Update customer status
+   - Track resolution
+<br>
+---
+<br>
+<h2>Performance Troubleshooting</h2>
+<br>
+<h3>High CPU Usage</h3>
+<br>
+<strong>Investigation:</strong>
+<code></code>`bash
+<h1>Check process CPU usage</h1>
+docker exec grim-api top -bn1
+<br>
+<h1>Check container metrics</h1>
+docker stats grim-api
+<br>
+<h1>Analyze CPU usage patterns</h1>
+docker exec grim-api cat /proc/stat
+<code></code>`
+<br>
+<strong>Common Solutions:</strong>
+- Scale up resources
+- Optimize queries
+- Add caching
+- Reduce workload
+<br>
+<h3>High Memory Usage</h3>
+<br>
+<strong>Investigation:</strong>
+<code></code>`bash
+<h1>Check memory usage</h1>
+docker exec grim-api free -h
+<br>
+<h1>Check memory by process</h1>
+docker exec grim-api ps aux --sort=-%mem
+<br>
+<h1>Check for memory leaks</h1>
+docker exec grim-api cat /proc/meminfo
+<code></code>`
+<br>
+<strong>Common Solutions:</strong>
+- Increase memory limits
+- Optimize memory usage
+- Restart services
+- Add memory monitoring
+<br>
+<h3>Slow Response Times</h3>
+<br>
+<strong>Investigation:</strong>
+<code></code>`bash
+<h1>Check API response times</h1>
+curl -w "@curl-format.txt" -o /dev/null -s http://grim-api:8080/health
+<br>
+<h1>Check database performance</h1>
+docker exec grim-postgres psql -U grim_admin -d grim -c "SELECT * FROM pg_stat_activity WHERE state = 'active';"
+<br>
+<h1>Check network latency</h1>
+ping grim-api
+<code></code>`
+<br>
+<strong>Common Solutions:</strong>
+- Optimize database queries
+- Add caching
+- Scale horizontally
+- Tune application settings
+<br>
+---
+<br>
+<h2>Database Maintenance</h2>
+<br>
+<h3>Regular Maintenance</h3>
+<br>
+<strong>Daily:</strong>
+- Check backup status
+- Monitor performance metrics
+- Review error logs
+<br>
+<strong>Weekly:</strong>
+- Analyze slow queries
+- Update statistics
+- Check disk usage
+<br>
+<strong>Monthly:</strong>
+- Review and optimize indexes
+- Clean up old data
+- Update maintenance procedures
+<br>
+<h3>Database Optimization</h3>
+<br>
+<strong>Query Optimization:</strong>
+<code></code>`sql
+-- Find slow queries
+SELECT query, mean_time, calls 
+FROM pg_stat_statements 
+ORDER BY mean_time DESC 
+LIMIT 10;
+<br>
+-- Analyze table statistics
+ANALYZE backups;
+ANALYZE security_events;
+<code></code>`
+<br>
+<strong>Index Optimization:</strong>
+<code></code>`sql
+-- Check index usage
+SELECT schemaname, tablename, indexname, idx_scan, idx_tup_read, idx_tup_fetch
+FROM pg_stat_user_indexes
+ORDER BY idx_scan DESC;
+<br>
+-- Create missing indexes
+CREATE INDEX CONCURRENTLY idx_backups_created_at ON backups(created_at);
+<code></code>`
+<br>
+---
+<br>
+<h2>License Management</h2>
+<br>
+<h3>License Monitoring</h3>
+<br>
+<strong>Daily Checks:</strong>
+- Monitor license usage
+- Check for violations
+- Review customer activity
+<br>
+<strong>Weekly Reviews:</strong>
+- Analyze usage patterns
+- Identify potential issues
+- Update customer records
+<br>
+<h3>License Violation Handling</h3>
+<br>
+<strong>Detection:</strong>
+- Automated monitoring
+- Customer reports
+- Usage analysis
+<br>
+<strong>Response:</strong>
+1. <strong>Investigate</strong>
+   - Review usage data
+   - Check customer history
+   - Verify violation
+<br>
+2. <strong>Contact Customer</strong>
+   - Explain situation
+   - Offer solutions
+   - Set expectations
+<br>
+3. <strong>Take Action</strong>
+   - Implement restrictions
+   - Update license terms
+   - Escalate if needed
+<br>
+<h3>License Renewal Process</h3>
+<br>
+<strong>30 Days Before Expiry:</strong>
+- Send renewal reminder
+- Review usage patterns
+- Prepare renewal terms
+<br>
+<strong>7 Days Before Expiry:</strong>
+- Send final reminder
+- Offer assistance
+- Prepare for expiration
+<br>
+<strong>On Expiry:</strong>
+- Implement restrictions
+- Contact customer
+- Process renewal
+<br>
+---
+<br>
+<h2>Emergency Contacts</h2>
+<br>
+<strong>Primary On-Call:</strong>
+- Name: [Primary Engineer]
+- Phone: [Phone Number]
+- Email: [Email]
+<br>
+<strong>Secondary On-Call:</strong>
+- Name: [Secondary Engineer]
+- Phone: [Phone Number]
+- Email: [Email]
+<br>
+<strong>Management Escalation:</strong>
+- Name: [Manager]
+- Phone: [Phone Number]
+- Email: [Email]
+<br>
+<strong>Security Team:</strong>
+- Email: security@grim.so
+- Slack: #security-alerts
+<br>
+---
+<br>
+<h2>Maintenance Windows</h2>
+<br>
+<strong>Regular Maintenance:</strong>
+- Day: Sunday
+- Time: 02:00-04:00 UTC
+- Duration: 2 hours
+<br>
+<strong>Emergency Maintenance:</strong>
+- As needed
+- 24-hour notice when possible
+- Immediate for critical issues
+<br>
+<strong>Communication:</strong>
+- Email: maintenance@grim.so
+- Slack: #maintenance
+- Status page: status.grim.so </div>
+    </div>
+</body>
+</html>

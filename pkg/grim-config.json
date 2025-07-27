@@ -1,0 +1,144 @@
+{
+  "version": {
+    "current": "1.0.33",
+    "override": null,
+    "history": [
+      {
+        "version": "1.0.33",
+        "date": "2025-01-22T12:00:00Z",
+        "notes": "MASSIVE ARCHITECTURE REVAMP - Fixed Java Maven deployment, updated to latest.tar.gz system compatibility"
+      },
+      {
+        "version": "1.0.32",
+        "date": "2025-01-22T10:00:00Z",
+        "notes": "Unified version across all packages - consistency update"
+      },
+      {
+        "version": "1.0.30",
+        "date": "2025-07-25T10:00:00Z",
+        "notes": "Updated to match current package versions"
+      },
+      {
+        "version": "2024.12.19",
+        "date": "2024-12-19T10:00:00Z",
+        "notes": "Initial unified build/deploy system"
+      }
+    ]
+  },
+  "paths": {
+    "base": "/opt/reaper/pkg",
+    "logs": "/opt/reaper/pkg/logs"
+  },
+  "packages": {
+    "js_grim": {
+      "name": "grim-reaper",
+      "enabled": true,
+      "registry": "npm",
+      "current_version": "1.0.33",
+      "files": {
+        "version": "package.json",
+        "pattern": "\"version\": \"VERSION\""
+      }
+    },
+    "py_grim": {
+      "name": "grim-reaper", 
+      "enabled": true,
+      "registry": "pypi",
+      "current_version": "1.0.33",
+      "files": {
+        "version": "setup.py",
+        "pattern": "version=\"VERSION\""
+      }
+    },
+    "rb_grim": {
+      "name": "grim-reaper",
+      "enabled": true,
+      "registry": "rubygems",
+      "current_version": "1.0.33",
+      "files": {
+        "version": "lib/grim_reaper/version.rb",
+        "pattern": "VERSION = \"VERSION\""
+      }
+    },
+    "rs_grim": {
+      "name": "grim-reaper",
+      "enabled": true,
+      "registry": "crates.io",
+      "current_version": "1.0.33",
+      "files": {
+        "version": "Cargo.toml",
+        "pattern": "version = \"VERSION\""
+      }
+    },
+    "php_grim": {
+      "name": "grim/reaper",
+      "enabled": true,
+      "registry": "packagist",
+      "current_version": "1.0.33",
+      "files": {
+        "version": "composer.json",
+        "json_field": "version"
+      }
+    },
+    "go_grim": {
+      "name": "github.com/cyber-boost/grim",
+      "enabled": true,
+      "registry": "pkg.go.dev",
+      "current_version": "1.0.33",
+      "files": {
+        "version": "version.go",
+        "content": "package grim\n\nconst Version = \"VERSION\""
+      }
+    },
+    "cs_grim": {
+      "name": "GrimReaper",
+      "enabled": true,
+      "registry": "nuget",
+      "current_version": "1.0.33",
+      "files": {
+        "version": "GrimReaper.csproj",
+        "pattern": "<PackageVersion>VERSION</PackageVersion>"
+      }
+    },
+    "java_grim": {
+      "name": "grim-reaper",
+      "enabled": true,
+      "registry": "maven",
+      "current_version": "1.0.33",
+      "files": {
+        "version": "pom.xml",
+        "pattern": "<version>VERSION</version>"
+      }
+    }
+  },
+  "deployment": {
+    "order": ["js_grim", "rb_grim", "py_grim", "rs_grim", "php_grim", "go_grim", "cs_grim", "java_grim"],
+    "credentials": {
+      "npm": {
+        "check_command": "npm whoami",
+        "env_var": null,
+        "file": null
+      },
+      "pypi": {
+        "check_command": null,
+        "env_var": "TWINE_USERNAME",
+        "file": "~/.pypirc"
+      },
+      "rubygems": {
+        "check_command": null,
+        "env_var": null,
+        "file": "~/.gem/credentials"
+      },
+      "crates.io": {
+        "check_command": null,
+        "env_var": null,
+        "file": "~/.cargo/credentials.toml"
+      },
+      "nuget": {
+        "check_command": null,
+        "env_var": "NUGET_API_KEY",
+        "file": null
+      }
+    }
+  }
+}

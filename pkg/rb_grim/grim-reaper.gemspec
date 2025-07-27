@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["Bernie Gengel and his beagle Buddy"]
   spec.email = ["rip@grim.so"]
 
-  spec.summary = "Grim: Unified Data Protection Ecosystem"
-  spec.description = "When data death comes knocking, Grim ensures resurrection is just a command away. License management, auto backups, highly compressed backups, multi-algorithm compression, content-based deduplication, smart storage tiering save up to 60% space, military-grade encryption, license protection, security surveillance, and automated threat response."
+  spec.summary = "Grim: Unified Data Protection Ecosystem with OTP Security"
+  spec.description = "When data death comes knocking, Grim ensures resurrection is just a command away. License management, auto backups, highly compressed backups, multi-algorithm compression, content-based deduplication, smart storage tiering save up to 60% space, military-grade encryption, license protection, security surveillance, OTP authentication, and automated threat response."
   spec.homepage = "https://github.com/cyber-boost/grim"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.7.0"
@@ -47,17 +47,27 @@ Gem::Specification.new do |spec|
   spec.post_install_message = <<~MESSAGE
     🗡️  Grim Reaper Ruby Gem v#{GrimReaper::VERSION} installed successfully!
     
+    🆕 NEW: OTP (One-Time Password) Authentication Support!
+    Run 'grim otp-setup' to enable secure two-factor authentication.
+    
     The gem provides a unified interface to all Grim Reaper modules:
     - Python components (scythe, py_grim)
     - Go components (go_grim)
     - Shell components (sh_grim)
     - Ruby components (rb_grim)
+    - OTP Security Module (NEW!)
     
     Run 'grim rb-setup' to configure your environment and install all components.
     Run 'grim help' to see all available commands.
     
     For automatic installation of all Grim Reaper components, run:
     grim setup-complete
+    
+    🔐 Security Enhancement:
+    • Use --otp flag for secure command execution
+    • Setup OTP: grim otp-setup
+    • Verify OTP: grim otp-verify <code>
+    • Check status: grim otp-status
     
     💡 For missing commands, visit: https://get.grim.so
   MESSAGE

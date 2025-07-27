@@ -1,6 +1,5 @@
 include README.md
 include grim_throne.sh
-# exclude LICENSE  # Removed due to metadata issues
 global-exclude *.pyc
 global-exclude *.pyo
 global-exclude *.pyd
@@ -15,4 +14,4 @@ global-exclude .gitignore
 global-exclude .DS_Store
 global-exclude *.egg-info/
 global-exclude build/
-global-exclude dist/ 
+global-exclude dist/

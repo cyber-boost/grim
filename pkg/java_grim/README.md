@@ -3,9 +3,36 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://grim.so/license)
 [![Maven Central](https://img.shields.io/maven-central/v/so.grim/grim-reaper)](https://search.maven.org/artifact/so.grim/grim-reaper)
 [![Javadoc](https://javadoc.io/badge2/so.grim/grim-reaper/javadoc.svg)](https://javadoc.io/doc/so.grim/grim-reaper)
-[![Java](https://img.shields.io/badge/java-%3E%3D%2011-orange.svg)](https://openjdk.org/)
+[![Java](https://img.shields.io/badge/java-%3E%3D%2017-orange.svg)](https://openjdk.org/)
 
 **When data death comes knocking, Grim ensures resurrection is just a command away.**
+
+## 🔥 Latest Release v1.0.33 - MASSIVE ARCHITECTURE REVAMP
+
+**🚀 MAJOR RELEASE**: Complete Java package overhaul with proper Maven Central integration!
+
+### **🎯 Critical Fixes Applied**
+✅ **Fixed**: Maven plugin version conflicts (were incorrectly set to 1.0.32)  
+✅ **Fixed**: Jackson and OkHttp dependency versions corrected  
+✅ **Fixed**: Proper Grim branding in Maven Central publication  
+✅ **Verified**: Build system compatibility with latest.tar.gz architecture  
+✅ **Tested**: Complete Maven Central deployment workflow  
+
+### **🏗️ Latest.tar.gz System Integration**
+✅ **Compatible**: Fully integrated with new latest.tar.gz distribution system  
+✅ **Post-Install**: Background heavy operations support  
+✅ **Recovery Tools**: Emergency fix and fallback mechanisms  
+✅ **Build Pipeline**: Unified with master Grim ecosystem  
+
+### **📊 Maven Central Publication**
+✅ **Proper Branding**: Published as "Grim Reaper" (not development package)  
+✅ **Complete Metadata**: Full description, license, and developer information  
+✅ **GPG Signing**: Secure artifact verification  
+✅ **Source & Javadoc**: Complete documentation packages  
+
+**Upgrade NOW**: Update your dependency to `1.0.33`
+
+---
 
 Enterprise-grade data protection platform with AI-powered backup decisions, military-grade encryption, multi-algorithm compression, content-based deduplication, real-time monitoring, and automated threat response.
 
@@ -16,39 +43,59 @@ Enterprise-grade data protection platform with AI-powered backup decisions, mili
 <dependency>
     <groupId>so.grim</groupId>
     <artifactId>grim-reaper</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.33</version>
 </dependency>
 
 <!-- Gradle -->
-implementation 'so.grim:grim-reaper:1.0.0'
+implementation 'so.grim:grim-reaper:1.0.33'
 ```
 
 ## 🎯 Quick Start
 
 ```java
-import so.grim.Grim;
-import so.grim.GrimConfig;
+import so.grim.GrimReaper;
 
 public class Example {
-    public static void main(String[] args) {
-        // Initialize Grim Reaper
-        Grim grim = Grim.builder()
-            .workDir("/opt/reaper")
-            .build();
-        
-        // Quick backup
-        grim.backup("/home/user/data").execute();
-        
-        // Start monitoring
-        grim.monitor("/var/log")
-            .onChange(event -> System.out.println("File changed: " + event.getPath()))
-            .start();
-        
-        // Health check
-        var health = grim.healthCheck().execute();
-        System.out.println("System Status: " + health.getStatus());
+    public static void main(String[] args) throws Exception {
+        // Initialize Grim Reaper with automatic path discovery
+        try (GrimReaper grim = new GrimReaper()) {
+            // Quick backup
+            String result = grim.backup("/home/user/data");
+            System.out.println("Backup completed: " + result);
+            
+            // Start monitoring
+            grim.startMonitoring("/var/log");
+            
+            // Health check
+            String health = grim.healthCheck();
+            System.out.println("System Status: " + health);
+            
+            // AI-powered compression
+            String compressed = grim.compress("/large/file.txt", "zstd", 9, null);
+            System.out.println("Compression result: " + compressed);
+        }
     }
 }
+```
+
+## 🔧 Latest.tar.gz Integration
+
+The Java package now fully supports the latest.tar.gz distribution system:
+
+```java
+// Example: Integration with post-install system
+GrimReaper grim = new GrimReaper();
+
+// Check if running in post-install mode
+Map<String, Boolean> services = grim.checkServices();
+if (!services.get("api")) {
+    // Trigger post-install recovery
+    grim.executeCommand("emergency-heal");
+}
+
+// Verify latest.tar.gz installation integrity
+String installCheck = grim.executeCommand("health", "check-install");
+System.out.println(installCheck);
 ```
 
 ## All Commands

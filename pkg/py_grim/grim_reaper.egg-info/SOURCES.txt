@@ -1,0 +1,14 @@
+MANIFEST.in
+README.md
+grim_throne.sh
+pyproject.toml
+setup.py
+grim_reaper/__init__.py
+grim_reaper/post_install.py
+grim_reaper.egg-info/PKG-INFO
+grim_reaper.egg-info/SOURCES.txt
+grim_reaper.egg-info/dependency_links.txt
+grim_reaper.egg-info/entry_points.txt
+grim_reaper.egg-info/not-zip-safe
+grim_reaper.egg-info/requires.txt
+grim_reaper.egg-info/top_level.txt

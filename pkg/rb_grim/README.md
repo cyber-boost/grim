@@ -14,6 +14,25 @@ Enterprise-grade data protection platform with AI-powered backup decisions, mili
 gem install grim-reaper
 ```
 
+## 🔐 NEW: OTP Authentication Support
+
+Version 1.0.33 introduces One-Time Password (TOTP) authentication for enhanced security:
+
+```bash
+# Setup OTP authentication
+grim otp-setup
+
+# Use OTP with commands
+grim health --otp 123456
+grim setup-complete --otp 789012
+
+# Check OTP status
+grim otp-status
+
+# Verify OTP code
+grim otp-verify 123456
+```
+
 ## 🎯 Quick Start
 
 ```ruby

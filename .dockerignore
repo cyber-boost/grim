@@ -1,0 +1,86 @@
+# Development & Admin
+admin/
+.claude/
+.cursor/
+builds/
+summaries/
+z_archive/
+z_grim_v1/
+test_data/
+.git/
+.gitignore
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Configuration & Secrets
+.env
+.env.*
+*.key
+*.pem
+*.crt
+config/credentials.tsk
+
+# Backup & Archive
+backups/
+*.tar.gz
+*.tar.bz2
+*.zip
+*.rar
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp 

@@ -1,145 +1,63 @@
-# CRITICAL SECURITY - NEVER COMMIT THESE
-.api_key
-.install_id
-mother_db/
-config/credentials.tsk
-config/*.conf
+# Sensitive directories - NEVER commit these
+admin/
+tsk_flask/
+.graveyard/
+.claude/
+.cursor/
 grim_venv/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment and credentials
 .env
+.env.*
 *.key
 *.pem
-*.crt
-secrets/
-credentials/
-.secret_key
-tsk_flask/.secret_key
-tsk_flask/ 
-throne/
-pkg/
-package/
-
-# Nested repositories (causing Git conflicts)
-tsk_flask/
-admin/
-backups/
-builds/
-summaries/
-z_archive/
-
-# Project directories to exclude
-ascii/
-bin/
-config/
-db/
-internal/
-go_grim/
-py_grim/
-sh_grim/
-scythe/
-reaper/
-scripts/
-throne/
-src/
-
-# Additional files to exclude
-package/
-test-py/
-z_archive/
---type=service | grep grim
-install_php_dependencies.sh
-js-grim_throne.sh
-master-install.sh
-phpgrim.sh
-populate_error_db.py
-py_grim_throne.sh
-rc.sh
-sh_grim_throne.sh
-test_compress.txt
-test_compress.txt.zstd
-test_grim_debug.py
-test_server_priority.sh
-what-the-grim.txt
-
-# Composer
-/vendor/
-composer.lock
-composer.phar
+*credential*
+*secret*
+config.json
+settings.json
 
 # Build artifacts
-/build/
-*.tar.gz
-*.zip
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# Virtual environments
-venv/
-env/
-ENV/
-env.bak/
-venv.bak/
-
-# Node.js
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+target/
+bin/
+obj/
+__pycache__/
+*.pyc
+venv/
+.venv/
 
-# IDE
+# IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
-# OS
+# OS files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
-# Logs
+# Log files
 *.log
 logs/
-
-# Cache
-cache/
-.cache/
-
-# Tests
-/coverage/
-.phpunit.result.cache
-
-# Environment
-.env
-.env.local
-.env.*.local
 
 # Temporary files
 tmp/
 temp/
 *.tmp
+
+# Package specific ignores
+pkg/*/node_modules/
+pkg/*/target/
+pkg/*/bin/
+pkg/*/obj/
+pkg/*/__pycache__/
+pkg/*/venv/
+pkg/*/.venv/
+pkg/*/*.log
+
+# Keep package source code but ignore build artifacts

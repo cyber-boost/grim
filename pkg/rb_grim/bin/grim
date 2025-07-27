@@ -12,6 +12,7 @@ class GrimCLI < Thor
   class_option :config, type: :string, default: "grim.yml", desc: "Configuration file path"
   class_option :verbose, type: :boolean, default: false, desc: "Enable verbose output"
   class_option :json, type: :boolean, default: false, desc: "Output in JSON format"
+  class_option :otp, type: :string, desc: "One-Time Password for secure authentication"
   
   desc "version", "Show Grim Reaper version"
   def version
@@ -19,9 +20,76 @@ class GrimCLI < Thor
     puts "The Ultimate Backup, Monitoring, and Security System"
     puts "By Bernie Gengel and his beagle Buddy"
   end
+
+  desc "otp-setup", "Setup OTP authentication for Grim Reaper"
+  def otp_setup
+    puts "🔐 Setting up OTP authentication...".colorize(:cyan)
+    
+    begin
+      grim = GrimReaper::Core.new(load_config)
+      otp_module = grim.get_otp_module
+      
+      if otp_module.setup_otp
+        puts "✅ OTP authentication setup complete!".colorize(:green)
+        puts "📱 Scan the QR code with your authenticator app".colorize(:blue)
+        puts "🔑 Save your backup codes in a secure location".colorize(:yellow)
+      else
+        puts "❌ OTP setup failed".colorize(:red)
+        exit 1
+      end
+    rescue => e
+      puts "❌ OTP setup failed: #{e.message}".colorize(:red)
+      exit 1
+    end
+  end
+
+  desc "otp-verify CODE", "Verify OTP code"
+  def otp_verify(code)
+    puts "🔓 Verifying OTP code...".colorize(:cyan)
+    
+    begin
+      grim = GrimReaper::Core.new(load_config)
+      otp_module = grim.get_otp_module
+      
+      if otp_module.verify_otp(code)
+        puts "✅ OTP verification successful!".colorize(:green)
+      else
+        puts "❌ Invalid OTP code".colorize(:red)
+        exit 1
+      end
+    rescue => e
+      puts "❌ OTP verification failed: #{e.message}".colorize(:red)
+      exit 1
+    end
+  end
+
+  desc "otp-status", "Check OTP authentication status"
+  def otp_status
+    puts "📊 Checking OTP status...".colorize(:cyan)
+    
+    begin
+      grim = GrimReaper::Core.new(load_config)
+      otp_module = grim.get_otp_module
+      status = otp_module.status
+      
+      if options[:json]
+        puts JSON.pretty_generate(status)
+      else
+        puts "OTP Status: #{status[:enabled] ? 'Enabled'.colorize(:green) : 'Disabled'.colorize(:red)}"
+        puts "Last Authentication: #{status[:last_auth] || 'Never'}"
+        puts "Failed Attempts: #{status[:failed_attempts] || 0}"
+      end
+    rescue => e
+      puts "❌ Status check failed: #{e.message}".colorize(:red)
+    end
+  end
   
   desc "setup-complete", "Setup complete Grim Reaper environment (installs Python, Go, Shell, Scythe components)"
   def setup_complete
+    if options[:otp] && !validate_otp_access
+      return
+    end
+    
     puts "🗡️  Setting up complete Grim Reaper environment...".colorize(:cyan)
     
     begin
@@ -36,6 +104,10 @@ class GrimCLI < Thor
   
   desc "health", "Check health of all Grim Reaper modules"
   def health
+    if options[:otp] && !validate_otp_access
+      return
+    end
+    
     puts "🏥 Checking Grim Reaper health...".colorize(:cyan)
     
     begin
@@ -48,19 +120,19 @@ class GrimCLI < Thor
         puts "Grim Reaper Health Status:".colorize(:cyan)
         all_healthy = true
         
-        status_data.each do |module_name, data|
-          if data[:status] == 'ready' || data[:status] == 'healthy'
-            puts "  ✅ #{module_name}: #{data[:status]}".colorize(:green)
-          else
-            puts "  ❌ #{module_name}: #{data[:status]}".colorize(:red)
+        status_data.each do |module_name, result|
+          if result.is_a?(Hash) && result[:error]
+            puts "  #{module_name}: ❌ #{result[:error]}".colorize(:red)
             all_healthy = false
+          else
+            puts "  #{module_name}: ✅ Healthy".colorize(:green)
           end
         end
         
         if all_healthy
-          puts "\n🎉 All modules are healthy!".colorize(:green)
+          puts "\n🎉 All modules healthy!".colorize(:green)
         else
-          puts "\n⚠️  Some modules have issues.".colorize(:yellow)
+          puts "\n⚠️  Some modules need attention".colorize(:yellow)
         end
       end
     rescue => e
@@ -309,6 +381,11 @@ class GrimCLI < Thor
     puts "  install              Install dependencies"
     puts "  update               Update all modules"
     puts ""
+    puts "🔐 OTP Security Commands:"
+    puts "  otp-setup            Setup OTP authentication"
+    puts "  otp-verify CODE      Verify OTP code"
+    puts "  otp-status           Check OTP authentication status"
+    puts ""
     puts "💎 Ruby-Specific Commands:"
     puts "  rb-setup             Setup Ruby environment"
     puts "  rb-analyze PATH      Analyze Ruby code quality"
@@ -324,29 +401,17 @@ class GrimCLI < Thor
     puts "  --config FILE        Configuration file path (default: grim.yml)"
     puts "  --verbose            Enable verbose output"
     puts "  --json               Output in JSON format"
+    puts "  --otp CODE           One-Time Password for secure authentication"
     puts ""
-    puts "Examples:"
-    puts "  grim setup-complete  # Install all Grim Reaper components"
-    puts "  grim health          # Check health of all modules"
-    puts "  grim rb-setup        # Setup Ruby environment"
-    puts "  grim rb-analyze /app # Analyze Ruby code"
-    puts "  grim status"
-    puts "  grim backup /home/user"
-    puts "  grim deploy production --verbose"
-    puts "  grim execute 'ls -la' --json"
+    puts "🔐 Security Features:"
+    puts "  • Two-Factor Authentication (TOTP)"
+    puts "  • Backup codes for recovery"
+    puts "  • Secure command execution"
+    puts "  • Authentication tracking"
     puts ""
-    puts "🚀 Full Grim Reaper CLI Features:"
-    puts "  • 50+ backup commands (backup-create, backup-verify, etc.)"
-    puts "  • 30+ monitoring commands (monitor-start, monitor-events, etc.)"
-    puts "  • 20+ security commands (security-audit, quarantine-isolate, etc.)"
-    puts "  • 15+ AI/ML commands (ai-analyze, ai-train, ai-predict, etc.)"
-    puts "  • 10+ optimization commands (optimize-all, heal, etc.)"
-    puts "  • License protection system"
-    puts "  • Emergency commands"
-    puts "  • Web interface and admin server"
-    puts ""
-    puts "💡 For the complete Grim Reaper experience, visit: https://get.grim.so"
-    puts "📦 Or run: curl -sSL https://get.grim.so | bash"
+    puts "📖 Documentation: https://grim.so/docs"
+    puts "🌐 Full Installation: https://get.grim.so"
+    puts "💎 Gem Page: https://rubygems.org/gems/grim-reaper"
   end
   
   private
@@ -362,10 +427,81 @@ class GrimCLI < Thor
       {}
     end
   end
-  
-  def redirect_to_grim_so(command)
-    puts "\n💡 Command '#{command}' not available in this installation.".colorize(:yellow)
-    puts "🌐 Visit https://get.grim.so to install the full Grim Reaper CLI".colorize(:cyan)
+
+  private
+
+  def load_config
+    config_file = options[:config]
+    return {} unless File.exist?(config_file)
+    
+    case File.extname(config_file)
+    when '.yml', '.yaml'
+      YAML.load_file(config_file) || {}
+    when '.json'
+      JSON.parse(File.read(config_file))
+    else
+      {}
+    end
+  rescue => e
+    warn "Warning: Could not load config file #{config_file}: #{e.message}"
+    {}
+  end
+
+  def validate_otp_access
+    return true unless options[:otp]
+    
+    begin
+      grim = GrimReaper::Core.new(load_config)
+      otp_module = grim.get_otp_module
+      
+      if otp_module.verify_otp(options[:otp])
+        puts "✅ OTP authentication successful".colorize(:green)
+        return true
+      else
+        puts "❌ Invalid OTP code".colorize(:red)
+        exit 1
+      end
+    rescue => e
+      puts "❌ OTP verification failed: #{e.message}".colorize(:red)
+      exit 1
+    end
+  end
+
+  def execute(command, *args)
+    begin
+      grim = GrimReaper::Core.new(load_config)
+      result = grim.execute(command, *args)
+      
+      if options[:json]
+        puts JSON.pretty_generate(result)
+      else
+        result.each do |module_name, data|
+          if data.is_a?(Hash) && data[:error]
+            puts "  #{module_name}: ❌ #{data[:error]}".colorize(:red)
+          else
+            puts "  #{module_name}: ✅ #{data}".colorize(:green)
+          end
+        end
+      end
+    rescue => e
+      puts "❌ Command failed: #{e.message}".colorize(:red)
+      exit 1
+    end
+  end
+
+     def redirect_to_grim_so(command)
+     puts "\n🌐 This command is not available in the Ruby gem.".colorize(:yellow)
+     puts "For the complete Grim Reaper ecosystem with all commands, visit:".colorize(:blue)
+     puts "  🔗 https://get.grim.so - Complete installation".colorize(:cyan)
+     puts "  📚 https://grim.so/docs - Documentation".colorize(:cyan)
+     puts "  💎 gem install grim-reaper - Ruby gem".colorize(:cyan)
+     puts "\nThe Ruby gem provides Ruby-specific commands and interfaces to other modules."
+     puts "For command '#{command}', you'll need the full Grim Reaper installation."
+   end
+end
+
+# Start the CLI if this file is executed directly
+GrimCLI.start(ARGV) if __FILE__ == $0
     puts "📦 Or run: curl -sSL https://get.grim.so | bash".colorize(:cyan)
     puts ""
     puts "Available commands in this installation:".colorize(:green)
