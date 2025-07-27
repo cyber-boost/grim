@@ -161,8 +161,8 @@ if [[ -f "scythe/scythe.py" ]]; then
         python3 scythe/scythe.py health
     fi
 else
-    warning "scythe.py not found. Please run 'grim health' manually to test."
+    warning "scythe.py not found. Please run 'grim health check' manually to test."
 fi
 
-success "Update completed! Please run 'grim health' to verify the fix."
+success "Update completed! Please run 'grim health check' to verify the fix."
 EOF
