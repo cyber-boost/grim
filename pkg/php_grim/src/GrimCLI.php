@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Grim CLI - Command Line Interface for Grim Reaper
+ * Provides monitoring and analytics commands for user CLI installations
+ *
+ * @copyright 2025 Bernie Gengel and CyberBoost LLC
+ * @license MIT License - see LICENSE file for full terms
+ * @package GrimReaper
+ */
+
 namespace GrimReaper;
 
 use GrimReaper\Monitoring\StorageAnalyticsDashboard;
@@ -8,11 +17,6 @@ use GrimReaper\Monitoring\PerformanceMonitor;
 use GrimReaper\Monitoring\SLAMonitor;
 use GrimReaper\Analytics\CostForecaster;
 use GrimReaper\Analytics\UsagePatternAnalyzer;
-
-/**
- * Grim CLI - Command Line Interface for Grim Reaper
- * Provides monitoring and analytics commands for user CLI installations
- */
 class GrimCLI
 {
     private StorageAnalyticsDashboard $dashboard;

@@ -1,12 +1,16 @@
 <?php
 
-namespace GrimReaper;
-
 /**
  * Grim Reaper PHP Package
  * Real core integration with sh_grim, py_grim, and go_grim
  * No mock files - calls actual core modules and binaries
+ *
+ * @copyright 2025 Bernie Gengel and CyberBoost LLC
+ * @license MIT License - see LICENSE file for full terms
+ * @package GrimReaper
  */
+
+namespace GrimReaper;
 class GrimReaper
 {
     private string $grimRoot;

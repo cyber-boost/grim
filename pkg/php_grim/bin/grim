@@ -6,6 +6,10 @@
  * 
  * This script serves as the main entry point for the Grim Reaper PHP package.
  * It handles command routing and delegates to the appropriate throne script.
+ *
+ * @copyright 2025 Bernie Gengel and CyberBoost LLC
+ * @license MIT License - see LICENSE file for full terms
+ * @package GrimReaper
  */
 
 // Prevent direct web access
