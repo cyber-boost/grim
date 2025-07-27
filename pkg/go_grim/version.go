@@ -4,4 +4,4 @@
 package grim
 
 // Version represents the current version of the Grim Reaper Go SDK
-const Version = "1.0.33"
+const Version = "1.0.37"
