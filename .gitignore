@@ -2,6 +2,8 @@
 admin/
 tsk_flask/
 cloud_storage/
+.g/
+**/.g/
 master_install/
 data/
 db/
@@ -93,15 +95,6 @@ install_php_dependencies.sh
 manifest-og.tsk
 manifest.tsk
 reaper.sh
-
-# AI ASSISTANT REFERENCES (NEVER COMMIT)
-*claude*
-*Claude*
-claude_*
-Claude_*
-pkg/*/claude*
-pkg/*/Claude*
-pkg/c.txt
 
 # DEPLOYMENT REPORTS
 deploy-report-*.txt
@@ -200,8 +193,6 @@ pkg/*/.grim/
 pkg/*/deploy.sh
 pkg/*/install*.sh
 pkg/*/*.egg-info/
-pkg/*/claude*
-pkg/*/Claude*
 
 # KEEP THESE PUBLIC FILES (explicitly allow)
 !README.md
@@ -230,17 +221,3 @@ pkg/*/Claude*
 
 # EXCEPTION: Allow grim-reaper.gemspec at root (Ruby gem spec)
 !grim-reaper.gemspec
-
-# Claude-generated temporary files
-*claude*.md
-claude_*.py
-claude_*.md
-
-# Preview/temporary scripts
-*preview*.py
-preview_*.py
-simple_preview*.py
-
-# Temporary documentation
-temp_*.md
-tmp_*.py
