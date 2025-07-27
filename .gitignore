@@ -47,6 +47,12 @@ go_grim/
 py_grim/
 sh_grim/
 
+# DEPLOYMENT DIRECTORIES
+pkg/deploy-logs/
+pkg/deploy-updated/
+deploy-logs/
+deploy-updated/
+
 # SENSITIVE FILES
 *.db
 *.sqlite
@@ -65,6 +71,7 @@ install.sh
 install_dependencies.sh
 js-grim_throne.sh
 grim_throne.sh
+grim-ascii.sh
 master_requirements.txt
 validate_ai_quality.py
 run_velocity_benchmarks.py
@@ -86,6 +93,10 @@ install_php_dependencies.sh
 manifest-og.tsk
 manifest.tsk
 reaper.sh
+
+# DEPLOYMENT REPORTS
+deploy-report-*.txt
+version-manifest.json
 
 # ENVIRONMENT AND CREDENTIALS
 .env
@@ -205,3 +216,6 @@ pkg/*/*.egg-info/
 !grim_reaper.go
 !svg/
 !svg/**/*.svg
+
+# EXCEPTION: Allow grim-reaper.gemspec at root (Ruby gem spec)
+!grim-reaper.gemspec
