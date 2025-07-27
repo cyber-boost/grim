@@ -1,1 +1,314 @@
-og/grim_reaper_pricing_visual.svg
+<svg width="1000" height="700" viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradients for each tier -->
+    <linearGradient id="freeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e8f5e8"/>
+      <stop offset="100%" style="stop-color:#d4f5d4"/>
+    </linearGradient>
+    
+    <linearGradient id="basicGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fff3cd"/>
+      <stop offset="100%" style="stop-color:#ffeaa7"/>
+    </linearGradient>
+    
+    <linearGradient id="proGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4edda"/>
+      <stop offset="100%" style="stop-color:#b8e6c1"/>
+    </linearGradient>
+    
+    <linearGradient id="masterGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#cce5ff"/>
+      <stop offset="100%" style="stop-color:#a8daff"/>
+    </linearGradient>
+    
+    <linearGradient id="reaperGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8d7da"/>
+      <stop offset="100%" style="stop-color:#f5b7b1"/>
+    </linearGradient>
+    
+    <linearGradient id="enterpriseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e2e3e5"/>
+      <stop offset="100%" style="stop-color:#d1d3d4"/>
+    </linearGradient>
+    
+    <linearGradient id="goldAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#b8860b"/>
+      <stop offset="100%" style="stop-color:#daa520"/>
+    </linearGradient>
+    
+    <!-- Filters -->
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+    
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1000" height="700" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="500" y="40" font-family="Arial Black, sans-serif" font-size="32" font-weight="900" 
+        text-anchor="middle" fill="#654321">Grim Reaper Pricing Strategy</text>
+  
+  <text x="500" y="70" font-family="Arial, sans-serif" font-size="18" font-weight="600" 
+        text-anchor="middle" fill="#8b4513">Land & Expand • High Margins • AI-Driven Value</text>
+  
+  <!-- Pricing Tiers -->
+  
+  <!-- Free Tier -->
+  <g transform="translate(50, 120)">
+    <rect x="0" y="0" width="140" height="200" rx="10" fill="url(#freeGrad)" stroke="#4a4a4a" stroke-width="2" filter="url(#shadow)"/>
+    
+    <text x="70" y="25" font-family="Arial Black, sans-serif" font-size="16" font-weight="900" 
+          text-anchor="middle" fill="#2d5a2d">FREE</text>
+    
+    <text x="70" y="45" font-family="Arial, sans-serif" font-size="24" font-weight="700" 
+          text-anchor="middle" fill="#1a1a1a">$0</text>
+    
+    <text x="70" y="65" font-family="Arial, sans-serif" font-size="11" 
+          text-anchor="middle" fill="#4a4a4a">5GB • 1 Agent • 7 Days</text>
+    
+    <g transform="translate(10, 80)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="10" fill="#2d5a2d">✓ Core Backup</text>
+      <text x="0" y="15" font-family="Arial, sans-serif" font-size="10" fill="#2d5a2d">✓ Basic Monitoring</text>
+      <text x="0" y="30" font-family="Arial, sans-serif" font-size="10" fill="#2d5a2d">✓ Community Support</text>
+    </g>
+    
+    <text x="70" y="180" font-family="Arial, sans-serif" font-size="9" font-weight="600" 
+          text-anchor="middle" fill="#666">GM: Investment</text>
+  </g>
+  
+  <!-- Basic Tier -->
+  <g transform="translate(210, 120)">
+    <rect x="0" y="0" width="140" height="200" rx="10" fill="url(#basicGrad)" stroke="#d4a400" stroke-width="2" filter="url(#shadow)"/>
+    
+    <text x="70" y="25" font-family="Arial Black, sans-serif" font-size="16" font-weight="900" 
+          text-anchor="middle" fill="#b8860b">BASIC</text>
+    
+    <text x="70" y="45" font-family="Arial, sans-serif" font-size="24" font-weight="700" 
+          text-anchor="middle" fill="#1a1a1a">$10</text>
+    
+    <text x="70" y="65" font-family="Arial, sans-serif" font-size="11" 
+          text-anchor="middle" fill="#4a4a4a">50GB • 3 Agents • 30 Days</text>
+    
+    <g transform="translate(10, 80)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="10" fill="#b8860b">✓ Encryption</text>
+      <text x="0" y="15" font-family="Arial, sans-serif" font-size="10" fill="#b8860b">✓ Auto-Backup</text>
+      <text x="0" y="30" font-family="Arial, sans-serif" font-size="10" fill="#b8860b">✓ Email Support</text>
+      <text x="0" y="45" font-family="Arial, sans-serif" font-size="10" fill="#b8860b">✓ Integrity Checks</text>
+    </g>
+    
+    <text x="70" y="180" font-family="Arial, sans-serif" font-size="9" font-weight="600" 
+          text-anchor="middle" fill="#666">GM: ~60%</text>
+  </g>
+  
+  <!-- Pro Tier -->
+  <g transform="translate(370, 120)">
+    <rect x="0" y="0" width="140" height="200" rx="10" fill="url(#proGrad)" stroke="#28a745" stroke-width="2" filter="url(#shadow)"/>
+    
+    <text x="70" y="25" font-family="Arial Black, sans-serif" font-size="16" font-weight="900" 
+          text-anchor="middle" fill="#155724">PRO</text>
+    
+    <text x="70" y="45" font-family="Arial, sans-serif" font-size="24" font-weight="700" 
+          text-anchor="middle" fill="#1a1a1a">$49</text>
+    
+    <text x="70" y="65" font-family="Arial, sans-serif" font-size="11" 
+          text-anchor="middle" fill="#4a4a4a">200GB • 10 Agents • 90 Days</text>
+    
+    <g transform="translate(10, 80)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="10" fill="#155724">✓ Advanced Compression</text>
+      <text x="0" y="15" font-family="Arial, sans-serif" font-size="10" fill="#155724">✓ Cloud Sync</text>
+      <text x="0" y="30" font-family="Arial, sans-serif" font-size="10" fill="#155724">✓ Web Dashboard</text>
+      <text x="0" y="45" font-family="Arial, sans-serif" font-size="10" fill="#155724">✓ Vuln Scanning</text>
+    </g>
+    
+    <text x="70" y="180" font-family="Arial, sans-serif" font-size="9" font-weight="600" 
+          text-anchor="middle" fill="#666">GM: ~75-80%</text>
+  </g>
+  
+  <!-- Master Tier -->
+  <g transform="translate(530, 120)">
+    <rect x="0" y="0" width="140" height="200" rx="10" fill="url(#masterGrad)" stroke="#007bff" stroke-width="2" filter="url(#shadow)"/>
+    
+    <text x="70" y="25" font-family="Arial Black, sans-serif" font-size="16" font-weight="900" 
+          text-anchor="middle" fill="#004085">MASTER</text>
+    
+    <text x="70" y="45" font-family="Arial, sans-serif" font-size="24" font-weight="700" 
+          text-anchor="middle" fill="#1a1a1a">$199</text>
+    
+    <text x="70" y="65" font-family="Arial, sans-serif" font-size="11" 
+          text-anchor="middle" fill="#4a4a4a">1TB • 50 Agents • 180 Days</text>
+    
+    <g transform="translate(10, 80)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="10" fill="#004085">✓ AI & ML Features</text>
+      <text x="0" y="15" font-family="Arial, sans-serif" font-size="10" fill="#004085">✓ Compliance Audit</text>
+      <text x="0" y="30" font-family="Arial, sans-serif" font-size="10" fill="#004085">✓ Performance Tuning</text>
+      <text x="0" y="45" font-family="Arial, sans-serif" font-size="10" fill="#004085">✓ Priority Support</text>
+    </g>
+    
+    <text x="70" y="180" font-family="Arial, sans-serif" font-size="9" font-weight="600" 
+          text-anchor="middle" fill="#666">GM: ~85%</text>
+  </g>
+  
+  <!-- Reaper Tier -->
+  <g transform="translate(690, 120)">
+    <rect x="0" y="0" width="140" height="200" rx="10" fill="url(#reaperGrad)" stroke="#dc3545" stroke-width="3" filter="url(#shadow)"/>
+    
+    <!-- Popular badge -->
+    <rect x="35" y="-10" width="70" height="20" rx="10" fill="url(#goldAccent)" filter="url(#glow)"/>
+    <text x="70" y="5" font-family="Arial, sans-serif" font-size="10" font-weight="700" 
+          text-anchor="middle" fill="white">POPULAR</text>
+    
+    <text x="70" y="25" font-family="Arial Black, sans-serif" font-size="16" font-weight="900" 
+          text-anchor="middle" fill="#721c24">REAPER</text>
+    
+    <text x="70" y="45" font-family="Arial, sans-serif" font-size="24" font-weight="700" 
+          text-anchor="middle" fill="#1a1a1a">$499</text>
+    
+    <text x="70" y="65" font-family="Arial, sans-serif" font-size="11" 
+          text-anchor="middle" fill="#4a4a4a">5TB • 200 Agents • 1 Year</text>
+    
+    <g transform="translate(10, 80)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="10" fill="#721c24">✓ Pen Testing</text>
+      <text x="0" y="15" font-family="Arial, sans-serif" font-size="10" fill="#721c24">✓ Multi-Cloud Deploy</text>
+      <text x="0" y="30" font-family="Arial, sans-serif" font-size="10" fill="#721c24">✓ Unlimited Jobs</text>
+      <text x="0" y="45" font-family="Arial, sans-serif" font-size="10" fill="#721c24">✓ 24/7 Premium</text>
+    </g>
+    
+    <text x="70" y="180" font-family="Arial, sans-serif" font-size="9" font-weight="600" 
+          text-anchor="middle" fill="#666">GM: ~90%</text>
+  </g>
+  
+  <!-- Enterprise Tier -->
+  <g transform="translate(850, 120)">
+    <rect x="0" y="0" width="140" height="200" rx="10" fill="url(#enterpriseGrad)" stroke="#6c757d" stroke-width="2" filter="url(#shadow)"/>
+    
+    <text x="70" y="25" font-family="Arial Black, sans-serif" font-size="14" font-weight="900" 
+          text-anchor="middle" fill="#495057">ENTERPRISE</text>
+    
+    <text x="70" y="45" font-family="Arial, sans-serif" font-size="20" font-weight="700" 
+          text-anchor="middle" fill="#1a1a1a">Custom</text>
+    
+    <text x="70" y="65" font-family="Arial, sans-serif" font-size="11" 
+          text-anchor="middle" fill="#4a4a4a">Unlimited • Custom SLA</text>
+    
+    <g transform="translate(10, 80)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="10" fill="#495057">✓ Dedicated Instance</text>
+      <text x="0" y="15" font-family="Arial, sans-serif" font-size="10" fill="#495057">✓ BYO Cloud</text>
+      <text x="0" y="30" font-family="Arial, sans-serif" font-size="10" fill="#495057">✓ Custom Integration</text>
+      <text x="0" y="45" font-family="Arial, sans-serif" font-size="10" fill="#495057">✓ White-Glove</text>
+    </g>
+    
+    <text x="70" y="180" font-family="Arial, sans-serif" font-size="9" font-weight="600" 
+          text-anchor="middle" fill="#666">GM: ~75-80%</text>
+  </g>
+  
+  <!-- Upgrade flow arrows -->
+  <g stroke="#b8860b" stroke-width="2" fill="none" opacity="0.7">
+    <path d="M 190 220 Q 200 240 210 220" marker-end="url(#arrowhead)"/>
+    <path d="M 350 220 Q 360 240 370 220" marker-end="url(#arrowhead)"/>
+    <path d="M 510 220 Q 520 240 530 220" marker-end="url(#arrowhead)"/>
+    <path d="M 670 220 Q 680 240 690 220" marker-end="url(#arrowhead)"/>
+    <path d="M 830 220 Q 840 240 850 220" marker-end="url(#arrowhead)"/>
+  </g>
+  
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+            refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#b8860b"/>
+    </marker>
+  </defs>
+  
+  <!-- Business Model Benefits -->
+  <g transform="translate(50, 380)">
+    <rect x="0" y="0" width="900" height="150" rx="15" fill="white" stroke="#daa520" stroke-width="2" filter="url(#shadow)"/>
+    
+    <text x="450" y="30" font-family="Arial Black, sans-serif" font-size="20" font-weight="900" 
+          text-anchor="middle" fill="#654321">Land & Expand Strategy</text>
+    
+    <!-- Three columns of benefits -->
+    <g transform="translate(50, 50)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#8b4513">
+        Customer Acquisition
+      </text>
+      <text x="0" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">
+        • Free tier removes barriers
+      </text>
+      <text x="0" y="35" font-family="Arial, sans-serif" font-size="12" fill="#666">
+        • Low-cost lead generation
+      </text>
+      <text x="0" y="50" font-family="Arial, sans-serif" font-size="12" fill="#666">
+        • Viral adoption within orgs
+      </text>
+      <text x="0" y="65" font-family="Arial, sans-serif" font-size="12" fill="#666">
+        • Word-of-mouth growth
+      </text>
+    </g>
+    
+    <g transform="translate(350, 50)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#8b4513">
+        Revenue Expansion
+      </text>
+      <text x="0" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">
+        • Clear upgrade paths
+      </text>
+      <text x="0" y="35" font-family="Arial, sans-serif" font-size="12" fill="#666">
+        • Usage-based scaling
+      </text>
+      <text x="0" y="50" font-family="Arial, sans-serif" font-size="12" fill="#666">
+        • Feature-driven upsells
+      </text>
+      <text x="0" y="65" font-family="Arial, sans-serif" font-size="12" fill="#666">
+        • Net retention >100%
+      </text>
+    </g>
+    
+    <g transform="translate(650, 50)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#8b4513">
+        Margin Optimization
+      </text>
+      <text x="0" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">
+        • AI features = high margin
+      </text>
+      <text x="0" y="35" font-family="Arial, sans-serif" font-size="12" fill="#666">
+        • Software scales efficiently
+      </text>
+      <text x="0" y="50" font-family="Arial, sans-serif" font-size="12" fill="#666">
+        • Premium pricing justified
+      </text>
+      <text x="0" y="65" font-family="Arial, sans-serif" font-size="12" fill="#666">
+        • Enterprise contracts profitable
+      </text>
+    </g>
+  </g>
+  
+  <!-- Key Metrics -->
+  <g transform="translate(50, 570)">
+    <rect x="0" y="0" width="900" height="80" rx="10" fill="url(#goldAccent)" filter="url(#shadow)"/>
+    
+    <text x="450" y="25" font-family="Arial Black, sans-serif" font-size="18" font-weight="900" 
+          text-anchor="middle" fill="white">Key Business Metrics</text>
+    
+    <g transform="translate(100, 40)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="white">
+        ARPU Growth: Free → $10 → $49 → $199 → $499+ 
+      </text>
+      <text x="450" y="0" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="white">
+        Gross Margin: 60% → 90%
+      </text>
+    </g>
+  </g>
+  
+  <!-- Footer -->
+  <text x="500" y="680" font-family="monospace" font-size="12" text-anchor="middle" fill="#8b4513" opacity="0.7">
+    grimreaper.ai • Unified Data Protection Platform
+  </text>
+</svg>

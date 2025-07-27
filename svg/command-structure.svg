@@ -1,1 +1,205 @@
-og/grim_reaper_platform_overview.svg
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8f9fa"/>
+      <stop offset="100%" style="stop-color:#e9ecef"/>
+    </linearGradient>
+    
+    <linearGradient id="centerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#654321"/>
+      <stop offset="100%" style="stop-color:#8b4513"/>
+    </linearGradient>
+    
+    <linearGradient id="backupGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#b8860b"/>
+      <stop offset="50%" style="stop-color:#daa520"/>
+      <stop offset="100%" style="stop-color:#cd853f"/>
+    </linearGradient>
+    
+    <!-- Glow effects -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#bgGrad)"/>
+  
+  <!-- Title -->
+  <text x="400" y="40" font-family="Arial Black, sans-serif" font-size="28" font-weight="900" 
+        text-anchor="middle" fill="#654321">Unified Data Protection Platform</text>
+  
+  <!-- Central Grim Reaper Core -->
+  <g transform="translate(400, 300)">
+    <!-- Core circle -->
+    <circle cx="0" cy="0" r="80" fill="url(#centerGrad)" filter="url(#shadow)"/>
+    
+    <!-- Logo elements in center -->
+    <g transform="scale(0.8)">
+      <line x1="-20" y1="20" x2="0" y2="-30" stroke="#daa520" stroke-width="4" stroke-linecap="round"/>
+      <path d="M0 -30 C12 -40, 25 -35, 30 -20 C27 -10, 20 -5, 10 -8 C3 -12, -2 -22, 0 -30" 
+            fill="#daa520" stroke="#654321" stroke-width="1"/>
+    </g>
+    
+    <text x="0" y="8" font-family="Arial Black, sans-serif" font-size="14" font-weight="900" 
+          text-anchor="middle" fill="#daa520">GRIM</text>
+    <text x="0" y="25" font-family="Arial, sans-serif" font-size="10" font-weight="600" 
+          text-anchor="middle" fill="#cd853f">REAPER</text>
+  </g>
+  
+  <!-- Feature Modules around the core -->
+  
+  <!-- 1. Backup & Recovery (Top) -->
+  <g transform="translate(400, 120)">
+    <rect x="-60" y="-25" width="120" height="50" rx="25" fill="url(#backupGrad)" filter="url(#shadow)"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="14" font-weight="700" 
+          text-anchor="middle" fill="white">💾 Backup & Recovery</text>
+    <text x="0" y="10" font-family="Arial, sans-serif" font-size="10" 
+          text-anchor="middle" fill="white">Intelligent • Automated • Secure</text>
+    
+    <!-- Connection line -->
+    <line x1="0" y1="25" x2="0" y2="140" stroke="#b8860b" stroke-width="3" opacity="0.6"/>
+  </g>
+  
+  <!-- 2. AI & ML (Top Right) -->
+  <g transform="translate(580, 180)">
+    <rect x="-50" y="-25" width="100" height="50" rx="25" fill="#8b4513" filter="url(#shadow)"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="14" font-weight="700" 
+          text-anchor="middle" fill="#daa520">🤖 AI & ML</text>
+    <text x="0" y="10" font-family="Arial, sans-serif" font-size="10" 
+          text-anchor="middle" fill="#daa520">Predictive • Optimize</text>
+    
+    <!-- Connection line -->
+    <line x1="-50" y1="0" x2="-100" y2="60" stroke="#8b4513" stroke-width="3" opacity="0.6"/>
+  </g>
+  
+  <!-- 3. Security & Compliance (Right) -->
+  <g transform="translate(620, 300)">
+    <rect x="-60" y="-25" width="120" height="50" rx="25" fill="#654321" filter="url(#shadow)"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="14" font-weight="700" 
+          text-anchor="middle" fill="#daa520">🔒 Security</text>
+    <text x="0" y="10" font-family="Arial, sans-serif" font-size="10" 
+          text-anchor="middle" fill="#daa520">Compliance • Pen Testing</text>
+    
+    <!-- Connection line -->
+    <line x1="-60" y1="0" x2="-140" y2="0" stroke="#654321" stroke-width="3" opacity="0.6"/>
+  </g>
+  
+  <!-- 4. Cloud & Distributed (Bottom Right) -->
+  <g transform="translate(580, 420)">
+    <rect x="-55" y="-25" width="110" height="50" rx="25" fill="#cd853f" filter="url(#shadow)"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="14" font-weight="700" 
+          text-anchor="middle" fill="white">☁️ Multi-Cloud</text>
+    <text x="0" y="10" font-family="Arial, sans-serif" font-size="10" 
+          text-anchor="middle" fill="white">Distributed • Scalable</text>
+    
+    <!-- Connection line -->
+    <line x1="-50" y1="0" x2="-100" y2="-60" stroke="#cd853f" stroke-width="3" opacity="0.6"/>
+  </g>
+  
+  <!-- 5. Monitoring (Bottom) -->
+  <g transform="translate(400, 480)">
+    <rect x="-50" y="-25" width="100" height="50" rx="25" fill="#b8860b" filter="url(#shadow)"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="14" font-weight="700" 
+          text-anchor="middle" fill="white">📊 Monitoring</text>
+    <text x="0" y="10" font-family="Arial, sans-serif" font-size="10" 
+          text-anchor="middle" fill="white">Real-time • Alerts</text>
+    
+    <!-- Connection line -->
+    <line x1="0" y1="-25" x2="0" y2="-100" stroke="#b8860b" stroke-width="3" opacity="0.6"/>
+  </g>
+  
+  <!-- 6. Performance (Bottom Left) -->
+  <g transform="translate(220, 420)">
+    <rect x="-55" y="-25" width="110" height="50" rx="25" fill="#daa520" filter="url(#shadow)"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="14" font-weight="700" 
+          text-anchor="middle" fill="white">🚀 Performance</text>
+    <text x="0" y="10" font-family="Arial, sans-serif" font-size="10" 
+          text-anchor="middle" fill="white">Optimization • Speed</text>
+    
+    <!-- Connection line -->
+    <line x1="50" y1="0" x2="100" y2="-60" stroke="#daa520" stroke-width="3" opacity="0.6"/>
+  </g>
+  
+  <!-- 7. Dev Tools (Left) -->
+  <g transform="translate(180, 300)">
+    <rect x="-50" y="-25" width="100" height="50" rx="25" fill="#8b4513" filter="url(#shadow)"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="14" font-weight="700" 
+          text-anchor="middle" fill="#daa520">🛠️ Dev Tools</text>
+    <text x="0" y="10" font-family="Arial, sans-serif" font-size="10" 
+          text-anchor="middle" fill="#daa520">CI/CD • Quality</text>
+    
+    <!-- Connection line -->
+    <line x1="50" y1="0" x2="140" y2="0" stroke="#8b4513" stroke-width="3" opacity="0.6"/>
+  </g>
+  
+  <!-- 8. Operations (Top Left) -->
+  <g transform="translate(220, 180)">
+    <rect x="-50" y="-25" width="100" height="50" rx="25" fill="#654321" filter="url(#shadow)"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="14" font-weight="700" 
+          text-anchor="middle" fill="#daa520">🔧 Operations</text>
+    <text x="0" y="10" font-family="Arial, sans-serif" font-size="10" 
+          text-anchor="middle" fill="#daa520">Runbooks • SRE</text>
+    
+    <!-- Connection line -->
+    <line x1="50" y1="0" x2="100" y2="60" stroke="#654321" stroke-width="3" opacity="0.6"/>
+  </g>
+  
+  <!-- Value Props at bottom -->
+  <g transform="translate(400, 550)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="16" font-weight="600" 
+          text-anchor="middle" fill="#654321">Replace Multiple Tools • Reduce Complexity • AI-Driven Intelligence</text>
+  </g>
+  
+  <!-- Competitive advantage callouts -->
+  <g transform="translate(50, 100)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#8b4513">
+      Traditional Approach:
+    </text>
+    <text x="0" y="20" font-family="Arial, sans-serif" font-size="11" fill="#666">
+      • Separate backup tool
+    </text>
+    <text x="0" y="35" font-family="Arial, sans-serif" font-size="11" fill="#666">
+      • Security scanner
+    </text>
+    <text x="0" y="50" font-family="Arial, sans-serif" font-size="11" fill="#666">
+      • Monitoring system
+    </text>
+    <text x="0" y="65" font-family="Arial, sans-serif" font-size="11" fill="#666">
+      • Manual optimization
+    </text>
+    <text x="0" y="80" font-family="Arial, sans-serif" font-size="11" fill="#666">
+      • Multiple vendors
+    </text>
+  </g>
+  
+  <g transform="translate(650, 100)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#b8860b">
+      Grim Reaper:
+    </text>
+    <text x="0" y="20" font-family="Arial, sans-serif" font-size="11" fill="#666">
+      ✓ Unified platform
+    </text>
+    <text x="0" y="35" font-family="Arial, sans-serif" font-size="11" fill="#666">
+      ✓ AI-powered automation
+    </text>
+    <text x="0" y="50" font-family="Arial, sans-serif" font-size="11" fill="#666">
+      ✓ Built-in intelligence
+    </text>
+    <text x="0" y="65" font-family="Arial, sans-serif" font-size="11" fill="#666">
+      ✓ Single vendor
+    </text>
+    <text x="0" y="80" font-family="Arial, sans-serif" font-size="11" fill="#666">
+      ✓ Lower TCO
+    </text>
+  </g>
+</svg>

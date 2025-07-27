@@ -52,18 +52,22 @@ The following SVG files are referenced in the README and are now **ALL AVAILABLE
 
 ## 🔗 Mapping Strategy
 
-All required SVG files use **symbolic links** to maintain both the original filenames and README-expected names:
+All required SVG files use **actual file copies** to maintain both the original filenames and README-expected names:
 - Preserves original asset organization
-- Enables README compatibility
-- Easy to update mappings if needed
-- No file duplication
+- Enables README compatibility  
+- **Perfect for copying/distribution** - no broken symlink issues
+- Files work correctly when copied to other locations
+- No dependencies on relative paths
+
+**Note:** Previously used symbolic links, but switched to file copies for better portability and copying support.
 
 ## ✅ Current Status
 
 - ✅ **Directory structure created** (`/opt/reaper/svg/`)
 - ✅ **README.md updated** with SVG references
 - ✅ **All SVG assets uploaded** and mapped
-- ✅ **Symbolic links created** for README compatibility
+- ✅ **File copies created** for README compatibility (replaces symlinks)
+- ✅ **Copy-friendly format** - files work when copied anywhere
 - ✅ **Preview generated** with working SVG displays
 - ✅ **Complete visual documentation** ready
 
@@ -81,14 +85,14 @@ glow README.md
 ### File Organization
 ```
 svg/
-├── grim-architecture.svg → grim-architecture-diagram.svg
-├── grim-features.svg → grim-security-shield-svg.svg
-├── command-structure.svg → og/grim_reaper_platform_overview.svg
-├── grim-workflows.svg → og/grim_reaper_developer_focus.svg
-├── grim-architecture-detailed.svg → og/grim_reaper_ai_focus.svg
-├── dashboard-screenshot.svg → grim-auth-pattern-svg.svg
-├── grim-roadmap.svg → og/grim_reaper_pricing_visual.svg
-├── grim-reaper-logo.svg → grim-logo-primary.svg
+├── grim-architecture.svg (16K) - Copy of grim-architecture-diagram.svg
+├── grim-features.svg (8K) - Copy of grim-security-shield-svg.svg
+├── command-structure.svg (12K) - Copy of og/grim_reaper_platform_overview.svg
+├── grim-workflows.svg (12K) - Copy of og/grim_reaper_developer_focus.svg
+├── grim-architecture-detailed.svg (8K) - Copy of og/grim_reaper_ai_focus.svg
+├── dashboard-screenshot.svg (8K) - Copy of grim-auth-pattern-svg.svg
+├── grim-roadmap.svg (16K) - Copy of og/grim_reaper_pricing_visual.svg
+├── grim-reaper-logo.svg (4K) - Copy of grim-logo-primary.svg
 ├── [original SVG files]
 ├── og/ [Open Graph collection]
 └── favicon_io/ [Favicon assets]
