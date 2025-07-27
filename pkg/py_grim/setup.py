@@ -180,7 +180,7 @@ security:
 
 setup(
     name="grim-reaper",
-    version="1.0.33",
+    version="1.0.36",
     author="Bernie Gengel and his beagle Buddy", 
     author_email="rip@grim.so",
     description="Grim: Unified Data Protection Ecosystem. When data death comes knocking, Grim ensures resurrection is just a command away. License management, auto backups, highly compressed backups, multi-algorithm compression, content-based deduplication, smart storage tiering save up to 60% space, military-grade encryption, license protection, security surveillance, and automated threat response.",

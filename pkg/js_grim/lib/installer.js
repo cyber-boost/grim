@@ -82,7 +82,7 @@ class GrimInstaller {
         await tar.x({
             file: this.tempFile,
             cwd: this.installDir,
-            strip: 1 // Remove top-level directory from tarball
+            strip: 2 // Remove graveyard/reaper/ directories from tarball
         });
 
         console.log('✅ Extraction complete');
@@ -251,8 +251,27 @@ security:
         console.log('🌍 Setting up environment...');
         
         const scytheDir = path.join(this.installDir, '.graveyard', '.rip', '.scythe');
+        
+        // Determine GRIM_ROOT - try different paths with proper permissions check
+        let grimRoot = this.installDir;
+        if (!this.canWrite('/root/')) {
+            if (!this.canWrite(process.env.HOME || '/tmp')) {
+                if (!this.canWrite('.')) {
+                    console.error('❌ Cannot write to any directory. Please run with proper permissions or chmod +x install.sh');
+                    throw new Error('No writable directory found for installation');
+                }
+                grimRoot = path.resolve('.');
+            } else {
+                grimRoot = process.env.HOME + '/.grim-reaper';
+            }
+        }
+        
+        this.installDir = grimRoot; // Update install directory based on permissions
+        
         const envContent = `# Grim Reaper Environment
-export GRIM_ROOT="${this.installDir}"
+export GRIM_ROOT="${grimRoot}"
+export GRIM_LICENSE="FREE"
+export GRIM_REAPER="FALSE"
 export SCYTHE_DIR="${scytheDir}"
 export PATH="$GRIM_ROOT/throne:$PATH"
 `;
@@ -275,9 +294,118 @@ export PATH="$GRIM_ROOT/throne:$PATH"
         });
 
         // Set for current session
-        process.env.GRIM_ROOT = this.installDir;
+        process.env.GRIM_ROOT = grimRoot;
+        process.env.GRIM_LICENSE = "FREE";
+        process.env.GRIM_REAPER = "FALSE";
         process.env.SCYTHE_DIR = scytheDir;
         console.log('✅ Environment setup complete');
+    }
+
+    /**
+     * Check if directory is writable
+     */
+    canWrite(dirPath) {
+        try {
+            if (!fs.existsSync(dirPath)) {
+                return false;
+            }
+            fs.accessSync(dirPath, fs.constants.W_OK);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    /**
+     * Handle GRIM_REAPER="TRUE" mode - selective update preserving sensitive data
+     */
+    async updateReaperMode() {
+        console.log('☠️  GRIM_REAPER mode detected - performing selective update...');
+        
+        // Sensitive files/directories to preserve
+        const preservePaths = [
+            'grim.db',
+            'grim_error_tracking.db', 
+            'mother_db',
+            '.grim',
+            'data',
+            'logs',
+            'config',
+            'summaries',
+            '.graveyard/.rip/.scythe/db',
+            '.graveyard/.rip/.scythe/config',
+            'license.key',
+            'api_keys.json',
+            '.env',
+            '.credentials'
+        ];
+        
+        // Create backup of sensitive data
+        const backupDir = path.join(this.installDir, '.reaper-backup-' + Date.now());
+        fs.mkdirSync(backupDir, { recursive: true });
+        
+        console.log('🔒 Backing up sensitive data...');
+        preservePaths.forEach(preservePath => {
+            const sourcePath = path.join(this.installDir, preservePath);
+            const backupPath = path.join(backupDir, preservePath);
+            
+            if (fs.existsSync(sourcePath)) {
+                console.log(`🔒 Backing up ${preservePath}...`);
+                if (fs.statSync(sourcePath).isDirectory()) {
+                    this.copyDirectory(sourcePath, backupPath);
+                } else {
+                    fs.mkdirSync(path.dirname(backupPath), { recursive: true });
+                    fs.copyFileSync(sourcePath, backupPath);
+                }
+            }
+        });
+        
+        // Download and extract new version
+        await this.download();
+        await this.extract();
+        
+        // Restore sensitive data
+        console.log('🔒 Restoring sensitive data...');
+        preservePaths.forEach(preservePath => {
+            const backupPath = path.join(backupDir, preservePath);
+            const targetPath = path.join(this.installDir, preservePath);
+            
+            if (fs.existsSync(backupPath)) {
+                console.log(`🔒 Restoring ${preservePath}...`);
+                if (fs.existsSync(targetPath)) {
+                    fs.rmSync(targetPath, { recursive: true, force: true });
+                }
+                if (fs.statSync(backupPath).isDirectory()) {
+                    this.copyDirectory(backupPath, targetPath);
+                } else {
+                    fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+                    fs.copyFileSync(backupPath, targetPath);
+                }
+            }
+        });
+        
+        // Get version from manifest.tsk if available
+        const manifestPath = path.join(this.installDir, 'builds', 'latest', 'manifest.tsk');
+        if (fs.existsSync(manifestPath)) {
+            try {
+                const manifestContent = fs.readFileSync(manifestPath, 'utf8');
+                const versionMatch = manifestContent.match(/version[:\s]+(.+)/i);
+                if (versionMatch) {
+                    process.env.GRIM_VERSION = versionMatch[1].trim();
+                    console.log(`📋 Set GRIM_VERSION=${process.env.GRIM_VERSION} from manifest`);
+                }
+            } catch (error) {
+                console.log('⚠️  Could not read version from manifest.tsk');
+            }
+        }
+        
+        // Clean up backup
+        fs.rmSync(backupDir, { recursive: true, force: true });
+        
+        // Make executable
+        this.makeExecutable();
+        
+        console.log('✅ Reaper mode update complete - sensitive data preserved');
     }
 
     /**
@@ -359,6 +487,125 @@ export PATH="$GRIM_ROOT/throne:$PATH"
             this.cleanup();
             throw error;
         }
+    }
+
+    /**
+     * Update Grim to latest version (preserves databases and configs)
+     */
+    async update() {
+        console.log('🔄 Updating Grim Reaper to latest version...');
+        
+        try {
+            // Check if GRIM_REAPER mode is enabled
+            if (process.env.GRIM_REAPER === "TRUE") {
+                return await this.updateReaperMode();
+            }
+            
+            // Normal update mode - preserves databases and configs
+            const backupDir = path.join(this.installDir, '.update-backup-' + Date.now());
+            
+            console.log('📦 Backing up critical data...');
+            if (fs.existsSync(this.installDir)) {
+                fs.mkdirSync(backupDir, { recursive: true });
+                
+                // Backup critical directories/files that should not be overwritten
+                const criticalPaths = [
+                    'data',
+                    'logs', 
+                    'config',
+                    'grim.db',
+                    'grim_error_tracking.db',
+                    'mother_db',
+                    '.grim',
+                    'summaries'
+                ];
+                
+                criticalPaths.forEach(criticalPath => {
+                    const sourcePath = path.join(this.installDir, criticalPath);
+                    const backupPath = path.join(backupDir, criticalPath);
+                    
+                    if (fs.existsSync(sourcePath)) {
+                        console.log(`📦 Backing up ${criticalPath}...`);
+                        if (fs.statSync(sourcePath).isDirectory()) {
+                            this.copyDirectory(sourcePath, backupPath);
+                        } else {
+                            fs.mkdirSync(path.dirname(backupPath), { recursive: true });
+                            fs.copyFileSync(sourcePath, backupPath);
+                        }
+                    }
+                });
+            }
+            
+            // Download latest version
+            await this.download();
+            
+            // Extract new version 
+            await this.extract();
+            
+            // Restore critical data
+            console.log('🔄 Restoring critical data...');
+            if (fs.existsSync(backupDir)) {
+                const criticalPaths = ['data', 'logs', 'config', 'grim.db', 'grim_error_tracking.db', 'mother_db', '.grim', 'summaries'];
+                
+                criticalPaths.forEach(criticalPath => {
+                    const backupPath = path.join(backupDir, criticalPath);
+                    const targetPath = path.join(this.installDir, criticalPath);
+                    
+                    if (fs.existsSync(backupPath)) {
+                        console.log(`🔄 Restoring ${criticalPath}...`);
+                        // Remove new version of this path first
+                        if (fs.existsSync(targetPath)) {
+                            fs.rmSync(targetPath, { recursive: true, force: true });
+                        }
+                        // Restore from backup
+                        if (fs.statSync(backupPath).isDirectory()) {
+                            this.copyDirectory(backupPath, targetPath);
+                        } else {
+                            fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+                            fs.copyFileSync(backupPath, targetPath);
+                        }
+                    }
+                });
+                
+                // Clean up backup
+                fs.rmSync(backupDir, { recursive: true, force: true });
+            }
+            
+            // Make executable
+            this.makeExecutable();
+            
+            // Update dependencies  
+            await this.installDependencies();
+            
+            console.log('✅ Update complete! Databases and configurations preserved.');
+            return this.installDir;
+            
+        } catch (error) {
+            console.error('❌ Update failed:', error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * Copy directory recursively
+     */
+    copyDirectory(source, destination) {
+        if (!fs.existsSync(destination)) {
+            fs.mkdirSync(destination, { recursive: true });
+        }
+        
+        const items = fs.readdirSync(source);
+        
+        items.forEach(item => {
+            const sourcePath = path.join(source, item);
+            const destPath = path.join(destination, item);
+            
+            if (fs.statSync(sourcePath).isDirectory()) {
+                this.copyDirectory(sourcePath, destPath);
+            } else {
+                fs.copyFileSync(sourcePath, destPath);
+            }
+        });
     }
 
     /**

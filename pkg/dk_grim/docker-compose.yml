@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  grim-reaper:
+    build: .
+    image: grimreaper/grim:latest
+    container_name: grim-reaper
+    restart: unless-stopped
+    
+    environment:
+      - GRIM_ROOT=/opt/grim-reaper
+      - GRIM_LICENSE=FREE
+      - GRIM_REAPER=FALSE
+      - TZ=UTC
+    
+    volumes:
+      # Data to backup
+      - ./data:/data:ro
+      
+      # Backup storage
+      - ./backups:/backups
+      
+      # Grim configuration and state
+      - grim_graveyard:/home/grim/.graveyard
+      
+      # Optional: Custom configuration
+      - ./config:/opt/grim-reaper/config:ro
+      
+      # Optional: Logs
+      - ./logs:/opt/grim-reaper/logs
+    
+    # For monitoring exposed services
+    ports:
+      - "8000:8000"  # Grim web interface (if enabled)
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "grim", "health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '2.0'
+        reservations:
+          memory: 256M
+          cpus: '0.5'
+
+  # Optional: Grim monitoring dashboard
+  grim-monitor:
+    image: grimreaper/grim:latest
+    container_name: grim-monitor
+    restart: unless-stopped
+    
+    environment:
+      - GRIM_ROOT=/opt/grim-reaper
+      - GRIM_LICENSE=FREE
+      - GRIM_REAPER=FALSE
+    
+    volumes:
+      - grim_graveyard:/home/grim/.graveyard:ro
+    
+    ports:
+      - "8080:8000"
+    
+    command: ["monitor", "--web", "--port", "8000"]
+    
+    depends_on:
+      - grim-reaper
+
+volumes:
+  grim_graveyard:
+    driver: local
+
+networks:
+  default:
+    name: grim-network 

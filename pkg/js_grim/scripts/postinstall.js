@@ -9,12 +9,13 @@ async function postInstall() {
     const installer = new GrimInstaller();
     
     try {
-        // Check if Grim is already installed
-        if (!installer.isInstalled()) {
-            console.log('📥 Installing Grim Reaper core components...');
-            await installer.install();
+        // Always update to latest version (safe update preserving configs/databases)
+        if (installer.isInstalled()) {
+            console.log('🔄 Updating Grim Reaper to latest version...');
+            await installer.update();  // Safe update preserving existing data
         } else {
-            console.log('✅ Grim Reaper is already installed');
+            console.log('📥 Installing Grim Reaper core components...');
+            await installer.install();  // Fresh installation
         }
         
         console.log('\n✅ Setup complete! You can now use: grim <command>');

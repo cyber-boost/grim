@@ -1,6 +1,6 @@
 [package]
 name = "grim-reaper"
-version = "1.0.34"
+version = "1.0.35"
 edition = "2021"
 authors = ["Bernie Gengel and his beagle Buddy <rip@grim.so>"]
 description = "Death Defying Data Protection - When data death comes knocking, Grim ensures resurrection is just a command away"
@@ -29,6 +29,9 @@ walkdir = "2.3"
 # Configuration and utilities
 dirs = "5.0"
 which = "4.4"
+
+# Date/time handling for installation records
+chrono = { version = "0.4", features = ["serde"] }
 
 [build-dependencies]
 chrono = { version = "0.4", features = ["serde"] }

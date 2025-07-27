@@ -8,15 +8,64 @@
 
 Enterprise-grade data protection platform with AI-powered backup decisions, military-grade encryption, multi-algorithm compression, content-based deduplication, real-time monitoring, and automated threat response.
 
+## 🚀 What's New in v1.0.34
+
+### 🆕 **Latest.tar.gz Auto-Download System**
+- **Direct Install**: Now downloads complete Grim system from `get.grim.so/latest.tar.gz`
+- **Smart Extraction**: Properly handles `graveyard/reaper/` structure with `--strip-components=2`
+- **Auto-Environment**: Automatically sets `GRIM_ROOT`, `GRIM_LICENSE=FREE`, `GRIM_REAPER=FALSE`
+- **Intelligent Paths**: Tries `/root/.grim`, `$HOME/.grim`, or local directory
+- **Executable Scripts**: Automatically makes all scripts executable
+- **Bashrc Integration**: Adds environment to `~/.bashrc` for persistence
+
+### 🏗️ **Professional Tier System (July 2025)**
+Complete overhaul of pricing structure with 6-tier system:
+
+- **🆓 FREE** ($0) - 1GB storage, 15 commands, encrypted auto-backups
+- **💼 BASIC** ($19) - 25GB cloud, 35 commands, removes encryption friction  
+- **🚀 PRO** ($49) - 100GB storage, 60 commands, AI-powered decisions
+- **⚔️ MASTER** ($99) - 1TB storage, 200+ commands, enterprise compliance
+- **💀 REAPER** ($499) - Unlimited storage, custom development, 24/7 support
+- **🏢 ENTERPRISE** (Custom) - Global deployment, source code access, strategic partnership
+
+### 🔧 **Critical Infrastructure Fixes (July 26-27, 2025)**
+- **SSL Certificate Crisis**: Fixed `up.grim.so` SSL mismatch (was `cyberboost.com`)
+- **Port Configuration**: Corrected auto-update service from `4745` → `5001`
+- **Auto-Update Daemon**: Restored background version checking for 5000+ installations
+- **Nginx Proxy**: Fixed proxy configuration for proper request routing
+- **Function Dependencies**: Resolved `log_update` function order bugs
+
+### 🔐 **Enhanced Security Features**
+- **OTP Authentication**: TOTP support with QR codes and backup codes
+- **Environment Protection**: Smart environment variable detection and setup
+- **Secure Downloads**: HTTPS-only downloads with SSL verification
+- **Permission Management**: Automatic executable permissions for all scripts
+
 ## 🚀 Quick Install
 
 ```bash
 gem install grim-reaper
 ```
 
-## 🔐 NEW: OTP Authentication Support
+## 🎯 Quick Start Commands
 
-Version 1.0.33 introduces One-Time Password (TOTP) authentication for enhanced security:
+```bash
+# Download and install complete Grim system
+grim download-latest
+
+# Setup complete environment (Python, Go, Shell, Scythe)
+grim setup-complete
+
+# Check installation status
+grim check-installation
+
+# Health check all modules
+grim health
+```
+
+## 🔐 Enhanced OTP Authentication
+
+Enhanced security with One-Time Password (TOTP) authentication:
 
 ```bash
 # Setup OTP authentication
@@ -31,6 +80,43 @@ grim otp-status
 
 # Verify OTP code
 grim otp-verify 123456
+```
+
+## 🎯 Ruby Integration
+
+```ruby
+require 'grim_reaper'
+
+# Initialize with auto-download
+grim = GrimReaper.new
+
+# Download latest if not installed
+installer = GrimReaper::Installer.new
+installer.download_latest_grim unless installer.find_grim_root
+
+# Quick operations
+grim.backup('/important/data')
+grim.monitor('/var/log')
+grim.security
+```
+
+## 📥 Installation Options
+
+### Option 1: Ruby Gem (Recommended)
+```bash
+gem install grim-reaper
+grim download-latest
+```
+
+### Option 2: Direct Download
+```bash
+curl -sSL get.grim.so | sudo bash
+```
+
+### Option 3: Manual Setup
+```bash
+gem install grim-reaper
+grim setup-complete
 ```
 
 ## 🎯 Quick Start

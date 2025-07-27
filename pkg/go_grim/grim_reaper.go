@@ -7,6 +7,8 @@
 package grim
 
 import (
+	"archive/tar"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -109,7 +111,7 @@ func findGrimRoot() (string, error) {
 		filepath.Join(os.Getenv("HOME"), "reaper"),
 		filepath.Join(os.Getenv("HOME"), ".reaper"),
 		"/root/reaper",
-		"/root/.reaper", 
+		"/root/.reaper",
 		"/usr/local/reaper",
 		"/usr/local/share/reaper",
 		"/usr/share/reaper",
@@ -124,108 +126,280 @@ func findGrimRoot() (string, error) {
 		}
 	}
 
-	// Grim Reaper not found - attempt automatic installation
-	fmt.Println("Grim Reaper not found. Attempting automatic installation...")
-	installPath, err := installGrimReaper()
-	if err != nil {
-		return "", fmt.Errorf(`could not find Grim Reaper root directory and automatic installation failed: %v
-
-Please ensure Grim Reaper is properly installed using:
-  • curl -fsSL https://get.grim.so | sudo bash
-  • wget -qO- https://get.grim.so | sudo bash
-
-Or set GRIM_ROOT environment variable:
-  export GRIM_ROOT=/path/to/your/grim/installation`, err)
+	// Auto-download if not in CI/build environment
+	if os.Getenv("CI") == "" && os.Getenv("GO_ENV") != "build" {
+		fmt.Println("🔍 Grim Reaper not found locally")
+		fmt.Println("📥 Auto-downloading from get.grim.so...")
+		
+		downloadPath, err := downloadLatest()
+		if err != nil {
+			fmt.Printf("❌ Auto-download failed: %v\n", err)
+			fmt.Println("💡 Please install manually: curl -fsSL https://get.grim.so | sudo bash")
+			return "", fmt.Errorf("grim installation not found and auto-download failed: %v", err)
+		}
+		
+		return downloadPath, nil
 	}
 
-	fmt.Printf("Grim Reaper automatically installed to: %s\n", installPath)
-	return installPath, nil
+	return "", fmt.Errorf("grim installation not found")
 }
 
-// installGrimReaper automatically installs Grim Reaper
-func installGrimReaper() (string, error) {
-	// Determine installation directory
-	var installDir string
-	if os.Geteuid() == 0 {
-		// Running as root - install system-wide
-		installDir = "/opt/reaper"
-	} else {
-		// Running as user - install to home directory
-		homeDir, err := os.UserHomeDir()
-		if err != nil {
-			return "", fmt.Errorf("failed to get home directory: %v", err)
-		}
-		installDir = filepath.Join(homeDir, ".reaper")
-	}
-
-	// Create temporary directory for download
-	tempDir, err := os.MkdirTemp("", "grim-install-*")
-	if err != nil {
-		return "", fmt.Errorf("failed to create temp directory: %v", err)
-	}
-	defer os.RemoveAll(tempDir)
-
-	// Download installer
-	installerPath := filepath.Join(tempDir, "install.sh")
-	if err := downloadFile("https://get.grim.so", installerPath); err != nil {
-		return "", fmt.Errorf("failed to download installer: %v", err)
-	}
-
-	// Make installer executable
-	if err := os.Chmod(installerPath, 0755); err != nil {
-		return "", fmt.Errorf("failed to make installer executable: %v", err)
-	}
-
-	// Run installer
-	cmd := exec.Command(installerPath)
-	cmd.Dir = tempDir
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+// downloadLatest downloads latest.tar.gz from get.grim.so and extracts with proper graveyard/reaper/ handling
+func downloadLatest() (string, error) {
+	fmt.Println("📥 Downloading from https://get.grim.so/latest.tar.gz...")
 	
-	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("installer failed: %v", err)
+	// Determine GRIM_ROOT with permission checks
+	grimRoot, err := determineGrimRoot()
+	if err != nil {
+		return "", err
 	}
-
-	// Verify installation
-	if isGrimInstallation(installDir) {
-		return installDir, nil
+	
+	tempFile := filepath.Join(os.TempDir(), "grim-latest.tar.gz")
+	
+	// Download latest.tar.gz
+	client := &http.Client{Timeout: 60 * time.Second}
+	req, err := http.NewRequest("GET", "https://get.grim.so/latest.tar.gz", nil)
+	if err != nil {
+		return "", err
 	}
-
-	// Try alternative paths
-	altPaths := []string{
-		"/root/.graveyard/reaper",
-		filepath.Join(os.Getenv("HOME"), ".graveyard/reaper"),
+	req.Header.Set("User-Agent", "Grim-Reaper-Go/1.0.35")
+	
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
 	}
+	defer resp.Body.Close()
+	
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("download failed with status: %d", resp.StatusCode)
+	}
+	
+	// Create temp file
+	out, err := os.Create(tempFile)
+	if err != nil {
+		return "", err
+	}
+	defer out.Close()
+	
+	// Copy data
+	size, err := io.Copy(out, resp.Body)
+	if err != nil {
+		return "", err
+	}
+	
+	fmt.Printf("✅ Download complete (%s)\n", formatBytes(size))
+	
+	// Create GRIM_ROOT directory
+	if err := os.MkdirAll(grimRoot, 0755); err != nil {
+		return "", err
+	}
+	
+	// Extract with --strip-components=2 to handle graveyard/reaper/ prefix
+	fmt.Println("📦 Extracting with graveyard/reaper/ structure handling...")
+	
+	file, err := os.Open(tempFile)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+	
+	gzr, err := gzip.NewReader(file)
+	if err != nil {
+		return "", err
+	}
+	defer gzr.Close()
+	
+	tr := tar.NewReader(gzr)
+	
+	for {
+		header, err := tr.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return "", err
+		}
+		
+		// Strip 2 components from path (remove graveyard/reaper/)
+		pathParts := strings.Split(header.Name, "/")
+		if len(pathParts) <= 2 {
+			continue // Skip if not enough path components
+		}
+		
+		// Reconstruct path without first 2 components
+		newPath := filepath.Join(pathParts[2:]...)
+		if newPath == "" {
+			continue
+		}
+		
+		target := filepath.Join(grimRoot, newPath)
+		
+		switch header.Typeflag {
+		case tar.TypeDir:
+			if err := os.MkdirAll(target, 0755); err != nil {
+				return "", err
+			}
+		case tar.TypeReg:
+			// Ensure directory exists
+			if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
+				return "", err
+			}
+			
+			// Create file
+			f, err := os.OpenFile(target, os.O_CREATE|os.O_RDWR, os.FileMode(header.Mode))
+			if err != nil {
+				return "", err
+			}
+			
+			if _, err := io.Copy(f, tr); err != nil {
+				f.Close()
+				return "", err
+			}
+			f.Close()
+		}
+	}
+	
+	// Clean up temp file
+	os.Remove(tempFile)
+	
+	// Setup environment variables
+	setupEnvironmentVariables(grimRoot)
+	
+	// Make scripts executable
+	makeScriptsExecutable(grimRoot)
+	
+	fmt.Printf("✅ Extraction complete to: %s\n", grimRoot)
+	return grimRoot, nil
+}
 
-	for _, path := range altPaths {
-		if isGrimInstallation(path) {
+// determineGrimRoot determines optimal GRIM_ROOT with permission checking
+func determineGrimRoot() (string, error) {
+	// Check GRIM_REAPER mode
+	if os.Getenv("GRIM_REAPER") == "TRUE" {
+		if existing := os.Getenv("GRIM_ROOT"); existing != "" {
+			if info, err := os.Stat(existing); err == nil && info.IsDir() {
+				return existing, nil
+			}
+		}
+	}
+	
+	// Try permission hierarchy
+	home := os.Getenv("HOME")
+	if home == "" {
+		home = "/root"
+	}
+	
+	candidates := []string{
+		filepath.Join(home, ".grim"),
+		"/root/.grim", 
+		filepath.Join(".", ".grim"),
+	}
+	
+	for _, path := range candidates {
+		dir := filepath.Dir(path)
+		if isWritable(dir) {
 			return path, nil
 		}
 	}
-
-	return "", fmt.Errorf("installation completed but Grim Reaper not found in expected locations")
+	
+	return "", fmt.Errorf("no writable directory found. Please chmod +x install.sh or run with proper permissions")
 }
 
-// downloadFile downloads a file from URL to local path
-func downloadFile(url, filepath string) error {
-	resp, err := http.Get(url)
+// setupEnvironmentVariables sets up environment variables with persistence
+func setupEnvironmentVariables(grimRoot string) {
+	fmt.Println("🌍 Setting up environment variables...")
+	
+	// Set for current process
+	os.Setenv("GRIM_ROOT", grimRoot)
+	os.Setenv("GRIM_LICENSE", "FREE")
+	os.Setenv("GRIM_REAPER", "FALSE")
+	
+	// Read version from manifest.tsk if available
+	manifestPath := filepath.Join(grimRoot, "manifest.tsk")
+	if data, err := os.ReadFile(manifestPath); err == nil {
+		content := string(data)
+		if strings.Contains(content, "version") {
+			lines := strings.Split(content, "\n")
+			for _, line := range lines {
+				if strings.Contains(line, "version") && strings.Contains(line, ":") {
+					parts := strings.Split(line, ":")
+					if len(parts) >= 2 {
+						version := strings.Trim(strings.Trim(parts[1], " "), "\"")
+						os.Setenv("GRIM_VERSION", version)
+						fmt.Printf("📋 Set GRIM_VERSION=%s from manifest\n", version)
+						break
+					}
+				}
+			}
+		}
+	}
+	
+	fmt.Println("✅ Environment variables configured")
+}
+
+// makeScriptsExecutable makes all Grim scripts executable
+func makeScriptsExecutable(grimRoot string) {
+	fmt.Println("🔧 Making scripts executable...")
+	
+	scriptPatterns := []string{
+		"reaper.sh", "install.sh", "throne/*.sh", "sh_grim/*.sh",
+		"scripts/*.sh", "bin/*", ".rip/*", "py_grim/**/*.py", "go_grim/build/*",
+	}
+	
+	for _, pattern := range scriptPatterns {
+		fullPattern := filepath.Join(grimRoot, pattern)
+		
+		if strings.Contains(pattern, "*") {
+			// Handle glob patterns
+			matches, _ := filepath.Glob(fullPattern)
+			for _, match := range matches {
+				if info, err := os.Stat(match); err == nil && !info.IsDir() {
+					os.Chmod(match, 0755)
+				}
+			}
+		} else {
+			// Handle specific files
+			if info, err := os.Stat(fullPattern); err == nil && !info.IsDir() {
+				os.Chmod(fullPattern, 0755)
+			}
+		}
+	}
+	
+	fmt.Println("✅ Scripts made executable")
+}
+
+// isWritable checks if directory is writable
+func isWritable(path string) bool {
+	info, err := os.Stat(path)
 	if err != nil {
-		return err
+		return false
 	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("bad status: %s", resp.Status)
+	
+	if !info.IsDir() {
+		return false
 	}
-
-	out, err := os.Create(filepath)
-	if err != nil {
-		return err
+	
+	// Test write permissions
+	testFile := filepath.Join(path, fmt.Sprintf(".grim-test-%d", time.Now().UnixNano()))
+	if err := os.WriteFile(testFile, []byte("test"), 0644); err != nil {
+		return false
 	}
-	defer out.Close()
+	os.Remove(testFile)
+	return true
+}
 
-	_, err = io.Copy(out, resp.Body)
-	return err
+// formatBytes formats bytes for display
+func formatBytes(bytes int64) string {
+	units := []string{"B", "KB", "MB", "GB"}
+	size := float64(bytes)
+	unitIndex := 0
+	
+	for size >= 1024 && unitIndex < len(units)-1 {
+		size /= 1024
+		unitIndex++
+	}
+	
+	return fmt.Sprintf("%.2f %s", size, units[unitIndex])
 }
 
 // isGrimInstallation checks if path contains a valid Grim installation
@@ -237,9 +411,11 @@ func isGrimInstallation(path string) bool {
 	// Check for key Grim files
 	keyFiles := []string{
 		"throne/grim_throne.sh",
-		"tsk_flask/grim_admin_server.py",
 		"sh_grim/backup.sh",
+		"py_grim/grim_web/server.py",
 		"go_grim/build/grim-compression",
+		"reaper.sh",
+		"install.sh",
 	}
 
 	for _, keyFile := range keyFiles {
@@ -603,8 +779,12 @@ func InstallGrimReaper() (string, error) {
 		return root, nil
 	}
 	
-	// Not installed - install it
-	return installGrimReaper()
+	// Not installed - download and install it
+	downloadPath, err := downloadLatest()
+	if err != nil {
+		return "", fmt.Errorf("installation not found and auto-download failed: %v", err)
+	}
+	return downloadPath, nil
 }
 
 // NewGrimReaperWithInstall creates a new GrimReaper instance, installing if needed

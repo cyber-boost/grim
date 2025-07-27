@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	Version = "1.0.32"
+	Version = "1.0.33"
 	AppName = "Grim Reaper"
 )
 
@@ -23,6 +23,7 @@ func main() {
 	var (
 		version = flag.Bool("version", false, "Show version information")
 		help    = flag.Bool("help", false, "Show help information")
+		install = flag.Bool("install", false, "Install or reinstall Grim Reaper")
 		backup  = flag.String("backup", "", "Create backup with specified name")
 		scan    = flag.String("scan", "", "Scan directory for analysis")
 		monitor = flag.Bool("monitor", false, "Start monitoring mode")
@@ -51,6 +52,8 @@ func main() {
 
 	// Handle commands
 	switch {
+	case *install:
+		handleInstall()
 	case *backup != "":
 		handleBackup(grimReaper, *backup)
 	case *scan != "":
@@ -73,12 +76,14 @@ func showHelp() {
 	fmt.Println("OPTIONS:")
 	fmt.Println("  --version          Show version information")
 	fmt.Println("  --help             Show this help message")
+	fmt.Println("  --install          Install or reinstall Grim Reaper")
 	fmt.Println("  --backup NAME      Create backup with specified name")
 	fmt.Println("  --scan PATH        Scan directory for analysis")
 	fmt.Println("  --monitor          Start monitoring mode")
 	fmt.Println()
 	fmt.Println("EXAMPLES:")
 	fmt.Printf("  %s --version\n", filepath.Base(os.Args[0]))
+	fmt.Printf("  %s --install\n", filepath.Base(os.Args[0]))
 	fmt.Printf("  %s --backup mybackup\n", filepath.Base(os.Args[0]))
 	fmt.Printf("  %s --scan /opt/data\n", filepath.Base(os.Args[0]))
 	fmt.Printf("  %s --monitor\n", filepath.Base(os.Args[0]))
@@ -89,9 +94,29 @@ func showQuickHelp() {
 	fmt.Println("Available commands:")
 	fmt.Println("  --version    Show version")
 	fmt.Println("  --help       Show detailed help")
+	fmt.Println("  --install    Install Grim Reaper")
 	fmt.Println("  --backup     Create backup")
 	fmt.Println("  --scan       Scan directory")
 	fmt.Println("  --monitor    Start monitoring")
+}
+
+func handleInstall() {
+	fmt.Println("🚀 Installing Grim Reaper...")
+	fmt.Println("Downloading latest.tar.gz from get.grim.so...")
+	
+	// Force installation by creating a new GrimReaper instance 
+	// which will trigger auto-installation if not found
+	_, err := grim.NewGrimReaper()
+	if err != nil {
+		fmt.Printf("❌ Installation failed: %v\n", err)
+		fmt.Println("\nYou can also install manually:")
+		fmt.Println("  curl -fsSL https://get.grim.so | sudo bash")
+		fmt.Println("  wget -qO- https://get.grim.so | sudo bash")
+		os.Exit(1)
+	}
+	
+	fmt.Println("✅ Grim Reaper installation completed successfully!")
+	fmt.Println("You can now use all Grim Reaper commands.")
 }
 
 func handleBackup(gr *grim.GrimReaper, name string) {

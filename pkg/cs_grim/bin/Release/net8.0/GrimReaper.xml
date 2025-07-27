@@ -34,6 +34,32 @@
             <returns>Path to Grim installation</returns>
             <exception cref="T:System.IO.DirectoryNotFoundException">When Grim installation is not found</exception>
         </member>
+        <member name="M:GrimReaper.GrimReaper.DownloadLatest">
+            <summary>
+            Downloads latest.tar.gz from get.grim.so and extracts with proper graveyard/reaper/ handling
+            </summary>
+            <returns>Path to extracted Grim installation or null if failed</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.DetermineGrimRoot">
+            <summary>
+            Determine optimal GRIM_ROOT with permission checking
+            </summary>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.SetupEnvironmentVariables(System.String)">
+            <summary>
+            Setup environment variables with persistence
+            </summary>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.MakeScriptsExecutable(System.String)">
+            <summary>
+            Make scripts executable on Unix-like systems
+            </summary>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.FormatBytes(System.Int64)">
+            <summary>
+            Format bytes for display
+            </summary>
+        </member>
         <member name="M:GrimReaper.GrimReaper.IsGrimInstallation(System.String)">
             <summary>
             Checks if path contains a valid Grim installation
@@ -54,6 +80,13 @@
             Gets the default installation directory
             </summary>
             <returns>Default installation path</returns>
+        </member>
+        <member name="M:GrimReaper.GrimReaper.SetEnvironmentVariable(System.String,System.String)">
+            <summary>
+            Sets an environment variable for the current process and tries to persist it
+            </summary>
+            <param name="name">Environment variable name</param>
+            <param name="value">Environment variable value</param>
         </member>
         <member name="M:GrimReaper.GrimReaper.ExecuteShModuleAsync(System.String,System.String[])">
             <summary>

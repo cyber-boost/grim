@@ -2,6 +2,8 @@
 
 require "open3"
 require "fileutils"
+require "net/http"
+require "uri"
 
 module GrimReaper
   # Ruby-specific installer and dependency manager
@@ -12,6 +14,152 @@ module GrimReaper
       @grim_root = find_grim_root
       @backup_dir = ENV["HOME"] + "/.graveyard"
       @install_dir = ENV["HOME"] + "/reaper"
+      setup_environment_variables
+    end
+
+    # Setup environment variables
+    def setup_environment_variables
+      # Set GRIM_ROOT if not already set
+      unless ENV["GRIM_ROOT"]
+        if File.writable?("/root/")
+          ENV["GRIM_ROOT"] = "/root/.grim"
+        elsif File.writable?(ENV["HOME"])
+          ENV["GRIM_ROOT"] = ENV["HOME"] + "/.grim"
+        else
+          ENV["GRIM_ROOT"] = Dir.pwd + "/.grim"
+        end
+      end
+      
+      # Set default license tier to FREE
+      ENV["GRIM_LICENSE"] ||= "FREE"
+      
+      # Set GRIM_REAPER to FALSE for normal install
+      ENV["GRIM_REAPER"] ||= "FALSE"
+      
+      puts "🗡️  Grim environment configured:"
+      puts "   GRIM_ROOT=#{ENV['GRIM_ROOT']}"
+      puts "   GRIM_LICENSE=#{ENV['GRIM_LICENSE']}"
+      puts "   GRIM_REAPER=#{ENV['GRIM_REAPER']}"
+    end
+
+    # Download and install latest Grim Reaper from get.grim.so
+    def download_latest_grim
+      puts "📥 Downloading latest Grim Reaper from get.grim.so..."
+      
+      install_dir = ENV["GRIM_ROOT"] || (ENV["HOME"] + "/.grim")
+      FileUtils.mkdir_p(install_dir)
+      
+      temp_file = File.join(install_dir, "grim-latest.tar.gz")
+      
+      begin
+        # Download latest.tar.gz
+        uri = URI("https://get.grim.so/latest.tar.gz")
+        Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
+          request = Net::HTTP::Get.new(uri)
+          response = http.request(request)
+          
+          if response.code == "200"
+            File.open(temp_file, "wb") { |file| file.write(response.body) }
+            puts "✅ Download complete"
+          else
+            raise "Failed to download: HTTP #{response.code}"
+          end
+        end
+        
+        # Extract with proper graveyard/reaper/ handling (strip 2 components)
+        puts "📦 Extracting Grim Reaper..."
+        success = system("tar", "-xzf", temp_file, "--strip-components=2", "-C", install_dir)
+        
+        unless success
+          raise "Failed to extract tarball"
+        end
+        
+        # Remove temp file
+        File.delete(temp_file) if File.exist?(temp_file)
+        
+        # Make scripts executable
+        make_scripts_executable(install_dir)
+        
+        # Setup environment file
+        setup_environment_file(install_dir)
+        
+        puts "✅ Grim Reaper installation complete!"
+        puts "📁 Installed to: #{install_dir}"
+        
+        return true
+        
+      rescue => e
+        puts "❌ Download failed: #{e.message}"
+        File.delete(temp_file) if File.exist?(temp_file)
+        return false
+      end
+    end
+
+    # Make scripts executable
+    def make_scripts_executable(install_dir)
+      puts "🔧 Making scripts executable..."
+      
+      scripts = [
+        "throne/grim_throne.sh",
+        "throne/sh_grim_throne.sh", 
+        "throne/py_grim_throne.sh",
+        "throne/rb_grim_throne.sh",
+        "throne/go_grim_throne.sh",
+        "install.sh",
+        "master-install.sh",
+        "sh_grim/*.sh",
+        "py_grim/*.py",
+        "go_grim/build/*",
+        ".rip/*.sh",
+        "auto_backups/*.sh"
+      ]
+      
+      scripts.each do |script_pattern|
+        Dir.glob(File.join(install_dir, script_pattern)).each do |script|
+          begin
+            File.chmod(0755, script)
+          rescue => e
+            puts "⚠️  Could not make #{script} executable: #{e.message}"
+          end
+        end
+      end
+    end
+
+    # Setup environment file for persistence
+    def setup_environment_file(install_dir)
+      puts "📝 Setting up environment file..."
+      
+      env_file = File.join(install_dir, ".grim_env")
+      
+      env_content = <<~ENV
+        # Grim Reaper Environment Configuration
+        export GRIM_ROOT="#{ENV['GRIM_ROOT']}"
+        export GRIM_LICENSE="#{ENV['GRIM_LICENSE']}"
+        export GRIM_REAPER="#{ENV['GRIM_REAPER']}"
+        export PATH="$PATH:#{install_dir}/throne:#{install_dir}/sh_grim:#{install_dir}/py_grim"
+        
+        # Load Grim functions
+        if [ -f "#{install_dir}/throne/grim_throne.sh" ]; then
+          source "#{install_dir}/throne/grim_throne.sh"
+        fi
+      ENV
+      
+      File.write(env_file, env_content)
+      
+      # Add to bashrc if possible
+      bashrc_path = ENV["HOME"] + "/.bashrc"
+      if File.exist?(bashrc_path) && File.writable?(bashrc_path)
+        source_line = "[ -f #{env_file} ] && source #{env_file}"
+        bashrc_content = File.read(bashrc_path)
+        
+        unless bashrc_content.include?(source_line)
+          File.open(bashrc_path, "a") do |f|
+            f.puts "\n# Grim Reaper Environment"
+            f.puts source_line
+          end
+          puts "✅ Added Grim environment to ~/.bashrc"
+        end
+      end
     end
 
     # Find Grim Reaper root directory
@@ -54,9 +202,15 @@ module GrimReaper
       raise Error, "Could not find Grim Reaper root directory"
     end
 
-    # Setup complete Grim Reaper environment (like npm/pip packages)
+    # Setup complete Grim Reaper environment (installs Python, Go, Shell, Scythe components)
     def setup_complete_environment
       puts "🗡️  Setting up complete Grim Reaper environment..."
+      
+      # First download the latest version
+      unless download_latest_grim
+        puts "❌ Failed to download Grim Reaper"
+        return false
+      end
       
       # Setup Ruby environment
       setup_ruby_environment
@@ -76,10 +230,8 @@ module GrimReaper
       # Create necessary directories
       create_directories
       
-      # Setup environment file
-      setup_environment_file
-      
       puts "✅ Complete Grim Reaper environment setup finished"
+      return true
     end
 
     # Setup Ruby environment
@@ -398,25 +550,6 @@ module GrimReaper
         FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
         puts "📁 Created directory: #{dir}"
       end
-    end
-
-    # Setup environment file
-    def setup_environment_file
-      env_file = File.join(@grim_root, ".env")
-      scythe_dir = File.join(@grim_root, ".graveyard", ".rip", ".scythe")
-      env_content = <<~ENV
-        # Grim Reaper Environment Configuration
-        GRIM_ROOT=#{@grim_root}
-        SCYTHE_DIR=#{scythe_dir}
-        GRIM_BACKUP_DIR=#{@backup_dir}
-        GRIM_HOME=#{@install_dir}
-        GRIM_RUBY_VERSION=#{`ruby -e "puts RUBY_VERSION"`.strip}
-        GRIM_PYTHON_VERSION=#{`python3 --version 2>/dev/null | cut -d' ' -f2` || 'Not installed'}
-        GRIM_GO_VERSION=#{`go version 2>/dev/null | cut -d' ' -f3` || 'Not installed'}
-      ENV
-
-      File.write(env_file, env_content)
-      puts "📄 Created environment file: #{env_file}"
     end
 
     # Verify installation

@@ -3,4 +3,5 @@
 // See LICENSE file for full terms
 package grim
 
-const Version = "1.0.32"
+// Version represents the current version of the Grim Reaper Go SDK
+const Version = "1.0.33"

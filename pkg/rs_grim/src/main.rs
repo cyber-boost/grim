@@ -3,6 +3,7 @@
 //! No mock files - calls actual core modules and binaries
 
 use anyhow::{Context, Result};
+use chrono;
 use clap::{Parser, Subcommand};
 use reqwest;
 use serde_json::Value;
@@ -13,7 +14,7 @@ use tokio::process::Command as AsyncCommand;
 #[derive(Parser)]
 #[command(name = "grim")]
 #[command(about = "Grim Reaper - Real core integration with sh_grim, py_grim, and go_grim")]
-#[command(version = "1.0.33")]
+#[command(version = "1.0.35")]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -392,22 +393,47 @@ async fn install_grim(directory: Option<String>, skip_confirmation: bool) -> Res
     use std::io::{self, Write};
     use std::process::Command;
 
-    println!("🗡️  Grim Reaper Installer");
-    println!("========================\n");
+    println!("🗡️  Grim Reaper Installer v1.0.35");
+    println!("===============================\n");
 
-    // Determine installation directory
+    // Set up environment variables early
+    env::set_var("GRIM_LICENSE", "FREE");
+    env::set_var("GRIM_REAPER", "FALSE");
+
+    // Determine installation directory with proper fallback logic
     let install_dir = match directory {
-        Some(dir) => PathBuf::from(dir),
+        Some(dir) => {
+            env::set_var("GRIM_ROOT", &dir);
+            PathBuf::from(dir)
+        }
         None => {
-            if let Some(home_dir) = dirs::home_dir() {
-                home_dir.join(".grim-reaper")
-            } else {
-                PathBuf::from("/opt/grim-reaper")
-            }
+            // Try /root first, then $HOME, then local if no permissions
+            let default_paths = [
+                "/root/.graveyard",
+                &format!("{}/.graveyard", env::var("HOME").unwrap_or_default()),
+                "./grim-local-install",
+            ];
+            
+            let selected_path = default_paths.iter()
+                .map(|p| PathBuf::from(p))
+                .find(|p| {
+                    // Test if we can create directory or it already exists
+                    p.exists() || fs::create_dir_all(p).is_ok()
+                })
+                .unwrap_or_else(|| {
+                    println!("⚠️  Cannot write to standard locations, using local install");
+                    PathBuf::from("./grim-local-install")
+                });
+            
+            env::set_var("GRIM_ROOT", selected_path.to_str().unwrap());
+            selected_path
         }
     };
 
     println!("📁 Installation directory: {}", install_dir.display());
+    println!("🔧 GRIM_ROOT: {}", env::var("GRIM_ROOT").unwrap_or_default());
+    println!("🆓 GRIM_LICENSE: {}", env::var("GRIM_LICENSE").unwrap_or_default());
+    println!("⚖️  GRIM_REAPER: {}", env::var("GRIM_REAPER").unwrap_or_default());
 
     // Check if already installed
     if install_dir.exists() && GrimReaper::is_grim_installation(&install_dir) {
@@ -415,7 +441,13 @@ async fn install_grim(directory: Option<String>, skip_confirmation: bool) -> Res
             "✅ Grim Reaper is already installed at: {}",
             install_dir.display()
         );
-        return Ok(());
+        
+        // Check GRIM_REAPER variable for update vs fresh install
+        if env::var("GRIM_REAPER").unwrap_or_default() == "TRUE" {
+            println!("🔄 GRIM_REAPER=TRUE detected - Performing update without touching sensitive data");
+        } else {
+            return Ok(());
+        }
     }
 
     // Confirmation prompt
@@ -434,43 +466,68 @@ async fn install_grim(directory: Option<String>, skip_confirmation: bool) -> Res
 
     // Create installation directory
     println!("📦 Creating installation directory...");
-    fs::create_dir_all(&install_dir)?;
+    fs::create_dir_all(&install_dir).context("Failed to create installation directory")?;
 
-    // Download latest.tar.gz
+    // Download latest.tar.gz with proper error handling
     println!("📥 Downloading Grim Reaper from get.grim.so...");
     let temp_file = install_dir.join("grim-latest.tar.gz");
 
-    let client = reqwest::Client::new();
+    let client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(300)) // 5 minute timeout
+        .build()
+        .context("Failed to create HTTP client")?;
+        
     let response = client
         .get("https://get.grim.so/latest.tar.gz")
         .send()
         .await
-        .context("Failed to download Grim Reaper")?;
+        .context("Failed to download Grim Reaper - check internet connection")?;
 
     if !response.status().is_success() {
-        anyhow::bail!("Failed to download: HTTP {}", response.status());
+        anyhow::bail!("Failed to download: HTTP {} - Server may be temporarily unavailable", response.status());
     }
 
-    let bytes = response.bytes().await.context("Failed to read response")?;
-    fs::write(&temp_file, &bytes).context("Failed to save download")?;
-    println!("✅ Download complete");
+    let bytes = response.bytes().await.context("Failed to read response data")?;
+    fs::write(&temp_file, &bytes).context("Failed to save download to disk")?;
+    println!("✅ Download complete ({} bytes)", bytes.len());
 
-    // Extract tarball
-    println!("📦 Extracting Grim Reaper...");
+    // Extract tarball with --strip-components=2 to handle graveyard/reaper/ structure
+    println!("📦 Extracting Grim Reaper (handling graveyard/reaper/ structure)...");
     let status = Command::new("tar")
-        .args(&["-xzf", temp_file.to_str().unwrap(), "--strip-components=2"])
-        .current_dir(&install_dir)
+        .args(&[
+            "-xzf", 
+            temp_file.to_str().unwrap(), 
+            "--strip-components=2",  // Remove graveyard/reaper/ prefix
+            "-C",
+            install_dir.to_str().unwrap()
+        ])
         .status()
-        .context("Failed to extract tarball")?;
+        .context("Failed to run tar command - ensure tar is installed")?;
 
     if !status.success() {
-        anyhow::bail!("Failed to extract tarball");
+        anyhow::bail!("Failed to extract tarball - archive may be corrupted or incomplete");
+    }
+
+    // Verify extraction worked by checking for key directories
+    let expected_dirs = [".rip", "auto_backups", "auto_backups_encrypted"];
+    let mut missing_dirs = Vec::new();
+    
+    for dir in &expected_dirs {
+        let dir_path = install_dir.join(dir);
+        if !dir_path.exists() {
+            missing_dirs.push(*dir);
+        }
+    }
+
+    if !missing_dirs.is_empty() {
+        println!("⚠️  Warning: Some expected directories not found: {:?}", missing_dirs);
+        println!("    This may be normal for newer package versions");
     }
 
     // Remove temp file
     let _ = fs::remove_file(&temp_file);
 
-    // Make scripts executable
+    // Make scripts executable (enhanced list)
     println!("🔧 Making scripts executable...");
     let scripts = [
         "throne/grim_throne.sh",
@@ -478,15 +535,21 @@ async fn install_grim(directory: Option<String>, skip_confirmation: bool) -> Res
         "throne/py_grim_throne.sh",
         "throne/go_grim_throne.sh",
         "sh_grim/*.sh",
+        "py_grim/*.py",
         "go_grim/build/*",
+        "bin/*",
+        "scripts/*",
         "install.sh",
         "master-install.sh",
+        "reaper.sh",
+        "update_grim.sh",
     ];
 
     for pattern in &scripts {
         if pattern.contains('*') {
             // Handle glob patterns
-            let dir = install_dir.join(pattern.split('*').next().unwrap());
+            let (dir_part, _) = pattern.split_once('*').unwrap();
+            let dir = install_dir.join(dir_part);
             if dir.exists() {
                 let _ = Command::new("chmod")
                     .args(&["+x", "-R", dir.to_str().unwrap()])
@@ -502,33 +565,81 @@ async fn install_grim(directory: Option<String>, skip_confirmation: bool) -> Res
         }
     }
 
-    // Setup environment
-    println!("🔧 Setting up environment...");
+    // Setup environment and write to shell profile
+    println!("🔧 Setting up environment variables...");
     let grim_root = install_dir.to_str().unwrap();
-    let scythe_dir = format!("{}/.graveyard/.rip/.scythe", grim_root);
+    
+    // Create profile entry for persistence
+    let profile_content = format!(
+        "\n# Grim Reaper Environment (installed {})\nexport GRIM_ROOT=\"{}\"\nexport GRIM_LICENSE=\"FREE\"\nexport GRIM_REAPER=\"FALSE\"\nexport PATH=\"$GRIM_ROOT/bin:$PATH\"\n",
+        chrono::Utc::now().format("%Y-%m-%d %H:%M:%S UTC"),
+        grim_root
+    );
 
-    // Create scythe directories
-    let directories = ["config", "db", "logs", "run", "integrations"];
+    // Try to write to .bashrc or .profile
+    let home_dir = env::var("HOME").unwrap_or_else(|_| "/root".to_string());
+    let profile_files = [
+        format!("{}/.bashrc", home_dir),
+        format!("{}/.profile", home_dir),
+        format!("{}/.zshrc", home_dir),
+    ];
+
+    let mut profile_updated = false;
+    for profile_file in &profile_files {
+        if let Ok(mut file) = fs::OpenOptions::new().append(true).create(true).open(profile_file) {
+            if let Ok(_) = file.write_all(profile_content.as_bytes()) {
+                println!("✅ Environment variables added to {}", profile_file);
+                profile_updated = true;
+                break;
+            }
+        }
+    }
+
+    if !profile_updated {
+        println!("⚠️  Could not update shell profile - you may need to set environment variables manually");
+        println!("    Add these to your shell profile:");
+        println!("{}", profile_content);
+    }
+
+    // Create enhanced .scythe directory structure
+    let scythe_dir = format!("{}/.rip/.scythe", grim_root);
+    println!("🔧 Setting up .scythe directory structure...");
+
+    // Create main scythe directories
+    let directories = ["config", "db", "logs", "run", "integrations", "cache", "tmp"];
     for dir in &directories {
         let dir_path = format!("{}/{}", scythe_dir, dir);
         let _ = fs::create_dir_all(&dir_path);
     }
 
     // Create log subdirectories
-    let log_subdirs = ["orchestration", "components", "integrations", "security"];
+    let log_subdirs = ["orchestration", "components", "integrations", "security", "performance"];
     for subdir in &log_subdirs {
         let dir_path = format!("{}/logs/{}", scythe_dir, subdir);
         let _ = fs::create_dir_all(&dir_path);
     }
 
     // Create integration subdirectories
-    let integration_subdirs = ["discovered", "configs", "scripts"];
+    let integration_subdirs = ["discovered", "configs", "scripts", "monitoring"];
     for subdir in &integration_subdirs {
         let dir_path = format!("{}/integrations/{}", scythe_dir, subdir);
         let _ = fs::create_dir_all(&dir_path);
     }
 
-    // Create scythe configuration
+    // Read version from manifest.tsk if available
+    let version = if let Ok(manifest_content) = fs::read_to_string(format!("{}/manifest.tsk", grim_root)) {
+        manifest_content.lines()
+            .find(|line| line.starts_with("version:"))
+            .and_then(|line| line.split(':').nth(1))
+            .map(|v| v.trim().to_string())
+            .unwrap_or_else(|| "1.0.35".to_string())
+    } else {
+        "1.0.35".to_string()
+    };
+
+    env::set_var("GRIM_VERSION", &version);
+
+    // Create enhanced scythe configuration
     let config_file = format!("{}/config/scythe.yaml", scythe_dir);
     if !Path::new(&config_file).exists() {
         let config_content = format!(
@@ -536,8 +647,15 @@ async fn install_grim(directory: Option<String>, skip_confirmation: bool) -> Res
 # Central orchestrator settings for Grim Reaper System
 
 scythe:
-  version: "1.0.5"
+  version: "{}"
   install_date: {}
+  installer: "rs_grim"
+  
+# Installation settings
+installation:
+  grim_root: "{}"
+  grim_license: "FREE"
+  grim_reaper: "FALSE"
   
 database:
   path: "../db/scythe.db"
@@ -564,20 +682,65 @@ security:
   encryption: true
   key_rotation: "30d"
   audit_logs: true
+
+# Performance monitoring  
+monitoring:
+  enabled: true
+  metrics_retention: "30d"
+  alert_thresholds:
+    disk_usage: 85
+    memory_usage: 90
+    cpu_usage: 95
 "#,
+            version,
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap()
-                .as_secs()
+                .as_secs(),
+            grim_root
         );
 
         let _ = fs::write(&config_file, config_content);
     }
 
-    println!("\n✅ Grim Reaper installation complete!");
+    // Create installation record
+    let install_record = format!("{}/install_record.json", grim_root);
+    let record_content = format!(
+        r#"{{
+  "installer": "rs_grim",
+  "version": "1.0.35",
+  "grim_version": "{}",
+  "install_date": "{}",
+  "install_path": "{}",
+  "environment": {{
+    "GRIM_ROOT": "{}",
+    "GRIM_LICENSE": "FREE",
+    "GRIM_REAPER": "FALSE"
+  }},
+  "rust_package": true,
+  "download_source": "https://get.grim.so/latest.tar.gz",
+  "extraction_method": "tar --strip-components=2"
+}}"#,
+        version,
+        chrono::Utc::now().format("%Y-%m-%d %H:%M:%S UTC"),
+        grim_root,
+        grim_root
+    );
+
+    let _ = fs::write(&install_record, record_content);
+
+    println!("\n🎉 Grim Reaper installation complete!");
+    println!("==================================");
     println!("📁 Installed to: {}", install_dir.display());
-    println!("💡 Restart your shell or run: source ~/.bashrc");
-    println!("🗡️  Then use: grim <command>\n");
+    println!("🔧 GRIM_ROOT: {}", grim_root);
+    println!("📦 Version: {}", version);
+    println!("🆓 License: FREE");
+    println!("⚖️  Mode: Normal Install (GRIM_REAPER=FALSE)");
+    println!("\n💡 Next steps:");
+    println!("   1. Restart your shell or run: source ~/.bashrc");
+    println!("   2. Verify with: grim --version");
+    println!("   3. Get help with: grim --help");
+    println!("\n🗡️  Death-defying data protection is now active!\n");
 
     Ok(())
 }

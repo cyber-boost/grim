@@ -1,0 +1,67 @@
+{% set name = "grim-reaper" %}
+{% set version = "1.0.36" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://get.grim.so/latest.tar.gz
+  sha256: PLACEHOLDER_SHA256_WILL_BE_CALCULATED
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv
+  entry_points:
+    - grim = grim_reaper.cli:main
+  noarch: python
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.8
+    - requests >=2.25.0
+    - aiohttp >=3.8.0
+    - click >=8.0.0
+    - pyyaml >=6.0
+    - psutil >=5.8.0
+    - pathlib
+    - typing-extensions >=4.0.0
+
+test:
+  imports:
+    - grim_reaper
+  commands:
+    - grim --version
+    - grim help
+  requires:
+    - pytest
+
+about:
+  home: https://grim.so
+  license: BBL
+  license_family: PROPRIETARY
+  license_file: LICENSE
+  summary: Death-defying data protection - Unified backup, monitoring, and security system
+  description: |
+    Grim Reaper is a comprehensive data protection ecosystem that provides:
+    - Automated backup operations with intelligent compression
+    - Real-time system monitoring and threat detection
+    - Multi-algorithm compression with content-based deduplication
+    - Military-grade encryption and security surveillance
+    - Cross-platform support with native language integrations
+    - Smart storage tiering saving up to 60% space
+    - Automated threat response and recovery systems
+    
+    When data death comes knocking, Grim ensures resurrection is just a command away.
+  doc_url: https://grim.so/docs
+  dev_url: https://github.com/cyber-boost/grim
+
+extra:
+  recipe-maintainers:
+    - berniegengel
+    - cyber-boost 

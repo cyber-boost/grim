@@ -113,14 +113,209 @@ public class GrimReaper implements AutoCloseable {
             }
         }
 
-        throw new IOException(
-            "Could not find Grim Reaper root directory.\n\n" +
-            "Please ensure Grim Reaper is properly installed using:\n" +
-            "  • curl -fsSL https://get.grim.so | sudo bash\n" +
-            "  • wget -qO- https://get.grim.so | sudo bash\n\n" +
-            "Or set GRIM_ROOT environment variable:\n" +
-            "  export GRIM_ROOT=/path/to/your/grim/installation"
-        );
+        // Auto-download if not in CI/build environment
+        if (System.getenv("CI") == null && System.getenv("MAVEN_OPTS") == null) {
+            System.out.println("🔍 Grim Reaper not found locally");
+            System.out.println("📥 Auto-downloading from get.grim.so...");
+            
+            try {
+                String downloadPath = downloadLatest();
+                if (downloadPath != null) {
+                    return downloadPath;
+                }
+            } catch (Exception e) {
+                System.err.println("❌ Auto-download failed: " + e.getMessage());
+                System.out.println("💡 Please install manually: curl -fsSL https://get.grim.so | sudo bash");
+            }
+        }
+
+        throw new IOException("Grim installation not found and auto-download failed");
+    }
+
+    /**
+     * Downloads latest.tar.gz from get.grim.so and extracts with proper graveyard/reaper/ handling
+     * @return Path to extracted Grim installation or null if failed
+     * @throws IOException If download or extraction fails
+     */
+    private static String downloadLatest() throws IOException {
+        System.out.println("📥 Downloading from https://get.grim.so/latest.tar.gz...");
+        
+        // Determine GRIM_ROOT with permission checks
+        String grimRoot = determineGrimRoot();
+        Path tempFile = Paths.get(System.getProperty("java.io.tmpdir"), "grim-latest.tar.gz");
+        
+        // Download latest.tar.gz
+        OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(Duration.ofSeconds(60))
+            .readTimeout(Duration.ofSeconds(60))
+            .build();
+            
+        Request request = new Request.Builder()
+            .url("https://get.grim.so/latest.tar.gz")
+            .addHeader("User-Agent", "Grim-Reaper-Java/1.0.35")
+            .build();
+            
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Download failed with status: " + response.code());
+            }
+            
+            byte[] data = response.body().bytes();
+            Files.write(tempFile, data);
+            
+            System.out.println("✅ Download complete (" + formatBytes(data.length) + ")");
+            
+            // Create GRIM_ROOT directory
+            Files.createDirectories(Paths.get(grimRoot));
+            
+            // Extract with --strip-components=2 to handle graveyard/reaper/ prefix
+            System.out.println("📦 Extracting with graveyard/reaper/ structure handling...");
+            
+            String extractCommand = String.format(
+                "cd \"%s\" && tar -xzf \"%s\" --strip-components=2 2>/dev/null || tar -xzf \"%s\" --strip-components=1 2>/dev/null || tar -xzf \"%s\"",
+                grimRoot, tempFile.toString(), tempFile.toString(), tempFile.toString()
+            );
+            
+            Process process = Runtime.getRuntime().exec(new String[]{"/bin/bash", "-c", extractCommand});
+            int exitCode = process.waitFor();
+            
+            if (exitCode != 0) {
+                BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                StringBuilder errorOutput = new StringBuilder();
+                String line;
+                while ((line = errorReader.readLine()) != null) {
+                    errorOutput.append(line).append("\n");
+                }
+                throw new IOException("Failed to extract archive: " + errorOutput.toString());
+            }
+            
+            // Clean up temp file
+            Files.deleteIfExists(tempFile);
+            
+            // Setup environment variables
+            setupEnvironmentVariables(grimRoot);
+            
+            // Make scripts executable
+            makeScriptsExecutable(grimRoot);
+            
+            System.out.println("✅ Extraction complete to: " + grimRoot);
+            return grimRoot;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("Download interrupted", e);
+        }
+    }
+
+    /**
+     * Determines optimal GRIM_ROOT with permission checking
+     * @return Optimal GRIM_ROOT path
+     * @throws IOException If no writable directory found
+     */
+    private static String determineGrimRoot() throws IOException {
+        // Check GRIM_REAPER mode
+        if ("TRUE".equals(System.getenv("GRIM_REAPER"))) {
+            String existing = System.getenv("GRIM_ROOT");
+            if (existing != null && Files.isDirectory(Paths.get(existing))) {
+                return existing;
+            }
+        }
+        
+        // Try permission hierarchy
+        String home = System.getProperty("user.home");
+        String[] candidates = {
+            home + "/.grim",
+            "/root/.grim",
+            System.getProperty("user.dir") + "/.grim"
+        };
+        
+        for (String path : candidates) {
+            Path dir = Paths.get(path).getParent();
+            if (dir != null && Files.isWritable(dir)) {
+                return path;
+            }
+        }
+        
+        throw new IOException("No writable directory found. Please chmod +x install.sh or run with proper permissions");
+    }
+
+    /**
+     * Setup environment variables with persistence
+     * @param grimRoot The GRIM_ROOT path
+     */
+    private static void setupEnvironmentVariables(String grimRoot) {
+        System.out.println("🌍 Setting up environment variables...");
+        
+        // Set system properties (Java equivalent of environment variables)
+        System.setProperty("GRIM_ROOT", grimRoot);
+        System.setProperty("GRIM_LICENSE", "FREE");
+        System.setProperty("GRIM_REAPER", "FALSE");
+        
+        // Read version from manifest.tsk if available
+        Path manifestPath = Paths.get(grimRoot, "manifest.tsk");
+        if (Files.exists(manifestPath)) {
+            try {
+                String content = Files.readString(manifestPath);
+                String[] lines = content.split("\n");
+                for (String line : lines) {
+                    if (line.contains("version") && line.contains(":")) {
+                        String[] parts = line.split(":");
+                        if (parts.length >= 2) {
+                            String version = parts[1].trim().replaceAll("[\"]", "");
+                            System.setProperty("GRIM_VERSION", version);
+                            System.out.println("📋 Set GRIM_VERSION=" + version + " from manifest");
+                            break;
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                // Ignore read errors
+            }
+        }
+        
+        System.out.println("✅ Environment variables configured");
+    }
+
+    /**
+     * Make all Grim scripts executable
+     * @param grimRoot The GRIM_ROOT path
+     */
+    private static void makeScriptsExecutable(String grimRoot) {
+        System.out.println("🔧 Making scripts executable...");
+        
+        String[] scriptPatterns = {
+            "reaper.sh", "install.sh", "throne/*.sh", "sh_grim/*.sh",
+            "scripts/*.sh", "bin/*", ".rip/*", "py_grim/**/*.py", "go_grim/build/*"
+        };
+        
+        for (String pattern : scriptPatterns) {
+            String command = String.format("find \"%s\" -name \"%s\" -type f -exec chmod +x {} \\;", 
+                grimRoot, Paths.get(pattern).getFileName().toString());
+            try {
+                Runtime.getRuntime().exec(new String[]{"/bin/bash", "-c", command}).waitFor();
+            } catch (IOException | InterruptedException e) {
+                // Ignore permission errors
+            }
+        }
+        
+        System.out.println("✅ Scripts made executable");
+    }
+
+    /**
+     * Format bytes for display
+     * @param bytes Number of bytes
+     * @return Formatted string
+     */
+    private static String formatBytes(long bytes) {
+        String[] units = {"B", "KB", "MB", "GB"};
+        double size = bytes;
+        int unitIndex = 0;
+        
+        while (size >= 1024 && unitIndex < units.length - 1) {
+            size /= 1024;
+            unitIndex++;
+        }
+        
+        return String.format("%.2f %s", size, units[unitIndex]);
     }
 
     /**

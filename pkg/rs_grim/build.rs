@@ -16,7 +16,7 @@ fn setup_scythe_directories() {
     println!("🗡️  Setting up .scythe directory structure...");
 
     let grim_root = detect_grim_root();
-    let scythe_dir = format!("{}/.graveyard/.rip/.scythe", grim_root);
+    let scythe_dir = format!("{grim_root}/.graveyard/.rip/.scythe");
 
     // Create main scythe directories
     let directories = ["config", "db", "logs", "run", "integrations"];

@@ -94,11 +94,90 @@ class GrimCLI < Thor
     
     begin
       installer = GrimReaper::Installer.new
-      installer.setup_complete_environment
-      puts "✅ Complete Grim Reaper environment setup finished!".colorize(:green)
+      if installer.setup_complete_environment
+        puts "✅ Complete Grim Reaper environment setup finished!".colorize(:green)
+        puts "📁 Installation directory: #{ENV['GRIM_ROOT']}".colorize(:blue)
+        puts "🔧 Run 'source ~/.bashrc' to reload environment".colorize(:yellow)
+      else
+        puts "❌ Setup failed".colorize(:red)
+        exit 1
+      end
     rescue => e
       puts "❌ Setup failed: #{e.message}".colorize(:red)
       exit 1
+    end
+  end
+
+  desc "download-latest", "Download and install latest Grim Reaper from get.grim.so"
+  def download_latest
+    if options[:otp] && !validate_otp_access
+      return
+    end
+    
+    puts "📥 Downloading latest Grim Reaper...".colorize(:cyan)
+    
+    begin
+      installer = GrimReaper::Installer.new
+      if installer.download_latest_grim
+        puts "✅ Download and installation complete!".colorize(:green)
+        puts "📁 Installation directory: #{ENV['GRIM_ROOT']}".colorize(:blue)
+        puts "🔧 Run 'source ~/.bashrc' to reload environment".colorize(:yellow)
+        puts ""
+        puts "Available commands:".colorize(:blue)
+        puts "  grim backup <path>    - Create backup"
+        puts "  grim monitor <path>   - Start monitoring"
+        puts "  grim security         - Security status"
+        puts "  grim rb-setup         - Setup Ruby environment"
+      else
+        puts "❌ Download failed".colorize(:red)
+        exit 1
+      end
+    rescue => e
+      puts "❌ Download failed: #{e.message}".colorize(:red)
+      exit 1
+    end
+  end
+
+  desc "check-installation", "Check if Grim Reaper is properly installed"
+  def check_installation
+    puts "🔍 Checking Grim Reaper installation...".colorize(:cyan)
+    
+    begin
+      installer = GrimReaper::Installer.new
+      grim_root = ENV["GRIM_ROOT"]
+      
+      if grim_root && Dir.exist?(grim_root)
+        puts "✅ GRIM_ROOT found: #{grim_root}".colorize(:green)
+        
+        # Check key components
+        components = [
+          "throne/grim_throne.sh",
+          "install.sh",
+          ".rip"
+        ]
+        
+        components.each do |component|
+          path = File.join(grim_root, component)
+          if File.exist?(path)
+            puts "✅ #{component}".colorize(:green)
+          else
+            puts "❌ #{component} - Missing".colorize(:red)
+          end
+        end
+        
+        puts ""
+        puts "Environment Variables:".colorize(:blue)
+        puts "  GRIM_ROOT=#{ENV['GRIM_ROOT']}".colorize(:blue)
+        puts "  GRIM_LICENSE=#{ENV['GRIM_LICENSE']}".colorize(:blue)
+        puts "  GRIM_REAPER=#{ENV['GRIM_REAPER']}".colorize(:blue)
+        
+      else
+        puts "❌ Grim Reaper not installed".colorize(:red)
+        puts "💡 Run 'grim download-latest' to install".colorize(:yellow)
+      end
+      
+    rescue => e
+      puts "❌ Check failed: #{e.message}".colorize(:red)
     end
   end
   
@@ -489,29 +568,14 @@ class GrimCLI < Thor
     end
   end
 
-     def redirect_to_grim_so(command)
-     puts "\n🌐 This command is not available in the Ruby gem.".colorize(:yellow)
-     puts "For the complete Grim Reaper ecosystem with all commands, visit:".colorize(:blue)
-     puts "  🔗 https://get.grim.so - Complete installation".colorize(:cyan)
-     puts "  📚 https://grim.so/docs - Documentation".colorize(:cyan)
-     puts "  💎 gem install grim-reaper - Ruby gem".colorize(:cyan)
-     puts "\nThe Ruby gem provides Ruby-specific commands and interfaces to other modules."
-     puts "For command '#{command}', you'll need the full Grim Reaper installation."
-   end
-end
-
-# Start the CLI if this file is executed directly
-GrimCLI.start(ARGV) if __FILE__ == $0
-    puts "📦 Or run: curl -sSL https://get.grim.so | bash".colorize(:cyan)
-    puts ""
-    puts "Available commands in this installation:".colorize(:green)
-    puts "  grim help              # Show this help"
-    puts "  grim version           # Show version"
-    puts "  grim health            # Check health"
-    puts "  grim status            # Show status"
-    puts "  grim setup-complete    # Setup environment"
-    puts "  grim rb-setup          # Setup Ruby environment"
-    exit 1
+  def redirect_to_grim_so(command)
+    puts "\n🌐 This command is not available in the Ruby gem.".colorize(:yellow)
+    puts "For the complete Grim Reaper ecosystem with all commands, visit:".colorize(:blue)
+    puts "  🔗 https://get.grim.so - Complete installation".colorize(:cyan)
+    puts "  📚 https://grim.so/docs - Documentation".colorize(:cyan)
+    puts "  💎 gem install grim-reaper - Ruby gem".colorize(:cyan)
+    puts "\nThe Ruby gem provides Ruby-specific commands and interfaces to other modules."
+    puts "For command '#{command}', you'll need the full Grim Reaper installation."
   end
   
   # Override method_missing to catch unknown commands
@@ -527,7 +591,5 @@ GrimCLI.start(ARGV) if __FILE__ == $0
   end
 end
 
-# Run the CLI if this file is executed directly
-if __FILE__ == $0
-  GrimCLI.start(ARGV)
-end 
+# Start the CLI if this file is executed directly
+GrimCLI.start(ARGV) if __FILE__ == $0 

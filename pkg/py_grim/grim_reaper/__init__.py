@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Union
 import requests
 
-__version__ = "1.0.33"
+__version__ = "1.0.36"
 __author__ = "Bernie Gengel and his beagle Buddy"
 __license__ = "BBL"
 
@@ -39,6 +39,76 @@ class GrimReaper:
         """Initialize Grim Reaper with portable path discovery"""
         self.grim_root = grim_root or self._find_grim_root()
         self.api_base = "http://localhost:8000"
+        self._setup_environment()
+        
+    def _setup_environment(self):
+        """Setup required environment variables"""
+        # Set GRIM_ROOT if not already set
+        if not os.environ.get('GRIM_ROOT'):
+            os.environ['GRIM_ROOT'] = self.grim_root
+            
+        # Set GRIM_LICENSE to FREE if not already set
+        if not os.environ.get('GRIM_LICENSE'):
+            os.environ['GRIM_LICENSE'] = "FREE"
+            
+        # Set GRIM_REAPER to FALSE if not already set (normal install)
+        if not os.environ.get('GRIM_REAPER'):
+            os.environ['GRIM_REAPER'] = "FALSE"
+            
+        # Try to add environment variables to user's shell profile
+        self._persist_environment_variables()
+        
+    def _persist_environment_variables(self):
+        """Persist environment variables to shell profile"""
+        try:
+            # Determine shell profile file
+            home_dir = os.path.expanduser("~")
+            profile_files = [
+                os.path.join(home_dir, ".bashrc"),
+                os.path.join(home_dir, ".zshrc"),
+                os.path.join(home_dir, ".profile")
+            ]
+            
+            # Find the first existing profile file
+            profile_file = None
+            for pf in profile_files:
+                if os.path.exists(pf):
+                    profile_file = pf
+                    break
+            
+            if not profile_file:
+                # Create .bashrc if no profile exists
+                profile_file = os.path.join(home_dir, ".bashrc")
+            
+            # Check if our exports already exist
+            env_exports = [
+                f'export GRIM_ROOT="{self.grim_root}"',
+                'export GRIM_LICENSE="FREE"',
+                'export GRIM_REAPER="FALSE"'
+            ]
+            
+            existing_content = ""
+            if os.path.exists(profile_file):
+                with open(profile_file, 'r') as f:
+                    existing_content = f.read()
+            
+            # Add exports if they don't exist
+            content_to_add = []
+            for export in env_exports:
+                if export not in existing_content:
+                    content_to_add.append(export)
+            
+            if content_to_add:
+                with open(profile_file, 'a') as f:
+                    f.write("\n# Grim Reaper Environment Variables\n")
+                    for export in content_to_add:
+                        f.write(f"{export}\n")
+                
+                print(f"✅ Environment variables added to {profile_file}")
+                
+        except Exception as e:
+            # Don't fail installation if we can't persist env vars
+            print(f"⚠️  Could not persist environment variables: {e}")
         
     def _find_grim_root(self) -> str:
         """Find Grim Reaper installation directory"""
@@ -61,7 +131,8 @@ class GrimReaper:
         
         # Try common installation paths
         possible_paths = [
-            os.path.expanduser("~/reaper"),
+            "/root",
+            os.path.expanduser("~"),
             os.path.expanduser("~/.reaper"),
             "/root/reaper",
             "/root/.reaper",
@@ -77,30 +148,225 @@ class GrimReaper:
             if self._is_grim_installation(path):
                 return path
         
-        raise RuntimeError(
-            f"Could not find Grim Reaper root directory.\n"
-            f"Searched paths: {', '.join(possible_paths)}\n\n"
-            f"Please ensure Grim Reaper is properly installed using:\n"
-            f"  • curl -fsSL https://get.grim.so | sudo bash\n"
-            f"  • wget -qO- https://get.grim.so | sudo bash\n\n"
-            f"Or set GRIM_ROOT environment variable:\n"
-            f"  export GRIM_ROOT=/path/to/your/grim/installation"
-        )
+        # Determine install location with proper permissions
+        install_dir = self._determine_install_location()
+        
+        try:
+            print(f"🗡️  Grim Reaper not found. Installing to {install_dir}...")
+            self._install_grim_core(install_dir)
+            return install_dir
+        except Exception as install_error:
+            raise RuntimeError(
+                f"Could not find Grim Reaper root directory.\n"
+                f"Searched paths: {', '.join(possible_paths)}\n"
+                f"Auto-installation failed: {install_error}\n\n"
+                f"Please ensure Grim Reaper is properly installed using:\n"
+                f"  • curl -fsSL https://get.grim.so | sudo bash\n"
+                f"  • wget -qO- https://get.grim.so | sudo bash\n\n"
+                f"Or set GRIM_ROOT environment variable:\n"
+                f"  export GRIM_ROOT=/path/to/your/grim/installation\n\n"
+                f"If you get permission errors, try:\n"
+                f"  chmod +x ./install.sh && ./install.sh"
+            )
+    
+    def _determine_install_location(self) -> str:
+        """Determine the best installation location based on permissions"""
+        # Try /root first
+        if os.access("/root", os.W_OK):
+            return "/root"
+        
+        # Try user home directory
+        home_dir = os.path.expanduser("~")
+        if os.access(home_dir, os.W_OK):
+            return home_dir
+            
+        # Try local directory
+        current_dir = os.getcwd()
+        if os.access(current_dir, os.W_OK):
+            return current_dir
+            
+        # Fallback to /tmp (less ideal but works)
+        return "/tmp/grim_install"
     
     def _is_grim_installation(self, path: str) -> bool:
         """Check if path contains a valid Grim installation"""
         if not os.path.isdir(path):
             return False
         
-        # Check for key Grim files
+        # Check for key Grim files in various possible structures
         key_files = [
+            # Direct structure
             "throne/grim_throne.sh",
             "tsk_flask/grim_admin_server.py",
             "sh_grim/backup.sh",
-            "go_grim/build/grim-compression"
+            "go_grim/build/grim-compression",
+            # Reaper structure
+            "reaper/throne/grim_throne.sh",
+            "reaper/tsk_flask/grim_admin_server.py",
+            "reaper/sh_grim/backup.sh",
+            "reaper/go_grim/build/grim-compression",
+            # Main source structure
+            "grim_throne.sh",
+            "reaper.sh",
+            ".rip/config.tsk",
+            "auto_backups/",
         ]
         
         return any(os.path.exists(os.path.join(path, key_file)) for key_file in key_files)
+    
+    def _install_grim_core(self, install_dir: str) -> None:
+        """Install Grim Reaper core system from latest.tar.gz"""
+        import tarfile
+        import tempfile
+        import shutil
+        
+        print("📥 Downloading Grim Reaper from get.grim.so...")
+        
+        # Download latest.tar.gz
+        download_url = "https://get.grim.so/latest.tar.gz"
+        try:
+            response = requests.get(download_url, stream=True, timeout=60)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            raise RuntimeError(f"Failed to download Grim Reaper: {e}")
+        
+        # Create installation directory
+        os.makedirs(install_dir, exist_ok=True)
+        
+        # Save to temp file
+        with tempfile.NamedTemporaryFile(suffix='.tar.gz', delete=False) as temp_file:
+            for chunk in response.iter_content(chunk_size=8192):
+                temp_file.write(chunk)
+            temp_path = temp_file.name
+        
+        print("✅ Download complete")
+        print("📦 Extracting Grim Reaper...")
+        
+        try:
+            # Extract tarball with strip=2 to handle graveyard/reaper/ prefix
+            with tarfile.open(temp_path, 'r:gz') as tar:
+                # Get all members and strip the first 2 path components
+                members = []
+                for member in tar.getmembers():
+                    # Split path and remove first 2 components (graveyard/reaper/)
+                    path_parts = member.name.split('/')
+                    if len(path_parts) > 2:
+                        member.name = '/'.join(path_parts[2:])
+                        members.append(member)
+                    elif len(path_parts) == 2 and path_parts[0] in ['graveyard'] and path_parts[1] in ['reaper']:
+                        # Skip empty graveyard/reaper directories
+                        continue
+                    elif len(path_parts) == 1 and path_parts[0] in ['graveyard']:
+                        # Skip graveyard directory
+                        continue
+                
+                # Extract with modified paths
+                if members:
+                    tar.extractall(install_dir, members=members)
+                else:
+                    # Fallback: extract everything without path modification
+                    tar.extractall(install_dir)
+            
+            print("✅ Extraction complete")
+            
+            # Make scripts executable
+            print("🔧 Making scripts executable...")
+            script_dirs = ['throne', 'sh_grim', 'scripts', '.rip', 'auto_backups']
+            for script_dir in script_dirs:
+                script_path = os.path.join(install_dir, script_dir)
+                if os.path.exists(script_path):
+                    for root, dirs, files in os.walk(script_path):
+                        for file in files:
+                            if file.endswith('.sh') or file == 'reaper' or file == 'grim_throne.sh':
+                                file_path = os.path.join(root, file)
+                                try:
+                                    os.chmod(file_path, 0o755)
+                                except:
+                                    pass  # Skip if chmod fails
+            
+            # Make main executables executable
+            main_executables = [
+                'reaper.sh',
+                'grim_throne.sh', 
+                'install.sh'
+            ]
+            for executable in main_executables:
+                exe_path = os.path.join(install_dir, executable)
+                if os.path.exists(exe_path):
+                    try:
+                        os.chmod(exe_path, 0o755)
+                    except:
+                        pass
+            
+            print("✅ Scripts made executable")
+            
+            # Check if GRIM_REAPER environment variable indicates update mode
+            if os.environ.get('GRIM_REAPER') == 'TRUE':
+                print("🔄 GRIM_REAPER=TRUE detected - performing update mode")
+                self._handle_reaper_update(install_dir)
+            
+            print(f"✅ Grim Reaper installation complete at: {install_dir}")
+            
+        finally:
+            # Clean up temp file
+            try:
+                os.unlink(temp_path)
+            except:
+                pass
+    
+    def _handle_reaper_update(self, install_dir: str):
+        """Handle GRIM_REAPER=TRUE update mode - extract and overwrite except sensitive data"""
+        print("⚠️  Update mode: Preserving sensitive data (DB files, license, keys)")
+        
+        # Sensitive files to preserve
+        sensitive_patterns = [
+            "*.db",
+            "*.key", 
+            "*.pem",
+            "*.crt",
+            "license*",
+            "*.license",
+            ".rip/config.tsk",
+            "auto_backups_encrypted/",
+            "database/",
+            "keys/",
+            "ssl/",
+        ]
+        
+        # Create backup of sensitive files
+        import glob
+        preserved_files = {}
+        
+        for pattern in sensitive_patterns:
+            for file_path in glob.glob(os.path.join(install_dir, "**", pattern), recursive=True):
+                if os.path.exists(file_path):
+                    with open(file_path, 'rb') as f:
+                        preserved_files[file_path] = f.read()
+        
+        print(f"🔒 Preserved {len(preserved_files)} sensitive files")
+        
+        # Restore preserved files after extraction
+        for file_path, content in preserved_files.items():
+            try:
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                with open(file_path, 'wb') as f:
+                    f.write(content)
+            except Exception as e:
+                print(f"⚠️  Could not restore {file_path}: {e}")
+        
+        # Try to read version from manifest.tsk
+        try:
+            manifest_path = os.path.join(install_dir, "manifest.tsk")
+            if os.path.exists(manifest_path):
+                with open(manifest_path, 'r') as f:
+                    for line in f:
+                        if 'version' in line.lower():
+                            version = line.split('=', 1)[-1].strip().strip('"\'')
+                            os.environ['GRIM_VERSION'] = version
+                            print(f"📋 Set GRIM_VERSION={version}")
+                            break
+        except Exception as e:
+            print(f"⚠️  Could not read version from manifest.tsk: {e}")
     
     def _execute_sh_module(self, module: str, args: List[str] = None) -> str:
         """Execute sh_grim module with proper error handling"""
@@ -350,6 +616,14 @@ class GrimReaper:
         
         return self.execute_command("version")
     
+    def install_core(self, install_dir: Optional[str] = None) -> str:
+        """Manually install Grim Reaper core system"""
+        if install_dir is None:
+            install_dir = os.path.expanduser("~/reaper")
+        
+        self._install_grim_core(install_dir)
+        return install_dir
+    
     def check_services(self) -> Dict[str, bool]:
         """Check if Grim services are running"""
         services = {
@@ -414,7 +688,7 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description="Grim Reaper Python CLI")
-    parser.add_argument("command", choices=["backup", "restore", "compress", "health", "scan", "version"], 
+    parser.add_argument("command", choices=["backup", "restore", "compress", "health", "scan", "version", "install"], 
                        help="Command to execute")
     parser.add_argument("args", nargs="*", help="Command arguments")
     
@@ -453,6 +727,10 @@ def main():
         elif args.command == "version":
             result = grim.get_version()
             print(result)
+        elif args.command == "install":
+            install_dir = args.args[0] if args.args else None
+            result = grim.install_core(install_dir)
+            print(f"✅ Grim Reaper installed to: {result}")
             
     except Exception as e:
         print(f"Error: {e}")
