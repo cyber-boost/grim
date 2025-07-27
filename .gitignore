@@ -230,3 +230,17 @@ pkg/*/Claude*
 
 # EXCEPTION: Allow grim-reaper.gemspec at root (Ruby gem spec)
 !grim-reaper.gemspec
+
+# Claude-generated temporary files
+*claude*.md
+claude_*.py
+claude_*.md
+
+# Preview/temporary scripts
+*preview*.py
+preview_*.py
+simple_preview*.py
+
+# Temporary documentation
+temp_*.md
+tmp_*.py
