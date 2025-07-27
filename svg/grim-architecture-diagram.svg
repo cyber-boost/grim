@@ -1,0 +1,203 @@
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient definitions -->
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b4513;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b8860b;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="darkGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2a2a2a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1a1a;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Filter for drop shadows -->
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+    
+    <!-- Arrow marker -->
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#b8860b" />
+    </marker>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="800" fill="#0a0a0a"/>
+  
+  <!-- Title -->
+  <text x="600" y="40" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#b8860b">
+    GRIM Architecture: The Unified Data Protection Ecosystem
+  </text>
+  
+  <!-- User Layer -->
+  <g id="user-layer">
+    <rect x="50" y="80" width="1100" height="80" rx="10" fill="url(#darkGradient)" stroke="#8b4513" stroke-width="2" filter="url(#shadow)"/>
+    <text x="600" y="105" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#b8860b">
+      User Interface Layer
+    </text>
+    
+    <!-- Interface components -->
+    <rect x="100" y="115" width="200" height="35" rx="5" fill="#1a1a1a" stroke="#8b4513" stroke-width="1"/>
+    <text x="200" y="138" text-anchor="middle" font-family="monospace" font-size="14" fill="#e6e6e6">grim CLI</text>
+    
+    <rect x="350" y="115" width="200" height="35" rx="5" fill="#1a1a1a" stroke="#8b4513" stroke-width="1"/>
+    <text x="450" y="138" text-anchor="middle" font-family="monospace" font-size="14" fill="#e6e6e6">Web Dashboard</text>
+    
+    <rect x="600" y="115" width="200" height="35" rx="5" fill="#1a1a1a" stroke="#8b4513" stroke-width="1"/>
+    <text x="700" y="138" text-anchor="middle" font-family="monospace" font-size="14" fill="#e6e6e6">REST API</text>
+    
+    <rect x="850" y="115" width="200" height="35" rx="5" fill="#1a1a1a" stroke="#8b4513" stroke-width="1"/>
+    <text x="950" y="138" text-anchor="middle" font-family="monospace" font-size="14" fill="#e6e6e6">Notifications</text>
+  </g>
+  
+  <!-- Orchestrator Layer -->
+  <g id="orchestrator-layer">
+    <rect x="200" y="200" width="800" height="120" rx="10" fill="url(#primaryGradient)" stroke="#daa520" stroke-width="3" filter="url(#shadow)"/>
+    <text x="600" y="230" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff">
+      SCYTHE ORCHESTRATOR
+    </text>
+    <text x="600" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#ffffff">
+      Central Command &amp; Control
+    </text>
+    
+    <!-- Orchestrator components -->
+    <rect x="250" y="270" width="150" height="35" rx="5" fill="rgba(255,255,255,0.1)" stroke="#ffffff" stroke-width="1"/>
+    <text x="325" y="292" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#ffffff">Workflow Engine</text>
+    
+    <rect x="425" y="270" width="150" height="35" rx="5" fill="rgba(255,255,255,0.1)" stroke="#ffffff" stroke-width="1"/>
+    <text x="500" y="292" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#ffffff">Job Scheduler</text>
+    
+    <rect x="600" y="270" width="150" height="35" rx="5" fill="rgba(255,255,255,0.1)" stroke="#ffffff" stroke-width="1"/>
+    <text x="675" y="292" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#ffffff">Resource Manager</text>
+    
+    <rect x="775" y="270" width="150" height="35" rx="5" fill="rgba(255,255,255,0.1)" stroke="#ffffff" stroke-width="1"/>
+    <text x="850" y="292" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#ffffff">State Machine</text>
+  </g>
+  
+  <!-- Service Modules Layer -->
+  <g id="service-layer">
+    <text x="600" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#b8860b">
+      Service Modules
+    </text>
+    
+    <!-- SH_GRIM -->
+    <g id="sh_grim">
+      <rect x="50" y="390" width="320" height="180" rx="10" fill="url(#darkGradient)" stroke="#8b4513" stroke-width="2" filter="url(#shadow)"/>
+      <text x="210" y="415" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#b8860b">
+        SH_GRIM (Bash)
+      </text>
+      <text x="210" y="435" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#999">
+        60+ System Modules
+      </text>
+      
+      <!-- Module list -->
+      <text x="70" y="460" font-family="monospace" font-size="11" fill="#e6e6e6">• backup.sh - Backup operations</text>
+      <text x="70" y="480" font-family="monospace" font-size="11" fill="#e6e6e6">• monitor.sh - File monitoring</text>
+      <text x="70" y="500" font-family="monospace" font-size="11" fill="#e6e6e6">• security.sh - Encryption/audit</text>
+      <text x="70" y="520" font-family="monospace" font-size="11" fill="#e6e6e6">• scythe.sh - License protection</text>
+      <text x="70" y="540" font-family="monospace" font-size="11" fill="#e6e6e6">• healer.sh - Self-healing</text>
+      <text x="70" y="560" font-family="monospace" font-size="11" fill="#e6e6e6">• ...and 55+ more modules</text>
+    </g>
+    
+    <!-- GO_GRIM -->
+    <g id="go_grim">
+      <rect x="400" y="390" width="320" height="180" rx="10" fill="url(#darkGradient)" stroke="#8b4513" stroke-width="2" filter="url(#shadow)"/>
+      <text x="560" y="415" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#b8860b">
+        GO_GRIM (Go)
+      </text>
+      <text x="560" y="435" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#999">
+        High-Performance Engine
+      </text>
+      
+      <!-- Module list -->
+      <text x="420" y="460" font-family="monospace" font-size="11" fill="#e6e6e6">• grim-compression - Multi-algo</text>
+      <text x="420" y="480" font-family="monospace" font-size="11" fill="#e6e6e6">• grim-scanner - Fast file scan</text>
+      <text x="420" y="500" font-family="monospace" font-size="11" fill="#e6e6e6">• grim-transfer - Remote sync</text>
+      <text x="420" y="520" font-family="monospace" font-size="11" fill="#e6e6e6">• grim-dedup - Deduplication</text>
+      <text x="420" y="540" font-family="monospace" font-size="11" fill="#e6e6e6">• grim-benchmark - Performance</text>
+      <text x="420" y="560" font-family="monospace" font-size="11" fill="#e6e6e6">• Parallel processing engine</text>
+    </g>
+    
+    <!-- PY_GRIM -->
+    <g id="py_grim">
+      <rect x="750" y="390" width="320" height="180" rx="10" fill="url(#darkGradient)" stroke="#8b4513" stroke-width="2" filter="url(#shadow)"/>
+      <text x="910" y="415" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#b8860b">
+        PY_GRIM (Python)
+      </text>
+      <text x="910" y="435" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#999">
+        AI &amp; Web Services
+      </text>
+      
+      <!-- Module list -->
+      <text x="770" y="460" font-family="monospace" font-size="11" fill="#e6e6e6">• grim_web - Flask dashboard</text>
+      <text x="770" y="480" font-family="monospace" font-size="11" fill="#e6e6e6">• grim_ai - TensorFlow/PyTorch</text>
+      <text x="770" y="500" font-family="monospace" font-size="11" fill="#e6e6e6">• grim_api - REST endpoints</text>
+      <text x="770" y="520" font-family="monospace" font-size="11" fill="#e6e6e6">• grim_analytics - Reports</text>
+      <text x="770" y="540" font-family="monospace" font-size="11" fill="#e6e6e6">• grim_predict - ML models</text>
+      <text x="770" y="560" font-family="monospace" font-size="11" fill="#e6e6e6">• Smart decision engine</text>
+    </g>
+  </g>
+  
+  <!-- Storage Layer -->
+  <g id="storage-layer">
+    <rect x="50" y="610" width="1100" height="120" rx="10" fill="url(#darkGradient)" stroke="#8b4513" stroke-width="2" filter="url(#shadow)"/>
+    <text x="600" y="635" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#b8860b">
+      Storage &amp; Infrastructure Layer
+    </text>
+    
+    <!-- Storage components -->
+    <rect x="100" y="655" width="200" height="50" rx="5" fill="#1a1a1a" stroke="#8b4513" stroke-width="1"/>
+    <text x="200" y="675" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#e6e6e6">Local Storage</text>
+    <text x="200" y="692" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#999">Backups/Archives</text>
+    
+    <rect x="350" y="655" width="200" height="50" rx="5" fill="#1a1a1a" stroke="#8b4513" stroke-width="1"/>
+    <text x="450" y="675" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#e6e6e6">Cloud Storage</text>
+    <text x="450" y="692" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#999">S3/Azure/GCP</text>
+    
+    <rect x="600" y="655" width="200" height="50" rx="5" fill="#1a1a1a" stroke="#8b4513" stroke-width="1"/>
+    <text x="700" y="675" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#e6e6e6">SQLite DB</text>
+    <text x="700" y="692" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#999">Metadata/State</text>
+    
+    <rect x="850" y="655" width="200" height="50" rx="5" fill="#1a1a1a" stroke="#8b4513" stroke-width="1"/>
+    <text x="950" y="675" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#e6e6e6">Audit Logs</text>
+    <text x="950" y="692" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#999">Compliance/History</text>
+  </g>
+  
+  <!-- Arrows showing data flow -->
+  <g id="arrows">
+    <!-- User to Orchestrator -->
+    <line x1="600" y1="160" x2="600" y2="200" stroke="#b8860b" stroke-width="2" marker-end="url(#arrowhead)"/>
+    
+    <!-- Orchestrator to Services -->
+    <line x1="400" y1="320" x2="210" y2="390" stroke="#b8860b" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <line x1="600" y1="320" x2="560" y2="390" stroke="#b8860b" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <line x1="800" y1="320" x2="910" y2="390" stroke="#b8860b" stroke-width="2" marker-end="url(#arrowhead)"/>
+    
+    <!-- Services to Storage -->
+    <line x1="210" y1="570" x2="200" y2="610" stroke="#b8860b" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <line x1="560" y1="570" x2="450" y2="610" stroke="#b8860b" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <line x1="910" y1="570" x2="700" y2="610" stroke="#b8860b" stroke-width="2" marker-end="url(#arrowhead)"/>
+  </g>
+  
+  <!-- Key Features callouts -->
+  <g id="features">
+    <rect x="1100" y="250" width="90" height="250" rx="5" fill="rgba(139, 69, 19, 0.2)" stroke="#8b4513" stroke-width="1"/>
+    <text x="1145" y="275" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#b8860b">
+      Key Features
+    </text>
+    <text x="1105" y="300" font-family="Arial, sans-serif" font-size="10" fill="#e6e6e6">🤖 AI-Powered</text>
+    <text x="1105" y="325" font-family="Arial, sans-serif" font-size="10" fill="#e6e6e6">🔒 Encrypted</text>
+    <text x="1105" y="350" font-family="Arial, sans-serif" font-size="10" fill="#e6e6e6">♻️ Deduplicated</text>
+    <text x="1105" y="375" font-family="Arial, sans-serif" font-size="10" fill="#e6e6e6">⚡ Multi-threaded</text>
+    <text x="1105" y="400" font-family="Arial, sans-serif" font-size="10" fill="#e6e6e6">🌐 Multi-cloud</text>
+    <text x="1105" y="425" font-family="Arial, sans-serif" font-size="10" fill="#e6e6e6">📊 Real-time</text>
+    <text x="1105" y="450" font-family="Arial, sans-serif" font-size="10" fill="#e6e6e6">🚨 Self-healing</text>
+    <text x="1105" y="475" font-family="Arial, sans-serif" font-size="10" fill="#e6e6e6">💀 Unified CLI</text>
+  </g>
+  
+  <!-- Footer -->
+  <text x="600" y="770" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#666">
+    All components unified under the 'grim' command - No more script chaos!
+  </text>
+</svg>
