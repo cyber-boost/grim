@@ -40,6 +40,9 @@ vendor/
 .claude/
 .cursor/
 grim_venv/
+internal/
+mother_db/
+scripts/
 
 # SENSITIVE FILES
 *.db
